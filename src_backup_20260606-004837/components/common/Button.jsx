@@ -4,10 +4,11 @@ export default function Button({
   children,
   href,
   variant = "primary",
+  size = "md",
   className,
   ...props
 }) {
-  const classes = clsx("btn", `btn-${variant}`, className);
+  const classes = clsx("btn", `btn-${variant}`, `btn-${size}`, className);
 
   if (href) {
     return (

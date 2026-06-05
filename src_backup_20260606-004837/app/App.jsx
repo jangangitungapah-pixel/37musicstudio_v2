@@ -1,4 +1,4 @@
-﻿import { BrowserRouter, Navigate, Route, Routes } from "react-router-dom";
+﻿import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import LandingPage from "../pages/LandingPage.jsx";
 
 export default function App() {
