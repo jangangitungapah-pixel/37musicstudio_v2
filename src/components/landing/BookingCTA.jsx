@@ -1,5 +1,4 @@
-﻿import { MessageCircle, Sparkles } from "lucide-react";
-import { getWhatsAppUrl } from "../../config/site.js";
+﻿import { CalendarCheck, Sparkles } from "lucide-react";
 import Button from "../common/Button.jsx";
 import Container from "../common/Container.jsx";
 
@@ -15,13 +14,13 @@ export default function BookingCTA() {
 
           <h2>Siap latihan tanpa ribet?</h2>
           <p>
-            Cek jadwal, tanya room, dan booking studio langsung dari HP kamu.
-            Tinggal klik WhatsApp, pilih sesi, lalu gas latihan.
+            Cek jadwal, pilih room, isi detail singkat, lalu konfirmasi booking
+            langsung via WhatsApp dengan format pesan yang sudah rapi.
           </p>
 
-          <Button href={getWhatsAppUrl()} target="_blank" rel="noreferrer" size="lg">
-            <MessageCircle size={20} />
-            Booking via WhatsApp
+          <Button href="/booking" size="lg">
+            <CalendarCheck size={20} />
+            Mulai Booking
           </Button>
         </div>
       </Container>

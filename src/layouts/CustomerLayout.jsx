@@ -1,12 +1,13 @@
 ﻿import { useState } from "react";
+import { Link } from "react-router-dom";
 import { Menu, X } from "lucide-react";
-import { getWhatsAppUrl, siteConfig } from "../config/site.js";
+import { siteConfig } from "../config/site.js";
 
 const navItems = [
-  { label: "Ruangan", href: "#rooms" },
-  { label: "Harga", href: "#pricing" },
-  { label: "Gallery", href: "#gallery" },
-  { label: "FAQ", href: "#faq" },
+  { label: "Ruangan", href: "/#rooms" },
+  { label: "Harga", href: "/#pricing" },
+  { label: "Gallery", href: "/#gallery" },
+  { label: "FAQ", href: "/#faq" },
 ];
 
 export default function CustomerLayout({ children }) {
@@ -19,13 +20,13 @@ export default function CustomerLayout({ children }) {
   return (
     <div className="customer-app">
       <header className="customer-header">
-        <a className="brand-lockup" href="#top" aria-label={siteConfig.brand.name}>
+        <Link className="brand-lockup" to="/" aria-label={siteConfig.brand.name}>
           <span className="brand-mark">{siteConfig.brand.mark}</span>
           <span className="brand-text">
             <strong>{siteConfig.brand.shortName}</strong>
             <small>Studio</small>
           </span>
-        </a>
+        </Link>
 
         <nav className="desktop-nav" aria-label="Navigasi utama">
           {navItems.map((item) => (
@@ -35,14 +36,9 @@ export default function CustomerLayout({ children }) {
           ))}
         </nav>
 
-        <a
-          className="header-cta"
-          href={getWhatsAppUrl()}
-          target="_blank"
-          rel="noreferrer"
-        >
+        <Link className="header-cta" to="/booking">
           Booking
-        </a>
+        </Link>
 
         <button
           className="mobile-menu-button"
@@ -77,15 +73,9 @@ export default function CustomerLayout({ children }) {
           ))}
         </nav>
 
-        <a
-          className="mobile-nav-cta"
-          href={getWhatsAppUrl()}
-          target="_blank"
-          rel="noreferrer"
-          onClick={closeMenu}
-        >
+        <Link className="mobile-nav-cta" to="/booking" onClick={closeMenu}>
           Booking Sekarang
-        </a>
+        </Link>
       </aside>
 
       <main>{children}</main>

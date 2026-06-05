@@ -1,6 +1,5 @@
 ﻿import { Check } from "lucide-react";
 import { pricing } from "../../data/pricing.js";
-import { getWhatsAppUrl } from "../../config/site.js";
 import Container from "../common/Container.jsx";
 import SectionHeader from "../common/SectionHeader.jsx";
 import Button from "../common/Button.jsx";
@@ -42,12 +41,10 @@ export default function PricingSection() {
               </ul>
 
               <Button
-                href={getWhatsAppUrl(`Halo 37 Music Studio, saya mau booking paket ${item.name}.`)}
-                target="_blank"
-                rel="noreferrer"
+                href={`/booking?package=${encodeURIComponent(item.name)}`}
                 variant={index === 1 ? "primary" : "secondary"}
               >
-                Booking Paket
+                Pilih Paket
               </Button>
             </article>
           ))}

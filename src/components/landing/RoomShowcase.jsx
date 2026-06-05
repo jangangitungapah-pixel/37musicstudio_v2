@@ -1,6 +1,5 @@
 ﻿import { Check } from "lucide-react";
 import { rooms } from "../../data/rooms.js";
-import { getWhatsAppUrl } from "../../config/site.js";
 import Button from "../common/Button.jsx";
 import Container from "../common/Container.jsx";
 import SectionHeader from "../common/SectionHeader.jsx";
@@ -38,13 +37,11 @@ export default function RoomShowcase() {
                 </ul>
 
                 <Button
-                  href={getWhatsAppUrl(`Halo 37 Music Studio, saya mau tanya jadwal ${room.name}.`)}
-                  target="_blank"
-                  rel="noreferrer"
+                  href={`/booking?room=${encodeURIComponent(room.name)}`}
                   variant="secondary"
                   className="room-button"
                 >
-                  Tanya Jadwal
+                  Pilih Room Ini
                 </Button>
               </div>
             </article>

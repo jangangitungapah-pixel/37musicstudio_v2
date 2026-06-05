@@ -5,6 +5,7 @@ import App from "./app/App.jsx";
 import "./styles/variables.css";
 import "./styles/index.css";
 import "./styles/landing.css";
+import "./styles/booking.css";
 
 ReactDOM.createRoot(document.getElementById("root")).render(
   <React.StrictMode>

@@ -1,5 +1,5 @@
 ﻿import { Calendar, Headphones, Music, Sparkles } from "lucide-react";
-import { getWhatsAppUrl, siteConfig } from "../../config/site.js";
+import { siteConfig } from "../../config/site.js";
 import Button from "../common/Button.jsx";
 import Container from "../common/Container.jsx";
 
@@ -29,7 +29,7 @@ export default function HeroSection() {
           </p>
 
           <div className="hero-actions">
-            <Button href={getWhatsAppUrl()} target="_blank" rel="noreferrer">
+            <Button href="/booking">
               Booking Sekarang
             </Button>
 
