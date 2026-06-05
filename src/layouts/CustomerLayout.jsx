@@ -4,6 +4,7 @@ import { Menu, X } from "lucide-react";
 import { siteConfig } from "../config/site.js";
 
 const navItems = [
+  { label: "Kalender", href: "/calendar" },
   { label: "Ruangan", href: "/#rooms" },
   { label: "Harga", href: "/#pricing" },
   { label: "Gallery", href: "/#gallery" },

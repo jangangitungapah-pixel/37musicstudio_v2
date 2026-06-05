@@ -20,3 +20,8 @@
     rating: "4.9",
   },
 };
+
+export function getWhatsAppUrl(customText) {
+  const text = customText || siteConfig.contact.whatsappText;
+  return `https://wa.me/${siteConfig.contact.whatsappNumber}?text=${encodeURIComponent(text)}`;
+}

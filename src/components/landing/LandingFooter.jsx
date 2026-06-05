@@ -1,5 +1,5 @@
 ﻿import { Link } from "react-router-dom";
-import { Instagram, MapPin, Music, CalendarCheck } from "lucide-react";
+import { CalendarCheck, MapPin, Music } from "lucide-react";
 import { siteConfig } from "../../config/site.js";
 import Container from "../common/Container.jsx";
 
@@ -20,22 +20,26 @@ export default function LandingFooter() {
 
           <div>
             <h3>Kontak</h3>
+
             <Link to="/booking">
               <CalendarCheck size={17} />
               Mulai Booking
             </Link>
+
             <a href={siteConfig.contact.instagramUrl} target="_blank" rel="noreferrer">
-              <Instagram size={17} />
+              <span className="footer-social-badge">IG</span>
               Instagram
             </a>
           </div>
 
           <div>
             <h3>Lokasi</h3>
+
             <a href={siteConfig.contact.mapsUrl} target="_blank" rel="noreferrer">
               <MapPin size={17} />
               Lihat Google Maps
             </a>
+
             <a href="/#rooms">
               <Music size={17} />
               Lihat Ruangan

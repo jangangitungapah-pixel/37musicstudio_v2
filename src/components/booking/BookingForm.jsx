@@ -1,7 +1,16 @@
 ﻿import { useMemo, useState } from "react";
-import { CalendarDays, Clock, MessageCircle, Music2, UserRound } from "lucide-react";
+import {
+  CalendarDays,
+  Check,
+  Clock,
+  MessageCircle,
+  Music2,
+  UserRound,
+  UsersRound,
+} from "lucide-react";
 import { bookingPackages, bookingRooms, bookingTimeSlots } from "../../data/bookingOptions.js";
 import { siteConfig } from "../../config/site.js";
+import CustomSelect from "../common/CustomSelect.jsx";
 
 function getInitialValueFromQuery(key, fallback) {
   if (typeof window === "undefined") {
@@ -16,19 +25,30 @@ function buildWhatsAppUrl(message) {
   return `https://wa.me/${siteConfig.contact.whatsappNumber}?text=${encodeURIComponent(message)}`;
 }
 
+function getTodayInputValue() {
+  return new Date().toISOString().split("T")[0];
+}
+
 export default function BookingForm() {
+  const roomNames = bookingRooms.map((room) => room.name);
+  const packageNames = bookingPackages.map((item) => item.name);
+
   const [form, setForm] = useState({
     name: "",
     phone: "",
-    room: getInitialValueFromQuery("room", bookingRooms[0]),
-    packageName: getInitialValueFromQuery("package", bookingPackages[0]),
-    date: "",
-    time: bookingTimeSlots[0],
+    room: getInitialValueFromQuery("room", roomNames[0]),
+    packageName: getInitialValueFromQuery("package", packageNames[0]),
+    date: getInitialValueFromQuery("date", ""),
+    time: getInitialValueFromQuery("time", bookingTimeSlots[0]),
     peopleCount: "4",
     notes: "",
   });
 
-  const isReady = form.name.trim() && form.date && form.time;
+  const selectedRoom = bookingRooms.find((room) => room.name === form.room) || bookingRooms[0];
+  const selectedPackage =
+    bookingPackages.find((item) => item.name === form.packageName) || bookingPackages[0];
+
+  const isReady = form.name.trim() && form.phone.trim() && form.date && form.time;
 
   const message = useMemo(() => {
     const lines = [
@@ -65,120 +85,196 @@ export default function BookingForm() {
         <div className="booking-form-icon">
           <Music2 size={24} />
         </div>
+
         <div>
           <h2>Form Booking</h2>
-          <p>Isi data singkat, lalu lanjut konfirmasi via WhatsApp.</p>
+          <p>Pilih room, paket, jadwal, lalu kirim request ke admin.</p>
         </div>
       </div>
 
       <form className="booking-form" onSubmit={(event) => event.preventDefault()}>
-        <label className="form-field">
-          <span>
-            <UserRound size={16} />
-            Nama customer
-          </span>
-          <input
-            type="text"
-            placeholder="Contoh: Arief"
-            value={form.name}
-            onChange={(event) => updateField("name", event.target.value)}
-          />
-        </label>
+        <div className="booking-form-section">
+          <p className="booking-form-section-title">1. Data Customer</p>
 
-        <label className="form-field">
-          <span>
-            <MessageCircle size={16} />
-            Nomor HP
-          </span>
-          <input
-            type="tel"
-            placeholder="Contoh: 0812xxxxxxx"
-            value={form.phone}
-            onChange={(event) => updateField("phone", event.target.value)}
-          />
-        </label>
+          <div className="form-grid-two">
+            <label className="form-field">
+              <span>
+                <UserRound size={16} />
+                Nama customer
+              </span>
 
-        <div className="form-grid-two">
-          <label className="form-field">
-            <span>Room</span>
-            <select
-              value={form.room}
-              onChange={(event) => updateField("room", event.target.value)}
-            >
-              {bookingRooms.map((room) => (
-                <option value={room} key={room}>
-                  {room}
-                </option>
-              ))}
-            </select>
-          </label>
+              <input
+                type="text"
+                placeholder="Contoh: Arief"
+                value={form.name}
+                onChange={(event) => updateField("name", event.target.value)}
+              />
+            </label>
 
-          <label className="form-field">
-            <span>Paket</span>
-            <select
-              value={form.packageName}
-              onChange={(event) => updateField("packageName", event.target.value)}
-            >
-              {bookingPackages.map((item) => (
-                <option value={item} key={item}>
-                  {item}
-                </option>
-              ))}
-            </select>
-          </label>
+            <label className="form-field">
+              <span>
+                <MessageCircle size={16} />
+                Nomor HP
+              </span>
+
+              <input
+                type="tel"
+                placeholder="Contoh: 0812xxxxxxx"
+                value={form.phone}
+                onChange={(event) => updateField("phone", event.target.value)}
+              />
+            </label>
+          </div>
         </div>
 
-        <div className="form-grid-two">
+        <div className="booking-form-section">
+          <p className="booking-form-section-title">2. Pilih Room</p>
+
+          <div className="booking-choice-grid">
+            {bookingRooms.map((room) => {
+              const isSelected = room.name === form.room;
+
+              return (
+                <button
+                  type="button"
+                  className={`booking-choice-card ${isSelected ? "is-selected" : ""}`}
+                  key={room.name}
+                  onClick={() => updateField("room", room.name)}
+                >
+                  <span className="choice-topline">
+                    <span>{room.label}</span>
+                    {isSelected && <Check size={16} />}
+                  </span>
+
+                  <strong>{room.name}</strong>
+                  <p>{room.description}</p>
+
+                  <span className="choice-price">{room.price}</span>
+
+                  <span className="choice-tags">
+                    {room.tags.map((tag) => (
+                      <em key={tag}>{tag}</em>
+                    ))}
+                  </span>
+                </button>
+              );
+            })}
+          </div>
+        </div>
+
+        <div className="booking-form-section">
+          <p className="booking-form-section-title">3. Pilih Paket</p>
+
+          <div className="booking-package-grid">
+            {bookingPackages.map((item) => {
+              const isSelected = item.name === form.packageName;
+
+              return (
+                <button
+                  type="button"
+                  className={`booking-package-card ${isSelected ? "is-selected" : ""}`}
+                  key={item.name}
+                  onClick={() => updateField("packageName", item.name)}
+                >
+                  <span className="choice-topline">
+                    <strong>{item.name}</strong>
+                    {isSelected && <Check size={16} />}
+                  </span>
+
+                  <p>{item.description}</p>
+
+                  <span className="package-price">
+                    {item.price}
+                    <small>{item.unit}</small>
+                  </span>
+                </button>
+              );
+            })}
+          </div>
+        </div>
+
+        <div className="booking-form-section">
+          <p className="booking-form-section-title">4. Jadwal Sesi</p>
+
+          <div className="form-grid-two">
+            <label className="form-field">
+              <span>
+                <CalendarDays size={16} />
+                Tanggal
+              </span>
+
+              <input
+                type="date"
+                min={getTodayInputValue()}
+                value={form.date}
+                onChange={(event) => updateField("date", event.target.value)}
+              />
+            </label>
+
+            <label className="form-field">
+              <span>
+                <Clock size={16} />
+                Jam
+              </span>
+
+              <CustomSelect
+                label="Jam"
+                value={form.time}
+                options={bookingTimeSlots}
+                onChange={(value) => updateField("time", value)}
+              />
+            </label>
+          </div>
+
           <label className="form-field">
             <span>
-              <CalendarDays size={16} />
-              Tanggal
+              <UsersRound size={16} />
+              Jumlah orang
             </span>
+
             <input
-              type="date"
-              value={form.date}
-              onChange={(event) => updateField("date", event.target.value)}
+              type="number"
+              min="1"
+              placeholder="Contoh: 4"
+              value={form.peopleCount}
+              onChange={(event) => updateField("peopleCount", event.target.value)}
             />
           </label>
 
           <label className="form-field">
-            <span>
-              <Clock size={16} />
-              Jam
-            </span>
-            <select
-              value={form.time}
-              onChange={(event) => updateField("time", event.target.value)}
-            >
-              {bookingTimeSlots.map((slot) => (
-                <option value={slot} key={slot}>
-                  {slot}
-                </option>
-              ))}
-            </select>
+            <span>Catatan tambahan</span>
+
+            <textarea
+              rows="4"
+              placeholder="Contoh: Mau latihan full band, bawa gitar sendiri, butuh info parkir."
+              value={form.notes}
+              onChange={(event) => updateField("notes", event.target.value)}
+            />
           </label>
         </div>
 
-        <label className="form-field">
-          <span>Jumlah orang</span>
-          <input
-            type="number"
-            min="1"
-            placeholder="Contoh: 4"
-            value={form.peopleCount}
-            onChange={(event) => updateField("peopleCount", event.target.value)}
-          />
-        </label>
+        <div className="booking-summary-card">
+          <div>
+            <span className="summary-label">Ringkasan Booking</span>
+            <h3>{selectedRoom.name}</h3>
+            <p>{selectedPackage.name}</p>
+          </div>
 
-        <label className="form-field">
-          <span>Catatan tambahan</span>
-          <textarea
-            rows="4"
-            placeholder="Contoh: Mau latihan full band, bawa gitar sendiri, butuh info parkir."
-            value={form.notes}
-            onChange={(event) => updateField("notes", event.target.value)}
-          />
-        </label>
+          <div className="summary-list">
+            <span>
+              <strong>Tanggal</strong>
+              {form.date || "Belum dipilih"}
+            </span>
+            <span>
+              <strong>Jam</strong>
+              {form.time}
+            </span>
+            <span>
+              <strong>Customer</strong>
+              {form.name || "Belum diisi"}
+            </span>
+          </div>
+        </div>
 
         <div className="booking-preview">
           <strong>Preview pesan WhatsApp</strong>
@@ -198,7 +294,7 @@ export default function BookingForm() {
 
         {!isReady && (
           <p className="booking-helper">
-            Isi minimal nama dan tanggal dulu supaya tombol WhatsApp aktif.
+            Isi nama, nomor HP, dan tanggal dulu supaya tombol WhatsApp aktif.
           </p>
         )}
       </form>

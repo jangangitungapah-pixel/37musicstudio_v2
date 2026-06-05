@@ -1,8 +1,11 @@
-﻿* {
+﻿*,
+*::before,
+*::after {
   box-sizing: border-box;
 }
 
 html {
+  min-width: 320px;
   scroll-behavior: smooth;
   background: var(--bg-main);
 }
@@ -10,9 +13,10 @@ html {
 body {
   margin: 0;
   min-width: 320px;
+  min-height: 100vh;
   background:
-    radial-gradient(circle at 10% 0%, rgba(245, 184, 75, 0.14), transparent 28rem),
-    radial-gradient(circle at 100% 20%, rgba(255, 255, 255, 0.08), transparent 26rem),
+    radial-gradient(circle at top left, rgba(245, 184, 75, 0.12), transparent 34rem),
+    radial-gradient(circle at bottom right, rgba(255, 255, 255, 0.08), transparent 28rem),
     var(--bg-main);
   color: var(--text-main);
   font-family:
@@ -27,6 +31,15 @@ body {
   overflow-x: hidden;
 }
 
+#root {
+  min-height: 100vh;
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
 button,
 input,
 textarea,
@@ -38,13 +51,15 @@ button {
   cursor: pointer;
 }
 
-a {
-  color: inherit;
-  text-decoration: none;
+img,
+svg {
+  display: block;
+  max-width: 100%;
 }
 
-img {
-  display: block;
+input,
+textarea,
+select {
   max-width: 100%;
 }
 
@@ -53,8 +68,15 @@ img {
   color: #111;
 }
 
+.customer-app {
+  min-height: 100vh;
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.03), transparent 24rem),
+    transparent;
+}
+
 .container {
-  width: min(100% - 36px, var(--container));
+  width: min(100% - 40px, var(--container));
   margin-inline: auto;
 }
 
