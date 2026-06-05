@@ -1,12 +1,13 @@
-﻿import { CalendarCheck } from "lucide-react";
+﻿import { Link } from "react-router-dom";
+import { CalendarCheck } from "lucide-react";
 
 export default function MobileBookingBar() {
   return (
     <div className="mobile-booking-bar">
-      <a href="/booking">
+      <Link to="/booking">
         <CalendarCheck size={20} />
         Booking Sekarang
-      </a>
+      </Link>
     </div>
   );
 }

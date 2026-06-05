@@ -1,5 +1,6 @@
-﻿import { Instagram, MapPin, MessageCircle, Music } from "lucide-react";
-import { getWhatsAppUrl, siteConfig } from "../../config/site.js";
+﻿import { Link } from "react-router-dom";
+import { Instagram, MapPin, Music, CalendarCheck } from "lucide-react";
+import { siteConfig } from "../../config/site.js";
 import Container from "../common/Container.jsx";
 
 export default function LandingFooter() {
@@ -19,10 +20,10 @@ export default function LandingFooter() {
 
           <div>
             <h3>Kontak</h3>
-            <a href={getWhatsAppUrl()} target="_blank" rel="noreferrer">
-              <MessageCircle size={17} />
-              WhatsApp Booking
-            </a>
+            <Link to="/booking">
+              <CalendarCheck size={17} />
+              Mulai Booking
+            </Link>
             <a href={siteConfig.contact.instagramUrl} target="_blank" rel="noreferrer">
               <Instagram size={17} />
               Instagram
@@ -35,7 +36,7 @@ export default function LandingFooter() {
               <MapPin size={17} />
               Lihat Google Maps
             </a>
-            <a href="#rooms">
+            <a href="/#rooms">
               <Music size={17} />
               Lihat Ruangan
             </a>
