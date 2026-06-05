@@ -1104,3 +1104,109 @@
     font-size: 2.55rem;
   }
 }
+
+/* ================================
+   Mobile Navigation Drawer
+================================ */
+
+.mobile-nav-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 70;
+  background: rgba(0, 0, 0, 0.54);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 180ms ease;
+}
+
+.mobile-nav-backdrop.is-visible {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+.mobile-nav-drawer {
+  position: fixed;
+  z-index: 80;
+  top: 12px;
+  right: 12px;
+  left: 12px;
+  padding: 18px;
+  border: 1px solid var(--border-soft);
+  border-radius: 28px;
+  background:
+    radial-gradient(circle at top right, rgba(245, 184, 75, 0.16), transparent 36%),
+    rgba(12, 12, 12, 0.94);
+  box-shadow: 0 24px 90px rgba(0, 0, 0, 0.5);
+  backdrop-filter: blur(22px);
+  transform: translateY(-120%);
+  opacity: 0;
+  pointer-events: none;
+  transition:
+    transform 220ms ease,
+    opacity 220ms ease;
+}
+
+.mobile-nav-drawer.is-open {
+  transform: translateY(0);
+  opacity: 1;
+  pointer-events: auto;
+}
+
+.mobile-nav-header {
+  display: flex;
+  align-items: center;
+  gap: 13px;
+  padding-bottom: 16px;
+  border-bottom: 1px solid var(--border-soft);
+}
+
+.mobile-nav-header strong {
+  display: block;
+  font-size: 1rem;
+}
+
+.mobile-nav-header p {
+  margin: 3px 0 0;
+  color: var(--text-muted);
+  font-size: 0.82rem;
+}
+
+.mobile-nav-links {
+  display: grid;
+  gap: 8px;
+  padding: 16px 0;
+}
+
+.mobile-nav-links a {
+  display: flex;
+  align-items: center;
+  min-height: 48px;
+  padding: 0 14px;
+  border-radius: 16px;
+  background: rgba(255, 255, 255, 0.055);
+  color: var(--text-soft);
+  font-weight: 800;
+}
+
+.mobile-nav-links a:active {
+  background: var(--accent-soft);
+  color: var(--accent-strong);
+}
+
+.mobile-nav-cta {
+  min-height: 52px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 999px;
+  background: linear-gradient(135deg, var(--accent), var(--accent-strong));
+  color: #14100a;
+  font-weight: 950;
+}
+
+@media (min-width: 900px) {
+  .mobile-nav-backdrop,
+  .mobile-nav-drawer {
+    display: none;
+  }
+}
