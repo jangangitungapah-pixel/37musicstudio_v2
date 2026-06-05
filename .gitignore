@@ -22,3 +22,12 @@ dist-ssr
 *.njsproj
 *.sln
 *.sw?
+
+# Local manual backups
+*.backup.*
+src/styles_backup_*/
+
+# Local manual backups
+src/_backup_v2_*/
+src/styles_backup_*/
+*.backup.*
