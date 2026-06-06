@@ -157,7 +157,8 @@ export default function AdminCalendarGrid() {
   const [viewMode, setViewMode] = useState("week");
   const [activeDate, setActiveDate] = useState(new Date());
   const [selectedRoom, setSelectedRoom] = useState("all");
-  const [events] = useState(() => getCalendarEvents());
+  const [events, setEvents] = useState(() => getCalendarEvents());
+  const [selectedSlot, setSelectedSlot] = useState(null);
 
   const roomOptions = useMemo(() => ["all", ...publicCalendarRooms], []);
 
@@ -386,3 +387,6 @@ export default function AdminCalendarGrid() {
     </section>
   );
 }
+
+
+
