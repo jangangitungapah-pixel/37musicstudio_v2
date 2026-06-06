@@ -15,9 +15,9 @@ export default function PublicCalendarPage() {
             <p className="section-eyebrow">Calendar availability</p>
             <h1>Jadwal studio yang bisa dicek langsung dari HP.</h1>
             <p>
-              Pilih room, lihat slot mingguan, lalu klik slot yang tersedia untuk
-              lanjut request booking. Data ini nanti bisa langsung tersambung ke
-              kalender admin.
+              Lihat ringkasan slot, filter jam yang paling cocok, lalu klik slot
+              tersedia untuk lanjut request booking. Kalender ini disiapkan agar
+              nanti bisa langsung tersambung ke jadwal admin.
             </p>
           </div>
 
