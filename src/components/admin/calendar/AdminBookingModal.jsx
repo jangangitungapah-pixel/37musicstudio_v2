@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useState } from "react";
 import { Trash2, X } from "lucide-react";
 import { publicCalendarRooms } from "../../../data/publicCalendar.js";
+import { getPriceSettings } from "../../../utils/priceSettingsStorage.js";
 
 const scheduleTypes = [
   { value: "booking", label: "Booking Customer" },
@@ -25,7 +26,7 @@ const sessionCategories = [
   "Other",
 ];
 
-const packageOptions = [
+const fallbackPackageOptions = [
   "Regular Session",
   "Recording Basic",
   "Band Package",
@@ -50,6 +51,12 @@ function getTimeNumber(time) {
 function getNextHourLabel(startTime) {
   const hour = getTimeNumber(startTime);
   return `${String(Math.min(hour + 1, 23)).padStart(2, "0")}.00`;
+}
+
+function addHoursLabel(startTime, durationHours) {
+  const startHour = getTimeNumber(startTime);
+  const endHour = Math.min(startHour + Number(durationHours || 1), 23);
+  return `${String(endHour).padStart(2, "0")}.00`;
 }
 
 function cleanMoney(value) {
@@ -103,6 +110,17 @@ export default function AdminBookingModal({
   const inferredType = inferType(initialEvent);
   const parsedTime = parseEventTime(initialEvent?.time, slot?.hour || "10.00");
 
+  const [priceSettings] = useState(() => getPriceSettings());
+
+  const activeRecordingSessions = useMemo(() => {
+    return (priceSettings.recordingSessions || []).filter((item) => item.isActive);
+  }, [priceSettings]);
+
+  const packageOptions = useMemo(() => {
+    const recordingNames = activeRecordingSessions.map((item) => item.name);
+    return Array.from(new Set([...fallbackPackageOptions, ...recordingNames]));
+  }, [activeRecordingSessions]);
+
   const [form, setForm] = useState({
     type: inferredType,
     room: initialEvent?.room || defaultRoom || publicCalendarRooms[0],
@@ -114,6 +132,7 @@ export default function AdminBookingModal({
     peopleCount: String(initialEvent?.peopleCount || "4"),
     sessionCategory: initialEvent?.sessionCategory || "Latihan Band",
     packageName: initialEvent?.packageName || "Regular Session",
+    selectedRecordingSessionId: initialEvent?.selectedRecordingSessionId || "",
     status: initialEvent?.status || "pending",
     price: String(initialEvent?.price || ""),
     deposit: String(initialEvent?.deposit || ""),
@@ -137,9 +156,30 @@ export default function AdminBookingModal({
     return statusByType[form.type] || statusByType.booking;
   }, [form.type]);
 
+  const applyRecordingSession = (sessionId, currentForm) => {
+    const selectedSession = activeRecordingSessions.find((item) => item.id === sessionId);
+
+    if (!selectedSession) {
+      return {
+        ...currentForm,
+        selectedRecordingSessionId: "",
+      };
+    }
+
+    return {
+      ...currentForm,
+      selectedRecordingSessionId: selectedSession.id,
+      sessionCategory: "Recording",
+      packageName: selectedSession.name,
+      room: selectedSession.roomName || currentForm.room,
+      endTime: addHoursLabel(currentForm.startTime, selectedSession.durationHours),
+      price: String(selectedSession.price || ""),
+    };
+  };
+
   const updateField = (field, value) => {
     setForm((current) => {
-      const next = {
+      let next = {
         ...current,
         [field]: value,
       };
@@ -155,17 +195,31 @@ export default function AdminBookingModal({
           next.status = "maintenance";
           next.sessionCategory = "Other";
           next.packageName = "Custom";
+          next.selectedRecordingSessionId = "";
         }
 
         if (value === "block") {
           next.status = "blocked";
           next.sessionCategory = "Other";
           next.packageName = "Custom";
+          next.selectedRecordingSessionId = "";
         }
       }
 
-      if (field === "startTime" && getTimeNumber(next.endTime) <= getTimeNumber(value)) {
-        next.endTime = getNextHourLabel(value);
+      if (field === "sessionCategory" && value !== "Recording") {
+        next.selectedRecordingSessionId = "";
+      }
+
+      if (field === "startTime") {
+        if (next.selectedRecordingSessionId) {
+          next = applyRecordingSession(next.selectedRecordingSessionId, next);
+        } else if (getTimeNumber(next.endTime) <= getTimeNumber(value)) {
+          next.endTime = getNextHourLabel(value);
+        }
+      }
+
+      if (field === "selectedRecordingSessionId") {
+        next = applyRecordingSession(value, next);
       }
 
       return next;
@@ -203,7 +257,7 @@ export default function AdminBookingModal({
         ? "Room Maintenance"
         : form.type === "block"
           ? "Room Blocked"
-          : form.sessionCategory;
+          : form.packageName || form.sessionCategory;
 
     onSave({
       ...form,
@@ -374,6 +428,23 @@ export default function AdminBookingModal({
                       ))}
                     </select>
                   </label>
+
+                  {form.sessionCategory === "Recording" && (
+                    <label>
+                      <span>Recording Session</span>
+                      <select
+                        value={form.selectedRecordingSessionId}
+                        onChange={(event) => updateField("selectedRecordingSessionId", event.target.value)}
+                      >
+                        <option value="">Custom recording price</option>
+                        {activeRecordingSessions.map((session) => (
+                          <option value={session.id} key={session.id}>
+                            {session.name} · {session.durationHours} jam · Rp{Number(session.price || 0).toLocaleString("id-ID")}
+                          </option>
+                        ))}
+                      </select>
+                    </label>
+                  )}
 
                   <label>
                     <span>Paket</span>
