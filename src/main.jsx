@@ -22,6 +22,7 @@ import "./styles/admin-calendar-hero-command.css";
 import "./styles/admin-calendar-density-fix.css";
 import "./styles/admin-calendar-mobile-density.css";
 import "./styles/admin-calendar-month-scroll-fix.css";
+import "./styles/admin-calendar-smart-ux.css";
 import "./styles/admin-customer.css";
 import "./styles/admin-select-portal.css";
 

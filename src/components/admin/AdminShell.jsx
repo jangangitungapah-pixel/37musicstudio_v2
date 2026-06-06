@@ -1,5 +1,5 @@
 ﻿import { useEffect, useMemo, useState } from "react";
-import { NavLink, useLocation, useNavigate } from "react-router-dom";
+import { NavLink, useNavigate } from "react-router-dom";
 import {
   BookOpen,
   CalendarDays,
@@ -11,7 +11,6 @@ import {
   ReceiptText,
   Settings,
   UsersRound,
-  WalletCards,
   X,
 } from "lucide-react";
 import { logoutAdmin } from "../../utils/adminAuth.js";
@@ -59,7 +58,6 @@ const adminNavItems = [
 
 export default function AdminShell({ children, title = "Admin Panel", description = "37 Music Studio operations dashboard." }) {
   const navigate = useNavigate();
-  const location = useLocation();
 
   const [isCollapsed, setIsCollapsed] = useState(() => {
     if (typeof window === "undefined") {

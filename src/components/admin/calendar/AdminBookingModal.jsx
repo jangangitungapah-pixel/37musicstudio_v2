@@ -27,12 +27,6 @@ const statusByType = {
   block: [{ value: "blocked", label: "Blocked" }],
 };
 
-const paymentStatuses = [
-  { value: "unpaid", label: "Belum Bayar" },
-  { value: "down_payment", label: "DP" },
-  { value: "paid", label: "Lunas" },
-];
-
 const timeOptions = Array.from({ length: 14 }, (_, index) => {
   const hour = 10 + index;
   return `${String(hour).padStart(2, "0")}.00`;
@@ -292,6 +286,7 @@ export default function AdminBookingModal({
       return;
     }
 
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     setForm((current) => {
       const currentOption = priceOptions.find((item) => item.id === current.priceOptionId);
 
@@ -315,20 +310,15 @@ export default function AdminBookingModal({
   const resolvedBookingPrice = useMemo(() => {
     return getResolvedBookingPrice(selectedPriceOption, form);
   }, [
+    form,
     selectedPriceOption,
-    form.startTime,
-    form.endTime,
-    form.room,
   ]);
 
   const bookingConflict = useMemo(() => {
     return getBookingConflict(calendarEvents, form, initialEvent?.id);
   }, [
     calendarEvents,
-    form.date,
-    form.room,
-    form.startTime,
-    form.endTime,
+    form,
     initialEvent?.id,
   ]);
 

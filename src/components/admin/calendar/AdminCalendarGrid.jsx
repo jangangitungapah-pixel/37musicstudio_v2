@@ -1,5 +1,15 @@
 ﻿import { useMemo, useRef, useState } from "react";
-import { ChevronLeft, ChevronRight } from "lucide-react";
+import {
+  AlertTriangle,
+  CalendarClock,
+  CheckCircle2,
+  ChevronLeft,
+  ChevronRight,
+  Gauge,
+  Search,
+  Sparkles,
+  WalletCards,
+} from "lucide-react";
 import { publicCalendarRooms } from "../../../data/publicCalendar.js";
 import {
   addCalendarEvent,
@@ -90,6 +100,14 @@ function formatMonthYear(date) {
   return new Intl.DateTimeFormat("id-ID", {
     month: "long",
     year: "numeric",
+  }).format(date);
+}
+
+function formatDateLong(date) {
+  return new Intl.DateTimeFormat("id-ID", {
+    weekday: "long",
+    day: "2-digit",
+    month: "long",
   }).format(date);
 }
 
@@ -313,25 +331,6 @@ function getEventBlockMeta(event) {
   return packageName || roomName;
 }
 
-function getEventPrimaryTitle(event) {
-  if ((event.type === "booking" || !event.type) && event.customerName) {
-    return event.customerName;
-  }
-
-  return event.label || event.packageName || getStatusLabel(event.status);
-}
-
-function getEventSecondaryTitle(event) {
-  const packageName = event.packageName || event.label || getStatusLabel(event.status);
-  const roomName = event.room || "-";
-
-  if (event.type === "booking" || !event.type) {
-    return packageName ? `${packageName} · ${roomName}` : roomName;
-  }
-
-  return roomName;
-}
-
 function getEventsForCell(events, { date, hour, room }) {
   return events.filter((event) => {
     const matchDate = event.date === date;
@@ -400,6 +399,32 @@ function getRangeLabel(viewMode, activeDate, columns) {
   return formatMonthYear(activeDate);
 }
 
+function getEventDateTime(event) {
+  const [year, month, day] = String(event?.date || "").split("-").map(Number);
+  const startHour = getHourNumber(getEventStartTime(event?.time));
+
+  return new Date(year || 1970, (month || 1) - 1, day || 1, startHour || 0, 0, 0, 0);
+}
+
+function compareEventsBySchedule(firstEvent, secondEvent) {
+  return getEventDateTime(firstEvent).getTime() - getEventDateTime(secondEvent).getTime();
+}
+
+function getPaymentRemaining(event) {
+  return Math.max(0, Number(event?.price || 0) - Number(event?.deposit || 0));
+}
+
+function isActionableBooking(event) {
+  const isBooking = event?.type === "booking" || !event?.type;
+  const paymentStatus = event?.paymentStatus || "unpaid";
+
+  return (
+    isBooking &&
+    event?.status !== "cancelled" &&
+    (event?.status === "pending" || paymentStatus === "unpaid" || paymentStatus === "down_payment")
+  );
+}
+
 export default function AdminCalendarGrid() {
   const [viewMode, setViewMode] = useState("week");
   const [activeDate, setActiveDate] = useState(new Date());
@@ -407,6 +432,7 @@ export default function AdminCalendarGrid() {
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedStatus, setSelectedStatus] = useState("all");
   const [selectedPayment, setSelectedPayment] = useState("all");
+  const [densityMode, setDensityMode] = useState("comfortable");
   const [events, setEvents] = useState(() => getCalendarEvents());
   const [selectedSlot, setSelectedSlot] = useState(null);
   const [selectedEvent, setSelectedEvent] = useState(null);
@@ -466,6 +492,58 @@ export default function AdminCalendarGrid() {
     };
   }, [columns, filteredEvents]);
 
+  const smartOps = useMemo(() => {
+    const visibleDates = new Set(columns.map((column) => column.value));
+    const rangeEvents = filteredEvents
+      .filter((event) => visibleDates.has(event.date) && event.status !== "cancelled")
+      .sort(compareEventsBySchedule);
+
+    const now = new Date();
+    const todayValue = toDateInputValue(now);
+    const todayEvents = rangeEvents.filter((event) => event.date === todayValue);
+    const nextEvent = rangeEvents.find((event) => getEventDateTime(event).getTime() >= now.getTime()) || rangeEvents[0] || null;
+    const actionableEvents = rangeEvents.filter(isActionableBooking);
+    const unpaidEvents = rangeEvents.filter((event) => (event.paymentStatus || "unpaid") === "unpaid");
+    const revenueAtRisk = rangeEvents.reduce((total, event) => {
+      if ((event.type === "booking" || !event.type) && event.status !== "cancelled") {
+        return total + getPaymentRemaining(event);
+      }
+
+      return total;
+    }, 0);
+
+    const roomCount = selectedRoom === "all" ? publicCalendarRooms.length : 1;
+    const possibleHours = columns.length * adminCalendarHours.length * roomCount;
+    const bookedHours = rangeEvents.reduce((total, event) => total + getEventDurationSpan(event), 0);
+    const occupancyRate = possibleHours > 0 ? Math.min(100, Math.round((bookedHours / possibleHours) * 100)) : 0;
+
+    const roomLoad = publicCalendarRooms
+      .map((room) => ({
+        room,
+        count: rangeEvents.filter((event) => event.room === room).length,
+      }))
+      .sort((firstRoom, secondRoom) => secondRoom.count - firstRoom.count);
+
+    const busiestRoom = roomLoad[0]?.count ? roomLoad[0] : null;
+    const nextAction = actionableEvents[0]
+      ? `${getEventClientTitle(actionableEvents[0])} perlu follow-up`
+      : nextEvent
+        ? `Siapkan ${getEventClientTitle(nextEvent)}`
+        : "Belum ada jadwal aktif";
+
+    return {
+      rangeEvents,
+      todayEvents,
+      nextEvent,
+      actionableEvents,
+      unpaidEvents,
+      revenueAtRisk,
+      occupancyRate,
+      busiestRoom,
+      nextAction,
+    };
+  }, [columns, filteredEvents, selectedRoom]);
+
 
 
   const gridColumnStyle = useMemo(() => {
@@ -516,6 +594,34 @@ export default function AdminCalendarGrid() {
     setActiveDate((current) => addMonths(current, 1));
   };
 
+  function clearFilters() {
+    setSearchQuery("");
+    setSelectedStatus("all");
+    setSelectedPayment("all");
+  }
+
+  function focusFollowUpQueue() {
+    setSearchQuery("");
+    const hasPendingFollowUp = smartOps.actionableEvents.some((event) => event.status === "pending");
+
+    setSelectedStatus(hasPendingFollowUp ? "pending" : "all");
+    setSelectedPayment(hasPendingFollowUp ? "all" : "unpaid");
+  }
+
+  function focusUnpaidQueue() {
+    setSearchQuery("");
+    setSelectedStatus("all");
+    setSelectedPayment("unpaid");
+  }
+
+  function handleDateJump(value) {
+    if (!value) {
+      return;
+    }
+
+    setActiveDate(new Date(`${value}T12:00:00`));
+  }
+
   function handleOpenCreateModal({ date, dateLabel, dayName, hour }) {
     setSelectedEvent(null);
     setSelectedSlot({
@@ -531,12 +637,6 @@ export default function AdminCalendarGrid() {
     setSelectedSlot(null);
     setSelectedEvent(null);
     setSelectedDetailEvent(event);
-  }
-
-  function handleOpenEditModal(event) {
-    setSelectedSlot(null);
-    setSelectedDetailEvent(null);
-    setSelectedEvent(event);
   }
 
   function handleEditFromDetail() {
@@ -1078,23 +1178,24 @@ export default function AdminCalendarGrid() {
   }
 
   return (
-    <section className="admin-calendar-grid-shell">
+    <section className={`admin-calendar-grid-shell density-${densityMode}`} aria-labelledby="admin-calendar-title">
       <div className="admin-calendar-grid-toolbar">
         <div>
           <p className="section-eyebrow">Jadwal Studio</p>
-          <h2>{rangeLabel}</h2>
+          <h2 id="admin-calendar-title">{rangeLabel}</h2>
           <span>
             Atur booking, status, dan pembayaran per room.
           </span>
         </div>
 
         <div className="admin-calendar-toolbar-actions">
-          <div className="admin-calendar-view-toggle" aria-label="Pilih tampilan kalender">
+          <div className="admin-calendar-view-toggle" aria-label="Pilih tampilan kalender" role="group">
             {viewOptions.map((option) => (
               <button
                 type="button"
                 key={option.value}
                 className={viewMode === option.value ? "is-active" : ""}
+                aria-pressed={viewMode === option.value}
                 onClick={() => setViewMode(option.value)}
               >
                 {option.label}
@@ -1102,12 +1203,13 @@ export default function AdminCalendarGrid() {
             ))}
           </div>
 
-          <div className="admin-calendar-room-filter">
+          <div className="admin-calendar-room-filter" aria-label="Filter room" role="group">
             {roomOptions.map((room) => (
               <button
                 type="button"
                 key={room}
                 className={selectedRoom === room ? "is-active" : ""}
+                aria-pressed={selectedRoom === room}
                 onClick={() => setSelectedRoom(room)}
               >
                 {room === "all" ? "Semua Room" : room}
@@ -1115,7 +1217,7 @@ export default function AdminCalendarGrid() {
             ))}
           </div>
 
-          <div className="admin-calendar-nav">
+          <div className="admin-calendar-nav" aria-label="Navigasi tanggal" role="group">
             <button type="button" onClick={goPrevious} aria-label="Sebelumnya">
               <ChevronLeft size={18} />
             </button>
@@ -1128,7 +1230,112 @@ export default function AdminCalendarGrid() {
               <ChevronRight size={18} />
             </button>
           </div>
+
+          <label className="admin-calendar-date-jump">
+            <CalendarClock size={16} />
+            <span>Pilih tanggal</span>
+            <input
+              type="date"
+              value={toDateInputValue(activeDate)}
+              onChange={(event) => handleDateJump(event.target.value)}
+            />
+          </label>
+
+          <div className="admin-calendar-density-toggle" aria-label="Kepadatan kalender" role="group">
+            <button
+              type="button"
+              className={densityMode === "comfortable" ? "is-active" : ""}
+              aria-pressed={densityMode === "comfortable"}
+              onClick={() => setDensityMode("comfortable")}
+            >
+              Nyaman
+            </button>
+            <button
+              type="button"
+              className={densityMode === "compact" ? "is-active" : ""}
+              aria-pressed={densityMode === "compact"}
+              onClick={() => setDensityMode("compact")}
+            >
+              Padat
+            </button>
+          </div>
         </div>
+      </div>
+
+      <div className="admin-calendar-command-center" aria-label="Smart calendar insights">
+        <article className="admin-calendar-primary-insight">
+          <div className="admin-smart-icon">
+            <Sparkles size={20} />
+          </div>
+          <div>
+            <span>Prioritas berikutnya</span>
+            <strong>{smartOps.nextAction}</strong>
+            <small>
+              {smartOps.nextEvent
+                ? `${smartOps.nextEvent.date} · ${smartOps.nextEvent.time} · ${smartOps.nextEvent.room || "-"}`
+                : "Tidak ada booking pada range ini"}
+            </small>
+          </div>
+        </article>
+
+        <div className="admin-calendar-smart-metrics">
+          <div>
+            <CalendarClock size={18} />
+            <span>Hari ini</span>
+            <strong>{smartOps.todayEvents.length}</strong>
+          </div>
+          <button type="button" onClick={focusFollowUpQueue}>
+            <AlertTriangle size={18} />
+            <span>Follow-up</span>
+            <strong>{smartOps.actionableEvents.length}</strong>
+          </button>
+          <button type="button" onClick={focusUnpaidQueue}>
+            <WalletCards size={18} />
+            <span>Belum bayar</span>
+            <strong>{smartOps.unpaidEvents.length}</strong>
+          </button>
+          <div>
+            <Gauge size={18} />
+            <span>Okupansi</span>
+            <strong>{smartOps.occupancyRate}%</strong>
+          </div>
+          <div>
+            <WalletCards size={18} />
+            <span>Sisa tagihan</span>
+            <strong>{formatCurrencyCompact(smartOps.revenueAtRisk)}</strong>
+          </div>
+          {smartOps.busiestRoom && (
+            <div>
+              <CheckCircle2 size={18} />
+              <span>Room ramai</span>
+              <strong>{smartOps.busiestRoom.room}</strong>
+            </div>
+          )}
+        </div>
+
+        <aside className="admin-calendar-agenda-panel" aria-label="Agenda booking pada range aktif">
+          <div className="admin-calendar-agenda-head">
+            <span>Agenda cepat</span>
+            <strong>{smartOps.rangeEvents.length} item</strong>
+          </div>
+          <div className="admin-calendar-agenda-list">
+            {smartOps.rangeEvents.slice(0, 5).map((event) => (
+              <button
+                type="button"
+                key={event.id}
+                aria-label={`Buka agenda ${getEventClientTitle(event)} pada ${formatDateLong(getEventDateTime(event))} jam ${event.time}`}
+                onClick={() => handleOpenDetailModal(event)}
+              >
+                <span>{event.time}</span>
+                <strong>{getEventClientTitle(event)}</strong>
+                <small>{event.date} · {event.room || "-"}</small>
+              </button>
+            ))}
+            {smartOps.rangeEvents.length === 0 && (
+              <p>Belum ada jadwal pada range ini.</p>
+            )}
+          </div>
+        </aside>
       </div>
 
       <div className="admin-calendar-summary-row">
@@ -1165,10 +1372,11 @@ export default function AdminCalendarGrid() {
 
       <div className="admin-calendar-filter-bar">
         <label className="admin-calendar-search-box">
-          <span>Cari</span>
+          <span><Search size={14} /> Cari</span>
           <input
             value={searchQuery}
             placeholder="Cari nama, WA, paket..."
+            aria-label="Cari booking berdasarkan nama, WhatsApp, paket, room, atau catatan"
             onChange={(event) => setSearchQuery(event.target.value)}
           />
         </label>
@@ -1181,6 +1389,7 @@ export default function AdminCalendarGrid() {
                 type="button"
                 key={option.value}
                 className={selectedStatus === option.value ? "is-active" : ""}
+                aria-pressed={selectedStatus === option.value}
                 onClick={() => setSelectedStatus(option.value)}
               >
                 {option.label}
@@ -1197,12 +1406,20 @@ export default function AdminCalendarGrid() {
                 type="button"
                 key={option.value}
                 className={selectedPayment === option.value ? "is-active" : ""}
+                aria-pressed={selectedPayment === option.value}
                 onClick={() => setSelectedPayment(option.value)}
               >
                 {option.label}
               </button>
             ))}
           </div>
+        </div>
+
+        <div className="admin-calendar-filter-actions">
+          <span>Quick reset</span>
+          <button type="button" onClick={clearFilters}>
+            Reset filter
+          </button>
         </div>
       </div>
 
@@ -1219,6 +1436,7 @@ export default function AdminCalendarGrid() {
       {dragGhost && (
         <div
           className={`admin-calendar-drag-ghost ${dragGhost.isConflict ? "is-conflict" : ""}`}
+          aria-hidden="true"
           style={{
             "--ghost-x": `${dragGhost.x}px`,
             "--ghost-y": `${dragGhost.y}px`,
@@ -1231,14 +1449,25 @@ export default function AdminCalendarGrid() {
       )}
 
       {dragFeedback && (
-        <div className={`admin-calendar-drag-feedback is-${dragFeedback.type}`}>
+        <div className={`admin-calendar-drag-feedback is-${dragFeedback.type}`} role="status" aria-live="polite">
           <strong>{dragFeedback.title}</strong>
           <span>{dragFeedback.text}</span>
         </div>
       )}
 
-      <div className={`admin-time-calendar-scroll view-${viewMode}`}>
-        <div className="admin-time-calendar-grid" style={gridColumnStyle}>
+      <div
+        className={`admin-time-calendar-scroll view-${viewMode}`}
+        role="region"
+        aria-label={`Kalender ${rangeLabel}. Geser horizontal untuk melihat semua kolom.`}
+        tabIndex={0}
+      >
+        <div
+          className="admin-time-calendar-grid"
+          role="grid"
+          aria-rowcount={adminCalendarHours.length + 1}
+          aria-colcount={columns.length + 1}
+          style={gridColumnStyle}
+        >
           <div
             className="admin-time-corner"
             style={{
@@ -1280,8 +1509,8 @@ export default function AdminCalendarGrid() {
             <div className="admin-time-row" key={hour}>
               <div
                 className="admin-time-hour-cell"
-                  data-calendar-hour={hour}
-                  style={{
+                data-calendar-hour={hour}
+                style={{
                   gridColumn: 1,
                   gridRow: hourIndex + 2,
                 }}
@@ -1348,6 +1577,7 @@ export default function AdminCalendarGrid() {
                     data-calendar-slot="true"
                     data-date={column.value}
                     data-hour={hour}
+                    aria-label={`Buka detail ${getEventClientTitle(slotEvents[0])}, ${column.dayName} ${column.label}, ${slotEvents[0].time}, ${slotEvents[0].room || "room belum diisi"}, status ${getStatusLabel(slotEvents[0].status)}, pembayaran ${getPaymentShortLabel(slotEvents[0].paymentStatus)}`}
                     onPointerDown={(pointerEvent) => handleEventPointerDown(pointerEvent, slotEvents[0])}
                     onClick={(clickEvent) => handleEventClick(clickEvent, slotEvents[0])}
                   >
