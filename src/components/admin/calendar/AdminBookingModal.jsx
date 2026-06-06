@@ -1,7 +1,9 @@
 import { useEffect, useMemo, useState } from "react";
 import { Trash2, X } from "lucide-react";
+
 import { publicCalendarRooms } from "../../../data/publicCalendar.js";
 import { getPriceSettings } from "../../../utils/priceSettingsStorage.js";
+import AdminSelect from "../common/AdminSelect.jsx";
 
 const scheduleTypes = [
   { value: "booking", label: "Booking Customer" },
@@ -616,16 +618,17 @@ export default function AdminBookingModal({
                 <p className="admin-booking-section-title">Paket & Pembayaran</p>
 
                 <div className="admin-booking-grid">
-                  <label className="admin-booking-wide">
-                    <span>Pilih Paket</span>
-                    <select value={form.priceOptionId} onChange={(event) => updateField("priceOptionId", event.target.value)}>
-                      {priceOptions.map((option) => (
-                        <option value={option.id} key={option.id}>
-                          {option.label} · {option.description}
-                        </option>
-                      ))}
-                    </select>
-                  </label>
+                  <AdminSelect
+                    label="Pilih Paket"
+                    className="admin-booking-wide"
+                    value={form.priceOptionId}
+                    onChange={(nextValue) => updateField("priceOptionId", nextValue)}
+                    options={priceOptions.map((option) => ({
+                      value: option.id,
+                      label: option.label,
+                      description: option.description,
+                    }))}
+                  />
 
                   <label>
                     <span>Harga</span>
