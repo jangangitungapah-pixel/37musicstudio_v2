@@ -3,6 +3,7 @@ import { Trash2, X } from "lucide-react";
 
 import { publicCalendarRooms } from "../../../data/publicCalendar.js";
 import { getPriceSettings } from "../../../utils/priceSettingsStorage.js";
+import { attachCustomerToBooking } from "../../../utils/customerSync.js";
 import AdminSelect from "../common/AdminSelect.jsx";
 import {
   formatCurrency as formatFinanceCurrency,
@@ -514,7 +515,6 @@ export default function AdminBookingModal({
       return;
     }
 
-
     if (form.type === "booking" && !form.customerName.trim()) {
       alert("Nama customer wajib diisi.");
       return;
@@ -525,7 +525,7 @@ export default function AdminBookingModal({
       return;
     }
 
-    const price = Number(cleanMoney(form.price) || 0);
+    const price = resolvedBookingPrice;
     const deposit = Number(cleanMoney(form.deposit) || 0);
 
     const label =
@@ -535,14 +535,21 @@ export default function AdminBookingModal({
           ? "Room Blocked"
           : form.packageName || form.sessionCategory;
 
-    onSave({
+    const payload = {
       ...form,
       price,
       deposit,
+      paymentStatus: effectivePaymentStatus,
+      financeImpact: bookingFinanceImpact,
+      customerMessage: bookingFinanceImpact?.customerMessage || "",
       peopleCount: Number(form.peopleCount || 0),
       label,
       publicLabel: form.type === "booking" ? "Booked" : label,
-    });
+    };
+
+    const syncedPayload = form.type === "booking" ? attachCustomerToBooking(payload) : payload;
+
+    onSave(syncedPayload);
   };
 
   const handleDelete = () => {
