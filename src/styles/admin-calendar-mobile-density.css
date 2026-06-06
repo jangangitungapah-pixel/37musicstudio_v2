@@ -1,0 +1,334 @@
+/* ================================
+   Admin Calendar Mobile Density
+   Compact mobile-first override
+================================ */
+
+@media (max-width: 640px) {
+  /* Shell spacing */
+  .admin-content {
+    padding: 10px !important;
+  }
+
+  .admin-main-topbar {
+    min-height: 58px !important;
+    padding: 8px 10px !important;
+  }
+
+  .admin-topbar-copy h1 {
+    font-size: 0.9rem !important;
+  }
+
+  .admin-topbar-copy p {
+    font-size: 0.68rem !important;
+  }
+
+  .admin-mobile-menu {
+    width: 38px !important;
+    height: 38px !important;
+    flex-basis: 38px !important;
+    border-radius: 12px !important;
+  }
+
+  /* Main calendar wrapper */
+  .admin-calendar-grid-shell {
+    gap: 8px !important;
+  }
+
+  /* Hero compact */
+  .admin-calendar-grid-toolbar {
+    min-height: auto !important;
+    grid-template-columns: 1fr !important;
+    gap: 9px !important;
+    padding: 10px !important;
+    border-radius: 14px !important;
+  }
+
+  .admin-calendar-grid-toolbar > div:first-child {
+    min-height: 0 !important;
+  }
+
+  .admin-calendar-grid-toolbar .section-eyebrow {
+    margin-bottom: 5px !important;
+    padding: 3px 7px !important;
+    font-size: 0.55rem !important;
+  }
+
+  .admin-calendar-grid-toolbar h2 {
+    font-size: 1.28rem !important;
+    line-height: 1 !important;
+    letter-spacing: -0.055em !important;
+  }
+
+  .admin-calendar-grid-toolbar > div:first-child > span {
+    margin-top: 4px !important;
+    font-size: 0.66rem !important;
+    line-height: 1.25 !important;
+  }
+
+  /* Controls: view + nav satu baris, room di bawah */
+  .admin-calendar-toolbar-actions {
+    width: 100% !important;
+    max-width: none !important;
+    display: grid !important;
+    grid-template-columns: minmax(0, 1fr) auto !important;
+    grid-template-areas:
+      "view nav"
+      "room room" !important;
+    gap: 6px !important;
+    padding: 0 !important;
+    border: 0 !important;
+    background: transparent !important;
+    box-shadow: none !important;
+  }
+
+  .admin-calendar-view-toggle {
+    grid-area: view !important;
+    justify-self: stretch !important;
+  }
+
+  .admin-calendar-nav {
+    grid-area: nav !important;
+    justify-self: end !important;
+  }
+
+  .admin-calendar-room-filter {
+    grid-area: room !important;
+    justify-self: stretch !important;
+  }
+
+  .admin-calendar-view-toggle,
+  .admin-calendar-nav,
+  .admin-calendar-room-filter {
+    min-width: 0 !important;
+    padding: 4px !important;
+    gap: 4px !important;
+    border-radius: 11px !important;
+  }
+
+  .admin-calendar-view-toggle {
+    display: grid !important;
+    grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
+  }
+
+  .admin-calendar-view-toggle button,
+  .admin-calendar-nav button,
+  .admin-calendar-room-filter button {
+    min-height: 28px !important;
+    height: 28px !important;
+    padding: 0 8px !important;
+    border-radius: 8px !important;
+    font-size: 0.62rem !important;
+    font-weight: 850 !important;
+  }
+
+  .admin-calendar-nav {
+    display: grid !important;
+    grid-template-columns: 28px 54px 28px !important;
+  }
+
+  .admin-calendar-nav button {
+    min-width: 28px !important;
+    padding-inline: 0 !important;
+  }
+
+  .admin-calendar-nav button:nth-child(2) {
+    min-width: 54px !important;
+    font-size: 0.6rem !important;
+  }
+
+  .admin-calendar-room-filter {
+    display: flex !important;
+    flex-wrap: nowrap !important;
+    overflow-x: auto !important;
+    scrollbar-width: none;
+  }
+
+  .admin-calendar-room-filter::-webkit-scrollbar {
+    display: none;
+  }
+
+  .admin-calendar-room-filter button {
+    flex: 0 0 auto !important;
+  }
+
+  /* Summary cards jadi 2 kolom compact */
+  .admin-calendar-summary-row {
+    display: grid !important;
+    grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+    gap: 7px !important;
+  }
+
+  .admin-calendar-summary-row article {
+    min-height: 72px !important;
+    padding: 9px 10px !important;
+    border-radius: 12px !important;
+  }
+
+  .admin-calendar-summary-row article:last-child {
+    grid-column: 1 / -1 !important;
+    min-height: 68px !important;
+  }
+
+  .admin-calendar-summary-row article span {
+    font-size: 0.56rem !important;
+    letter-spacing: 0.08em !important;
+  }
+
+  .admin-calendar-summary-row article strong {
+    margin-top: 3px !important;
+    font-size: 1.22rem !important;
+    line-height: 1 !important;
+  }
+
+  .admin-calendar-summary-row article small {
+    font-size: 0.61rem !important;
+    line-height: 1.15 !important;
+  }
+
+  /* Filter bar compact */
+  .admin-calendar-filter-bar {
+    padding: 9px !important;
+    gap: 8px !important;
+    border-radius: 13px !important;
+  }
+
+  .admin-calendar-search-box {
+    gap: 5px !important;
+  }
+
+  .admin-calendar-search-box span,
+  .admin-calendar-filter-group > span {
+    font-size: 0.58rem !important;
+  }
+
+  .admin-calendar-search-box input {
+    min-height: 36px !important;
+    padding-inline: 11px !important;
+    font-size: 0.76rem !important;
+    border-radius: 10px !important;
+  }
+
+  .admin-calendar-filter-group {
+    gap: 5px !important;
+  }
+
+  .admin-calendar-filter-group > div {
+    flex-wrap: nowrap !important;
+    overflow-x: auto !important;
+    gap: 5px !important;
+    scrollbar-width: none;
+  }
+
+  .admin-calendar-filter-group > div::-webkit-scrollbar {
+    display: none;
+  }
+
+  .admin-calendar-filter-group button {
+    flex: 0 0 auto !important;
+    min-height: 28px !important;
+    height: 28px !important;
+    padding: 0 8px !important;
+    font-size: 0.62rem !important;
+    border-radius: 8px !important;
+  }
+
+  /* Legend horizontal compact */
+  .admin-calendar-status-row {
+    padding: 7px !important;
+    gap: 5px !important;
+    border-radius: 12px !important;
+    flex-wrap: nowrap !important;
+    overflow-x: auto !important;
+    scrollbar-width: none;
+  }
+
+  .admin-calendar-status-row::-webkit-scrollbar {
+    display: none;
+  }
+
+  .admin-calendar-status-row span {
+    flex: 0 0 auto !important;
+    min-height: 26px !important;
+    padding: 0 8px !important;
+    font-size: 0.62rem !important;
+  }
+
+  .status-dot,
+  .payment-dot {
+    width: 7px !important;
+    height: 7px !important;
+    flex-basis: 7px !important;
+  }
+
+  /* Calendar grid compact */
+  .admin-time-calendar-scroll {
+    border-radius: 13px !important;
+  }
+
+  .admin-time-calendar-grid {
+    min-width: 690px !important;
+  }
+
+  .admin-time-day-head {
+    min-height: 48px !important;
+    padding: 7px 8px !important;
+  }
+
+  .admin-time-day-head strong {
+    font-size: 0.74rem !important;
+  }
+
+  .admin-time-day-head span {
+    font-size: 0.62rem !important;
+  }
+
+  .admin-time-hour-cell,
+  .admin-time-slot-cell {
+    min-height: 48px !important;
+  }
+
+  .admin-time-hour-cell {
+    font-size: 0.66rem !important;
+  }
+
+  .admin-time-event-pill {
+    min-height: 42px !important;
+    padding: 8px 8px 12px 11px !important;
+    border-radius: 10px !important;
+  }
+
+  .admin-time-event-pill strong {
+    font-size: 0.7rem !important;
+  }
+
+  .admin-time-event-pill small {
+    font-size: 0.6rem !important;
+  }
+
+  .admin-event-payment-chip {
+    min-height: 18px !important;
+    padding: 0 6px !important;
+    font-size: 0.56rem !important;
+  }
+}
+
+/* Extra small phones */
+@media (max-width: 380px) {
+  .admin-calendar-summary-row {
+    grid-template-columns: 1fr 1fr !important;
+  }
+
+  .admin-calendar-grid-toolbar h2 {
+    font-size: 1.16rem !important;
+  }
+
+  .admin-calendar-view-toggle button,
+  .admin-calendar-nav button,
+  .admin-calendar-room-filter button {
+    font-size: 0.58rem !important;
+  }
+
+  .admin-calendar-nav {
+    grid-template-columns: 26px 50px 26px !important;
+  }
+}
