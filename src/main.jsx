@@ -14,6 +14,8 @@ import "./styles/admin-settings.css";
 import "./styles/admin-ui-polish.css";
 import "./styles/admin-typography.css";
 import "./styles/admin-density.css";
+import "./styles/admin-ambient-components.css";
+import "./styles/admin-motion.css";
 
 ReactDOM.createRoot(document.getElementById("root")).render(
   <React.StrictMode>

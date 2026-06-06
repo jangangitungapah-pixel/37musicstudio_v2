@@ -1,0 +1,322 @@
+/* ================================
+   Admin Ambient Component Skin
+   Shared dark / purple / orange UI language
+================================ */
+
+.admin-shell {
+  color-scheme: dark;
+}
+
+/* Better selection/focus language inside admin */
+.admin-shell :focus {
+  outline: none;
+}
+
+.admin-shell :focus-visible {
+  outline: 2px solid rgba(143, 92, 255, 0.64);
+  outline-offset: 3px;
+}
+
+.admin-shell button,
+.admin-shell input,
+.admin-shell textarea,
+.admin-shell select {
+  font: inherit;
+}
+
+/* Unified button base */
+.admin-shell button,
+.admin-shell .admin-modal-submit,
+.admin-shell .admin-modal-cancel,
+.admin-shell .admin-modal-delete,
+.admin-shell .admin-topbar-logout,
+.admin-shell .admin-shell-logout,
+.admin-shell .admin-collapse-button,
+.admin-shell .admin-mobile-menu,
+.admin-shell .admin-mobile-close {
+  -webkit-tap-highlight-color: transparent;
+  user-select: none;
+  transition:
+    transform 150ms ease,
+    border-color 150ms ease,
+    background 150ms ease,
+    box-shadow 150ms ease,
+    color 150ms ease,
+    opacity 150ms ease;
+}
+
+.admin-shell button:active {
+  transform: scale(0.985);
+}
+
+.admin-shell button:disabled {
+  cursor: not-allowed;
+}
+
+/* Primary buttons */
+.admin-shell .admin-modal-submit,
+.admin-shell .admin-settings-primary,
+.admin-shell .admin-primary-action {
+  border: 1px solid rgba(255, 184, 77, 0.38) !important;
+  border-radius: 12px !important;
+  background:
+    radial-gradient(circle at 20% 0%, rgba(255, 255, 255, 0.32), transparent 28%),
+    linear-gradient(135deg, #ffd27a 0%, #ffb84d 42%, #ff8a3d 100%) !important;
+  color: #160d05 !important;
+  box-shadow:
+    0 14px 36px rgba(255, 138, 61, 0.16),
+    inset 0 1px 0 rgba(255, 255, 255, 0.32) !important;
+  font-weight: 900 !important;
+}
+
+.admin-shell .admin-modal-submit:hover,
+.admin-shell .admin-settings-primary:hover,
+.admin-shell .admin-primary-action:hover {
+  transform: translateY(-1px);
+  box-shadow:
+    0 18px 44px rgba(255, 138, 61, 0.22),
+    0 0 0 3px rgba(255, 184, 77, 0.08),
+    inset 0 1px 0 rgba(255, 255, 255, 0.34) !important;
+}
+
+/* Secondary / ghost buttons */
+.admin-shell .admin-modal-cancel,
+.admin-shell .admin-secondary-action,
+.admin-shell .admin-settings-secondary,
+.admin-shell .admin-collapse-button,
+.admin-shell .admin-mobile-menu,
+.admin-shell .admin-mobile-close {
+  border: 1px solid rgba(255, 255, 255, 0.105) !important;
+  border-radius: 12px !important;
+  background:
+    linear-gradient(145deg, rgba(255, 255, 255, 0.062), rgba(255, 255, 255, 0.022)),
+    rgba(10, 8, 16, 0.58) !important;
+  color: var(--text-soft) !important;
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.052),
+    0 10px 28px rgba(0, 0, 0, 0.14) !important;
+}
+
+.admin-shell .admin-modal-cancel:hover,
+.admin-shell .admin-secondary-action:hover,
+.admin-shell .admin-settings-secondary:hover,
+.admin-shell .admin-collapse-button:hover,
+.admin-shell .admin-mobile-menu:hover,
+.admin-shell .admin-mobile-close:hover {
+  border-color: rgba(143, 92, 255, 0.3) !important;
+  background:
+    radial-gradient(circle at 0% 0%, rgba(143, 92, 255, 0.12), transparent 38%),
+    linear-gradient(145deg, rgba(255, 255, 255, 0.072), rgba(255, 255, 255, 0.026)),
+    rgba(10, 8, 16, 0.64) !important;
+  color: var(--text-main) !important;
+}
+
+/* Danger buttons */
+.admin-shell .admin-modal-delete,
+.admin-shell .is-danger {
+  border-color: rgba(255, 107, 107, 0.26) !important;
+  background:
+    radial-gradient(circle at 0% 0%, rgba(255, 107, 107, 0.12), transparent 34%),
+    rgba(255, 107, 107, 0.07) !important;
+  color: #ffb3b3 !important;
+}
+
+/* Inputs / textarea / native select base */
+.admin-shell input,
+.admin-shell textarea,
+.admin-shell select {
+  width: 100%;
+  border: 1px solid rgba(255, 255, 255, 0.105) !important;
+  border-radius: 12px !important;
+  background:
+    linear-gradient(145deg, rgba(255, 255, 255, 0.048), rgba(255, 255, 255, 0.018)),
+    rgba(4, 3, 8, 0.54) !important;
+  color: var(--text-main) !important;
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.04),
+    0 8px 22px rgba(0, 0, 0, 0.12);
+  transition:
+    border-color 150ms ease,
+    background 150ms ease,
+    box-shadow 150ms ease;
+}
+
+.admin-shell input::placeholder,
+.admin-shell textarea::placeholder {
+  color: rgba(255, 250, 242, 0.34) !important;
+}
+
+.admin-shell input:hover,
+.admin-shell textarea:hover,
+.admin-shell select:hover {
+  border-color: rgba(143, 92, 255, 0.24) !important;
+}
+
+.admin-shell input:focus,
+.admin-shell textarea:focus,
+.admin-shell select:focus {
+  border-color: rgba(255, 184, 77, 0.48) !important;
+  box-shadow:
+    0 0 0 3px rgba(143, 92, 255, 0.1),
+    0 0 0 1px rgba(255, 184, 77, 0.1),
+    inset 0 1px 0 rgba(255, 255, 255, 0.055) !important;
+}
+
+/* Labels */
+.admin-shell label > span,
+.admin-shell .admin-custom-select-field > span {
+  color: rgba(255, 250, 242, 0.58) !important;
+  font-size: 0.72rem !important;
+  font-weight: 850 !important;
+  letter-spacing: 0.055em !important;
+  text-transform: uppercase !important;
+}
+
+/* Custom select */
+.admin-shell .admin-custom-select-trigger {
+  border-radius: 12px !important;
+  border: 1px solid rgba(255, 255, 255, 0.105) !important;
+  background:
+    linear-gradient(145deg, rgba(255, 255, 255, 0.055), rgba(255, 255, 255, 0.02)),
+    rgba(4, 3, 8, 0.54) !important;
+  color: var(--text-main) !important;
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.045),
+    0 8px 22px rgba(0, 0, 0, 0.12) !important;
+}
+
+.admin-shell .admin-custom-select-trigger:hover,
+.admin-shell .admin-custom-select-trigger.is-open {
+  border-color: rgba(143, 92, 255, 0.32) !important;
+  background:
+    radial-gradient(circle at 0% 0%, rgba(143, 92, 255, 0.11), transparent 36%),
+    linear-gradient(145deg, rgba(255, 255, 255, 0.064), rgba(255, 255, 255, 0.024)),
+    rgba(4, 3, 8, 0.62) !important;
+}
+
+.admin-shell .admin-custom-select-trigger svg {
+  color: var(--accent-strong);
+}
+
+.admin-shell .admin-custom-select-popover {
+  z-index: 9999;
+  border: 1px solid rgba(143, 92, 255, 0.24) !important;
+  border-radius: 14px !important;
+  background:
+    radial-gradient(circle at 0% 0%, rgba(143, 92, 255, 0.15), transparent 36%),
+    linear-gradient(180deg, rgba(22, 17, 32, 0.98), rgba(9, 7, 14, 0.98)) !important;
+  box-shadow:
+    0 24px 70px rgba(0, 0, 0, 0.42),
+    0 0 0 1px rgba(255, 255, 255, 0.04) inset !important;
+  backdrop-filter: blur(18px);
+}
+
+.admin-shell .admin-custom-select-list button {
+  border-radius: 10px !important;
+  color: var(--text-soft) !important;
+}
+
+.admin-shell .admin-custom-select-list button:hover,
+.admin-shell .admin-custom-select-list button.is-selected {
+  background:
+    linear-gradient(135deg, rgba(143, 92, 255, 0.16), rgba(255, 138, 61, 0.09)) !important;
+  color: var(--text-main) !important;
+}
+
+/* Modal skin */
+.admin-shell .admin-modal-backdrop {
+  background:
+    radial-gradient(circle at 18% 12%, rgba(143, 92, 255, 0.18), transparent 28rem),
+    radial-gradient(circle at 88% 18%, rgba(255, 138, 61, 0.12), transparent 28rem),
+    rgba(0, 0, 0, 0.72) !important;
+  backdrop-filter: blur(10px);
+}
+
+.admin-shell .admin-booking-modal,
+.admin-shell .admin-booking-detail-modal {
+  border-radius: 18px !important;
+  border: 1px solid rgba(255, 255, 255, 0.12) !important;
+  background:
+    radial-gradient(circle at 0% 0%, rgba(143, 92, 255, 0.1), transparent 36%),
+    radial-gradient(circle at 100% 0%, rgba(255, 138, 61, 0.08), transparent 34%),
+    linear-gradient(180deg, rgba(20, 16, 27, 0.98), rgba(8, 7, 12, 0.98)) !important;
+  box-shadow:
+    0 30px 90px rgba(0, 0, 0, 0.56),
+    inset 0 1px 0 rgba(255, 255, 255, 0.07) !important;
+}
+
+/* Section title / kicker language */
+.admin-shell .admin-booking-section-title,
+.admin-shell .admin-modal-kicker,
+.admin-shell .admin-booking-detail-section > p {
+  color: var(--accent-strong) !important;
+  letter-spacing: 0.075em !important;
+}
+
+/* Calendar grid/table shared ambient */
+.admin-shell .admin-time-calendar-scroll,
+.admin-shell .admin-time-calendar-grid,
+.admin-shell .admin-calendar-filter-bar,
+.admin-shell .admin-calendar-summary-row article {
+  scrollbar-color: rgba(143, 92, 255, 0.42) rgba(255, 255, 255, 0.04);
+}
+
+.admin-shell .admin-time-day-head,
+.admin-shell .admin-time-hour-cell,
+.admin-shell .admin-time-slot-cell {
+  border-color: rgba(255, 255, 255, 0.08) !important;
+}
+
+.admin-shell .admin-time-day-head {
+  background:
+    linear-gradient(180deg, rgba(143, 92, 255, 0.075), rgba(255, 255, 255, 0.018)),
+    rgba(6, 5, 10, 0.72) !important;
+}
+
+.admin-shell .admin-time-day-head.is-today {
+  border-color: rgba(255, 184, 77, 0.28) !important;
+  background:
+    radial-gradient(circle at top, rgba(255, 184, 77, 0.16), transparent 42%),
+    rgba(6, 5, 10, 0.72) !important;
+}
+
+.admin-shell .admin-time-slot-cell.is-empty:hover {
+  background:
+    radial-gradient(circle at center, rgba(143, 92, 255, 0.1), transparent 52%),
+    rgba(255, 255, 255, 0.02) !important;
+}
+
+/* Scrollbar */
+.admin-shell *::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+
+.admin-shell *::-webkit-scrollbar-track {
+  background: rgba(255, 255, 255, 0.035);
+  border-radius: 999px;
+}
+
+.admin-shell *::-webkit-scrollbar-thumb {
+  border: 2px solid transparent;
+  border-radius: 999px;
+  background:
+    linear-gradient(180deg, rgba(143, 92, 255, 0.56), rgba(255, 138, 61, 0.42))
+    border-box;
+}
+
+.admin-shell *::-webkit-scrollbar-thumb:hover {
+  background:
+    linear-gradient(180deg, rgba(176, 136, 255, 0.72), rgba(255, 184, 77, 0.6))
+    border-box;
+}
+
+/* Reduce motion safety */
+@media (prefers-reduced-motion: reduce) {
+  .admin-shell *,
+  .admin-shell *::before,
+  .admin-shell *::after {
+    transition-duration: 0.01ms !important;
+    animation-duration: 0.01ms !important;
+  }
+}

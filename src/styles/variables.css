@@ -1,27 +1,36 @@
 ﻿:root {
-  --bg-main: #070707;
-  --bg-deep: #030303;
+  --bg-main: #05040a;
+  --bg-deep: #020106;
+  --bg-elevated: rgba(17, 13, 26, 0.74);
   --bg-card: rgba(255, 255, 255, 0.065);
-  --bg-card-strong: rgba(255, 255, 255, 0.1);
+  --bg-card-strong: rgba(255, 255, 255, 0.105);
 
-  --text-main: #ffffff;
-  --text-soft: rgba(255, 255, 255, 0.78);
-  --text-muted: rgba(255, 255, 255, 0.56);
+  --text-main: #fffaf2;
+  --text-soft: rgba(255, 250, 242, 0.78);
+  --text-muted: rgba(255, 250, 242, 0.54);
 
-  --accent: #f5b84b;
-  --accent-strong: #ffcf70;
-  --accent-soft: rgba(245, 184, 75, 0.16);
+  --accent: #ffb84d;
+  --accent-strong: #ffd27a;
+  --accent-soft: rgba(255, 184, 77, 0.16);
 
-  --border-soft: rgba(255, 255, 255, 0.12);
-  --border-strong: rgba(245, 184, 75, 0.35);
+  --purple: #8f5cff;
+  --purple-strong: #b088ff;
+  --purple-soft: rgba(143, 92, 255, 0.18);
+  --orange: #ff8a3d;
+  --orange-soft: rgba(255, 138, 61, 0.16);
 
-  --shadow-soft: 0 24px 80px rgba(0, 0, 0, 0.35);
-  --shadow-glow: 0 0 70px rgba(245, 184, 75, 0.22);
+  --border-soft: rgba(255, 255, 255, 0.115);
+  --border-strong: rgba(255, 184, 77, 0.36);
+  --border-purple: rgba(143, 92, 255, 0.28);
 
-  --radius-sm: 14px;
-  --radius-md: 20px;
-  --radius-lg: 28px;
-  --radius-xl: 36px;
+  --shadow-soft: 0 24px 80px rgba(0, 0, 0, 0.38);
+  --shadow-glow: 0 0 70px rgba(255, 184, 77, 0.18);
+  --shadow-purple: 0 0 70px rgba(143, 92, 255, 0.16);
+
+  --radius-sm: 10px;
+  --radius-md: 14px;
+  --radius-lg: 18px;
+  --radius-xl: 22px;
 
   --container: 1160px;
   --header-height: 68px;

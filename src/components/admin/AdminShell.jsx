@@ -1,5 +1,5 @@
 ﻿import { useEffect, useMemo, useState } from "react";
-import { NavLink, useNavigate } from "react-router-dom";
+import { NavLink, useLocation, useNavigate } from "react-router-dom";
 import {
   BookOpen,
   CalendarDays,
@@ -59,6 +59,7 @@ const adminNavItems = [
 
 export default function AdminShell({ children, title = "Admin Panel", description = "37 Music Studio operations dashboard." }) {
   const navigate = useNavigate();
+  const location = useLocation();
 
   const [isCollapsed, setIsCollapsed] = useState(() => {
     if (typeof window === "undefined") {
@@ -106,6 +107,12 @@ export default function AdminShell({ children, title = "Admin Panel", descriptio
 
   return (
     <div className={shellClassName}>
+      <div className="admin-shell-ambient" aria-hidden="true">
+        <span className="admin-ambient-orb orb-purple" />
+        <span className="admin-ambient-orb orb-orange" />
+        <span className="admin-ambient-orb orb-violet" />
+        <span className="admin-ambient-grid" />
+      </div>
       <div
         className="admin-shell-backdrop"
         onClick={closeMobileMenu}

@@ -85,3 +85,37 @@ select {
     width: min(100% - 64px, var(--container));
   }
 }
+
+
+/* ================================
+   Spatial ambient base
+================================ */
+
+html {
+  background: var(--bg-deep);
+}
+
+body {
+  background:
+    radial-gradient(circle at 12% -10%, rgba(143, 92, 255, 0.18), transparent 32rem),
+    radial-gradient(circle at 88% 4%, rgba(255, 138, 61, 0.14), transparent 30rem),
+    radial-gradient(circle at 50% 100%, rgba(255, 184, 77, 0.07), transparent 36rem),
+    linear-gradient(180deg, #05040a 0%, #07050d 44%, #020106 100%);
+  color: var(--text-main);
+}
+
+button,
+input,
+textarea,
+select {
+  letter-spacing: -0.015em;
+}
+
+button {
+  border: 0;
+}
+
+::selection {
+  background: rgba(143, 92, 255, 0.48);
+  color: #fffaf2;
+}
