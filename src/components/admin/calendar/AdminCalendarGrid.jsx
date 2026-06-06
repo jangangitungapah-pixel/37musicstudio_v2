@@ -164,6 +164,17 @@ function getStatusLabel(status) {
   return map[status] || status;
 }
 
+function getPaymentShortLabel(paymentStatus) {
+  const map = {
+    unpaid: "Unpaid",
+    down_payment: "DP",
+    paid: "Lunas",
+    refund: "Refund",
+  };
+
+  return map[paymentStatus] || "Unpaid";
+}
+
 function getEventsForCell(events, { date, hour, room }) {
   return events.filter((event) => {
     const matchDate = event.date === date;
@@ -450,6 +461,9 @@ export default function AdminCalendarGrid() {
         <span><i className="status-dot status-pending" /> Pending</span>
         <span><i className="status-dot status-booked" /> Booked</span>
         <span><i className="status-dot status-maintenance" /> Maintenance</span>
+        <span><i className="status-dot status-cancelled" /> Cancelled</span>
+        <span><i className="payment-dot payment-down_payment" /> DP</span>
+        <span><i className="payment-dot payment-paid" /> Lunas</span>
       </div>
 
       <div className={`admin-time-calendar-scroll view-${viewMode}`}>
@@ -546,9 +560,9 @@ export default function AdminCalendarGrid() {
                     onClick={() => handleOpenDetailModal(slotEvents[0])}
                   >
                     {slotEvents.slice(0, 2).map((event) => (
-                      <span className={`admin-time-event-pill status-${event.status}`} key={event.id}>
+                      <span className={`admin-time-event-pill status-${event.status} payment-${event.paymentStatus || "unpaid"}`} key={event.id}>
                         <strong>{event.label || getStatusLabel(event.status)}</strong>
-                        <small>{event.room}</small>
+                        <small>{event.room} · {getPaymentShortLabel(event.paymentStatus)}</small>
                       </span>
                     ))}
 
