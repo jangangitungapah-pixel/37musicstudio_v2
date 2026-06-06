@@ -181,14 +181,65 @@ function inferPriceOptionId(event, defaultRoom) {
   return `base-${event?.room || defaultRoom || publicCalendarRooms[0]}`;
 }
 
+
+function getEventRangeFromModalPayload(payload) {
+  const startHour = getTimeNumber(payload.startTime);
+  const endHour = getTimeNumber(payload.endTime);
+
+  return {
+    startHour,
+    endHour: Math.max(startHour + 1, endHour),
+  };
+}
+
+function getEventRangeFromCalendarEvent(event) {
+  const time = String(event?.time || "");
+  const [startTime, endTime] = time.split(" - ").map((item) => item.trim());
+  const startHour = getTimeNumber(startTime);
+  const parsedEndHour = endTime ? getTimeNumber(endTime) : startHour + 1;
+
+  return {
+    startHour,
+    endHour: Math.max(startHour + 1, parsedEndHour),
+  };
+}
+
+function hasTimeOverlap(firstRange, secondRange) {
+  return firstRange.startHour < secondRange.endHour && secondRange.startHour < firstRange.endHour;
+}
+
+function getBookingConflict(calendarEvents, payload, currentEventId) {
+  if (!payload?.date || !payload?.room || !payload?.startTime || !payload?.endTime) {
+    return null;
+  }
+
+  if (getTimeNumber(payload.endTime) <= getTimeNumber(payload.startTime)) {
+    return null;
+  }
+
+  const payloadRange = getEventRangeFromModalPayload(payload);
+
+  return calendarEvents.find((event) => {
+    const isSameEvent = currentEventId && event.id === currentEventId;
+    const sameDate = event.date === payload.date;
+    const sameRoom = event.room === payload.room;
+
+    if (isSameEvent || !sameDate || !sameRoom) {
+      return false;
+    }
+
+    return hasTimeOverlap(payloadRange, getEventRangeFromCalendarEvent(event));
+  }) || null;
+}
+
 export default function AdminBookingModal({
   slot,
   defaultRoom,
   initialEvent = null,
   mode = "create",
   onClose,
-  onSave,
-  onDelete,
+  onSave,  onDelete,
+  calendarEvents = [],
 }) {
   const isEditMode = mode === "edit";
   const inferredType = inferType(initialEvent);
@@ -269,6 +320,18 @@ export default function AdminBookingModal({
   const selectedPriceOption = useMemo(() => {
     return priceOptions.find((item) => item.id === form.priceOptionId) || priceOptions.at(-1);
   }, [form.priceOptionId, priceOptions]);
+
+  const bookingConflict = useMemo(() => {
+    return getBookingConflict(calendarEvents, form, initialEvent?.id);
+  }, [
+    calendarEvents,
+    form.date,
+    form.room,
+    form.startTime,
+    form.endTime,
+    initialEvent?.id,
+  ]);
+
 
   function calculateBasePrice(option, currentForm) {
     const durationHours = Math.max(
@@ -432,6 +495,11 @@ export default function AdminBookingModal({
       return;
     }
 
+    if (bookingConflict) {
+      return;
+    }
+
+
     if (form.type === "booking" && !form.customerName.trim()) {
       alert("Nama customer wajib diisi.");
       return;
@@ -571,8 +639,20 @@ export default function AdminBookingModal({
               />
             </div>
           </div>
+          {bookingConflict && (
+            <div className="admin-booking-conflict-warning" role="alert">
+              <strong>Jadwal bentrok</strong>
+              <span>
+                {bookingConflict.label || bookingConflict.packageName || bookingConflict.customerName || "Booking lain"}
+                {" "}· {bookingConflict.time} · {bookingConflict.room}
+              </span>
+            </div>
+          )}
+
+
 
           {form.type === "booking" && (
+
             <>
               <div className="admin-booking-section">
                 <p className="admin-booking-section-title">Customer</p>
@@ -705,7 +785,7 @@ export default function AdminBookingModal({
               Batal
             </button>
 
-            <button type="submit" className="admin-modal-submit">
+            <button type="submit" className="admin-modal-submit" disabled={Boolean(bookingConflict)}>
               {isEditMode ? "Simpan Perubahan" : "Simpan Jadwal"}
             </button>
           </footer>

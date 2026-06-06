@@ -107,6 +107,32 @@ function getEventDurationSpan(event) {
   return Math.max(1, endHour - startHour);
 }
 
+function getTimeRangeFromEvent(event) {
+  const startHour = getHourNumber(getEventStartTime(event.time));
+  const endTime = getEventEndTime(event.time);
+  const endHour = endTime ? getHourNumber(endTime) : startHour + 1;
+
+  return {
+    startHour,
+    endHour: Math.max(startHour + 1, endHour),
+  };
+}
+
+function getTimeRangeFromPayload(payload) {
+  const startHour = getHourNumber(payload.startTime);
+  const endHour = getHourNumber(payload.endTime);
+
+  return {
+    startHour,
+    endHour: Math.max(startHour + 1, endHour),
+  };
+}
+
+function hasTimeOverlap(firstRange, secondRange) {
+  return firstRange.startHour < secondRange.endHour && secondRange.startHour < firstRange.endHour;
+}
+
+
 function isCellCoveredByPreviousSpan(events, { date, hour, room }) {
   const currentHour = getHourNumber(hour);
 
@@ -296,17 +322,30 @@ export default function AdminCalendarGrid() {
   function handleSaveModalBooking(payload) {
     const time = payload.startTime + " - " + payload.endTime;
 
-    const isConflict = events.some((event) => {
+    const payloadRange = getTimeRangeFromPayload(payload);
+
+    const conflictingEvent = events.find((event) => {
       const isSameEvent = selectedEvent && event.id === selectedEvent.id;
       const sameDate = event.date === payload.date;
       const sameRoom = event.room === payload.room;
-      const sameStart = getEventStartTime(event.time) === payload.startTime;
 
-      return !isSameEvent && sameDate && sameRoom && sameStart;
+      if (isSameEvent || !sameDate || !sameRoom) {
+        return false;
+      }
+
+      return hasTimeOverlap(payloadRange, getTimeRangeFromEvent(event));
     });
 
-    if (isConflict) {
-      alert("Slot ini sudah memiliki jadwal untuk room tersebut.");
+    if (conflictingEvent) {
+      const conflictTitle =
+        conflictingEvent.label ||
+        conflictingEvent.packageName ||
+        conflictingEvent.customerName ||
+        "booking lain";
+
+      alert(
+        `Jadwal bentrok dengan "${conflictTitle}" (${conflictingEvent.time}) di ${conflictingEvent.room}.`
+      );
       return;
     }
 
@@ -524,6 +563,7 @@ export default function AdminCalendarGrid() {
           defaultRoom={(selectedSlot || selectedEvent)?.room}
           mode={selectedEvent ? "edit" : "create"}
           initialEvent={selectedEvent}
+          calendarEvents={events}
           onClose={closeModal}
           onSave={handleSaveModalBooking}
           onDelete={selectedEvent ? handleDeleteModalBooking : undefined}

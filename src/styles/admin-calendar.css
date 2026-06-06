@@ -1752,3 +1752,38 @@
     min-height: 46px;
   }
 }
+
+/* ================================
+   Early booking conflict warning
+================================ */
+
+.admin-booking-conflict-warning {
+  display: grid;
+  gap: 5px;
+  padding: 12px 13px;
+  border: 1px solid rgba(255, 107, 107, 0.28);
+  border-radius: 12px;
+  background:
+    radial-gradient(circle at top right, rgba(255, 107, 107, 0.14), transparent 42%),
+    rgba(255, 107, 107, 0.075);
+}
+
+.admin-booking-conflict-warning strong {
+  color: #ffb3b3;
+  font-size: 0.84rem;
+  font-weight: 860;
+  letter-spacing: -0.015em;
+}
+
+.admin-booking-conflict-warning span {
+  color: rgba(255, 236, 236, 0.78);
+  font-size: 0.78rem;
+  font-weight: 680;
+  line-height: 1.35;
+}
+
+.admin-modal-submit:disabled {
+  opacity: 0.48;
+  cursor: not-allowed;
+  filter: grayscale(0.2);
+}
