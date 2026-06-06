@@ -1,0 +1,20 @@
+﻿.admin-calendar-page {
+  min-height: 100vh;
+  padding: 70px 0 100px;
+}
+
+.admin-calendar-container {
+  width: min(100% - 40px, var(--container));
+  margin-inline: auto;
+}
+
+.admin-calendar-hero h1 {
+  margin: 0;
+  font-size: clamp(2.4rem, 10vw, 5.5rem);
+  line-height: 0.9;
+  letter-spacing: -0.085em;
+}
+
+.admin-calendar-hero p:not(.section-eyebrow) {
+  color: var(--text-soft);
+}
