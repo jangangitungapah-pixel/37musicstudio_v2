@@ -300,14 +300,12 @@ export default function AdminCalendarGrid() {
 
                 if (slotEvents.length === 0) {
                   return (
-                    <button
+                                        <button
                       type="button"
-                      className="admin-time-slot-cell status-available"
+                      className="admin-time-slot-cell is-empty"
                       key={`${column.value}-${hour}`}
-                    >
-                      <strong>Tersedia</strong>
-                      <span>Klik untuk tambah</span>
-                    </button>
+                      aria-label={`Tambah jadwal ${column.label} jam ${hour}`}
+                    />
                   );
                 }
 
