@@ -1,4 +1,5 @@
-import { Pencil, X } from "lucide-react";
+import { MessageCircle, Pencil, X } from "lucide-react";
+import { getBookingWhatsAppTemplates } from "../../../utils/whatsappTemplates.js";
 
 function formatCurrency(value) {
   return new Intl.NumberFormat("id-ID", {
@@ -33,6 +34,15 @@ function getPaymentLabel(status) {
 
 export default function AdminBookingDetailModal({ event, onClose, onEdit, onQuickUpdate }) {
   const isBooking = event?.type === "booking" || !event?.type;
+  const whatsappTemplates = getBookingWhatsAppTemplates(event);
+
+  function handleOpenWhatsAppTemplate(template) {
+    if (!template?.isEnabled || !template?.url) {
+      return;
+    }
+
+    window.open(template.url, "_blank", "noopener,noreferrer");
+  }
 
   function handleMarkBooked() {
     onQuickUpdate?.({
@@ -140,6 +150,37 @@ export default function AdminBookingDetailModal({ event, onClose, onEdit, onQuic
               </div>
             </div>
           )}
+          {isBooking && (
+            <div className="admin-booking-detail-section admin-booking-wa-actions">
+              <p>Customer Messages</p>
+
+              <div className="admin-booking-wa-action-grid">
+                {whatsappTemplates.map((template) => (
+                  <button
+                    type="button"
+                    key={template.id}
+                    className="admin-booking-wa-card"
+                    disabled={!template.isEnabled}
+                    onClick={() => handleOpenWhatsAppTemplate(template)}
+                  >
+                    <MessageCircle size={16} />
+                    <span>
+                      <strong>{template.label}</strong>
+                      <small>{template.description}</small>
+                    </span>
+                    <em>Buka</em>
+                  </button>
+                ))}
+              </div>
+
+              {!event?.customerPhone && (
+                <small className="admin-booking-wa-hint">
+                  Nomor WhatsApp customer belum tersedia.
+                </small>
+              )}
+            </div>
+          )}
+
 
 
           {isBooking && (

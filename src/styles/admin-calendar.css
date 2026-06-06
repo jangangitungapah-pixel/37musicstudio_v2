@@ -2791,3 +2791,508 @@ body.is-admin-calendar-resizing * {
     grid-template-columns: repeat(4, minmax(0, 1fr));
   }
 }
+
+
+/* ================================
+   Booking WhatsApp Templates
+================================ */
+
+.admin-booking-wa-actions {
+  border-color: rgba(37, 211, 102, 0.22) !important;
+  background:
+    radial-gradient(circle at top right, rgba(37, 211, 102, 0.11), transparent 42%),
+    rgba(255, 255, 255, 0.035) !important;
+}
+
+.admin-booking-wa-action-grid {
+  display: grid;
+  gap: 8px;
+}
+
+.admin-booking-wa-action-grid button {
+  min-height: 48px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 9px 11px;
+  border: 1px solid rgba(37, 211, 102, 0.22);
+  border-radius: 11px;
+  background: rgba(37, 211, 102, 0.075);
+  color: var(--text-main);
+  text-align: left;
+}
+
+.admin-booking-wa-action-grid button:hover:not(:disabled) {
+  border-color: rgba(37, 211, 102, 0.42);
+  background: rgba(37, 211, 102, 0.12);
+}
+
+.admin-booking-wa-action-grid button:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+  filter: grayscale(0.4);
+}
+
+.admin-booking-wa-action-grid button svg {
+  flex: 0 0 auto;
+  color: #25d366;
+}
+
+.admin-booking-wa-action-grid button span {
+  min-width: 0;
+  display: grid;
+  gap: 2px;
+}
+
+.admin-booking-wa-action-grid button strong {
+  color: var(--text-main);
+  font-size: 0.82rem;
+  font-weight: 850;
+  letter-spacing: -0.02em;
+}
+
+.admin-booking-wa-action-grid button small {
+  color: var(--text-muted);
+  font-size: 0.72rem;
+  font-weight: 680;
+  line-height: 1.25;
+}
+
+.admin-booking-wa-hint {
+  color: rgba(255, 190, 190, 0.82);
+  font-size: 0.74rem;
+  font-weight: 700;
+}
+
+@media (min-width: 640px) {
+  .admin-booking-wa-action-grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}
+
+
+/* ================================
+   WhatsApp Template Premium Polish
+================================ */
+
+.admin-booking-wa-actions {
+  position: relative;
+  overflow: hidden;
+  padding: 14px !important;
+  border: 1px solid rgba(37, 211, 102, 0.18) !important;
+  border-radius: 16px !important;
+  background:
+    radial-gradient(circle at 12% 0%, rgba(37, 211, 102, 0.14), transparent 32%),
+    radial-gradient(circle at 100% 10%, rgba(245, 184, 75, 0.08), transparent 30%),
+    linear-gradient(145deg, rgba(255, 255, 255, 0.052), rgba(255, 255, 255, 0.018)),
+    rgba(0, 0, 0, 0.18) !important;
+}
+
+.admin-booking-wa-actions::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background:
+    linear-gradient(120deg, rgba(255, 255, 255, 0.08), transparent 26%),
+    linear-gradient(180deg, rgba(255, 255, 255, 0.035), transparent 38%);
+  opacity: 0.65;
+}
+
+.admin-booking-wa-actions > p {
+  position: relative;
+  width: fit-content;
+  margin: 0;
+  padding: 5px 9px;
+  border: 1px solid rgba(37, 211, 102, 0.18);
+  border-radius: 999px;
+  background: rgba(37, 211, 102, 0.08);
+  color: #b9ffd0;
+  font-size: 0.68rem;
+  font-weight: 900;
+  letter-spacing: 0.095em;
+  text-transform: uppercase;
+}
+
+.admin-booking-wa-action-grid {
+  position: relative;
+  display: grid;
+  gap: 9px;
+  margin-top: 12px;
+}
+
+.admin-booking-wa-action-grid .admin-booking-wa-card {
+  appearance: none;
+  -webkit-appearance: none;
+  position: relative;
+  min-height: 74px;
+  display: grid;
+  grid-template-columns: 38px minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 11px;
+  padding: 12px;
+  overflow: hidden;
+  border: 1px solid rgba(255, 255, 255, 0.095);
+  border-radius: 15px;
+  background:
+    radial-gradient(circle at 0% 0%, rgba(37, 211, 102, 0.13), transparent 38%),
+    linear-gradient(145deg, rgba(255, 255, 255, 0.068), rgba(255, 255, 255, 0.026)),
+    rgba(0, 0, 0, 0.22);
+  color: var(--text-main);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.055),
+    0 10px 28px rgba(0, 0, 0, 0.18);
+  text-align: left;
+  cursor: pointer;
+  transform: translateY(0);
+  transition:
+    transform 160ms ease,
+    border-color 160ms ease,
+    background 160ms ease,
+    box-shadow 160ms ease,
+    opacity 160ms ease;
+}
+
+.admin-booking-wa-action-grid .admin-booking-wa-card::after {
+  content: "";
+  position: absolute;
+  inset: 1px;
+  border-radius: 14px;
+  pointer-events: none;
+  background:
+    linear-gradient(120deg, rgba(255, 255, 255, 0.07), transparent 34%),
+    radial-gradient(circle at 92% 12%, rgba(37, 211, 102, 0.1), transparent 28%);
+  opacity: 0;
+  transition: opacity 160ms ease;
+}
+
+.admin-booking-wa-action-grid .admin-booking-wa-card:hover:not(:disabled) {
+  border-color: rgba(37, 211, 102, 0.36);
+  background:
+    radial-gradient(circle at 0% 0%, rgba(37, 211, 102, 0.18), transparent 40%),
+    linear-gradient(145deg, rgba(255, 255, 255, 0.084), rgba(255, 255, 255, 0.034)),
+    rgba(0, 0, 0, 0.24);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.075),
+    0 15px 36px rgba(0, 0, 0, 0.25),
+    0 0 0 3px rgba(37, 211, 102, 0.055);
+  transform: translateY(-2px);
+}
+
+.admin-booking-wa-action-grid .admin-booking-wa-card:hover:not(:disabled)::after {
+  opacity: 1;
+}
+
+.admin-booking-wa-action-grid .admin-booking-wa-card:active:not(:disabled) {
+  transform: translateY(0) scale(0.99);
+}
+
+.admin-booking-wa-action-grid .admin-booking-wa-card:disabled {
+  opacity: 0.42;
+  cursor: not-allowed;
+  filter: grayscale(0.45);
+  box-shadow: none;
+}
+
+.admin-booking-wa-action-grid .admin-booking-wa-card svg {
+  width: 38px;
+  height: 38px;
+  padding: 9px;
+  border: 1px solid rgba(37, 211, 102, 0.22);
+  border-radius: 13px;
+  background:
+    radial-gradient(circle at top, rgba(37, 211, 102, 0.24), transparent 58%),
+    rgba(37, 211, 102, 0.1);
+  color: #25d366;
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.08),
+    0 8px 20px rgba(37, 211, 102, 0.08);
+}
+
+.admin-booking-wa-action-grid .admin-booking-wa-card span {
+  min-width: 0;
+  display: grid;
+  gap: 3px;
+}
+
+.admin-booking-wa-action-grid .admin-booking-wa-card strong {
+  overflow: hidden;
+  color: var(--text-main);
+  font-size: 0.86rem;
+  font-weight: 880;
+  letter-spacing: -0.035em;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.admin-booking-wa-action-grid .admin-booking-wa-card small {
+  overflow: hidden;
+  color: rgba(235, 235, 235, 0.62);
+  font-size: 0.73rem;
+  font-weight: 690;
+  line-height: 1.25;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.admin-booking-wa-action-grid .admin-booking-wa-card em {
+  position: relative;
+  z-index: 1;
+  padding: 6px 8px;
+  border: 1px solid rgba(37, 211, 102, 0.18);
+  border-radius: 999px;
+  background: rgba(37, 211, 102, 0.08);
+  color: #b9ffd0;
+  font-size: 0.66rem;
+  font-style: normal;
+  font-weight: 900;
+  letter-spacing: 0.045em;
+  white-space: nowrap;
+}
+
+.admin-booking-wa-action-grid .admin-booking-wa-card:disabled em {
+  color: rgba(255, 255, 255, 0.45);
+  border-color: rgba(255, 255, 255, 0.1);
+  background: rgba(255, 255, 255, 0.045);
+}
+
+.admin-booking-wa-hint {
+  position: relative;
+  display: block;
+  margin-top: 10px;
+  padding: 10px 11px;
+  border: 1px solid rgba(255, 107, 107, 0.18);
+  border-radius: 12px;
+  background: rgba(255, 107, 107, 0.055);
+  color: rgba(255, 202, 202, 0.9);
+  font-size: 0.75rem;
+  font-weight: 760;
+}
+
+@media (min-width: 760px) {
+  .admin-booking-wa-action-grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+
+  .admin-booking-wa-action-grid .admin-booking-wa-card {
+    grid-template-columns: 38px minmax(0, 1fr);
+    align-content: start;
+  }
+
+  .admin-booking-wa-action-grid .admin-booking-wa-card em {
+    grid-column: 1 / -1;
+    width: fit-content;
+    margin-left: 49px;
+  }
+}
+
+@media (max-width: 520px) {
+  .admin-booking-wa-actions {
+    padding: 12px !important;
+    border-radius: 14px !important;
+  }
+
+  .admin-booking-wa-action-grid .admin-booking-wa-card {
+    min-height: 68px;
+    grid-template-columns: 36px minmax(0, 1fr);
+  }
+
+  .admin-booking-wa-action-grid .admin-booking-wa-card em {
+    grid-column: 1 / -1;
+    width: fit-content;
+    margin-left: 47px;
+  }
+
+  .admin-booking-wa-action-grid .admin-booking-wa-card svg {
+    width: 36px;
+    height: 36px;
+  }
+}
+
+
+/* ================================
+   WhatsApp Template Compact Fix
+   Overrides previous WA polish safely
+================================ */
+
+.admin-booking-detail-section.admin-booking-wa-actions {
+  position: relative !important;
+  overflow: visible !important;
+  display: grid !important;
+  gap: 10px !important;
+  min-height: auto !important;
+  height: auto !important;
+  padding: 13px !important;
+  border: 1px solid rgba(37, 211, 102, 0.22) !important;
+  border-radius: 13px !important;
+  background:
+    linear-gradient(145deg, rgba(37, 211, 102, 0.075), rgba(255, 255, 255, 0.025)),
+    rgba(0, 0, 0, 0.16) !important;
+}
+
+.admin-booking-detail-section.admin-booking-wa-actions::before,
+.admin-booking-detail-section.admin-booking-wa-actions::after {
+  display: none !important;
+}
+
+.admin-booking-detail-section.admin-booking-wa-actions > p {
+  position: static !important;
+  display: block !important;
+  width: auto !important;
+  margin: 0 !important;
+  padding: 0 !important;
+  border: 0 !important;
+  border-radius: 0 !important;
+  background: transparent !important;
+  color: #b9ffd0 !important;
+  font-size: 0.72rem !important;
+  font-weight: 900 !important;
+  letter-spacing: 0.075em !important;
+  text-transform: uppercase !important;
+}
+
+.admin-booking-wa-action-grid {
+  display: grid !important;
+  grid-template-columns: 1fr !important;
+  gap: 8px !important;
+  margin: 0 !important;
+  padding: 0 !important;
+}
+
+.admin-booking-wa-action-grid .admin-booking-wa-card {
+  appearance: none !important;
+  -webkit-appearance: none !important;
+  position: relative !important;
+  min-height: 54px !important;
+  height: auto !important;
+  display: grid !important;
+  grid-template-columns: 34px minmax(0, 1fr) auto !important;
+  align-items: center !important;
+  gap: 10px !important;
+  padding: 9px 10px !important;
+  border: 1px solid rgba(37, 211, 102, 0.18) !important;
+  border-radius: 11px !important;
+  background:
+    linear-gradient(145deg, rgba(255, 255, 255, 0.052), rgba(255, 255, 255, 0.018)),
+    rgba(0, 0, 0, 0.22) !important;
+  color: var(--text-main) !important;
+  box-shadow: none !important;
+  text-align: left !important;
+  cursor: pointer !important;
+  transform: none !important;
+  filter: none !important;
+}
+
+.admin-booking-wa-action-grid .admin-booking-wa-card::before,
+.admin-booking-wa-action-grid .admin-booking-wa-card::after {
+  display: none !important;
+}
+
+.admin-booking-wa-action-grid .admin-booking-wa-card:hover:not(:disabled) {
+  border-color: rgba(37, 211, 102, 0.42) !important;
+  background:
+    linear-gradient(145deg, rgba(37, 211, 102, 0.1), rgba(255, 255, 255, 0.026)),
+    rgba(0, 0, 0, 0.22) !important;
+  transform: translateY(-1px) !important;
+}
+
+.admin-booking-wa-action-grid .admin-booking-wa-card:disabled {
+  opacity: 0.42 !important;
+  cursor: not-allowed !important;
+  filter: grayscale(0.35) !important;
+}
+
+.admin-booking-wa-action-grid .admin-booking-wa-card svg {
+  width: 34px !important;
+  height: 34px !important;
+  padding: 8px !important;
+  border: 1px solid rgba(37, 211, 102, 0.22) !important;
+  border-radius: 10px !important;
+  background: rgba(37, 211, 102, 0.1) !important;
+  color: #25d366 !important;
+  box-shadow: none !important;
+}
+
+.admin-booking-wa-action-grid .admin-booking-wa-card span {
+  display: grid !important;
+  gap: 2px !important;
+  min-width: 0 !important;
+}
+
+.admin-booking-wa-action-grid .admin-booking-wa-card strong {
+  color: var(--text-main) !important;
+  font-size: 0.8rem !important;
+  font-weight: 850 !important;
+  letter-spacing: -0.025em !important;
+  white-space: nowrap !important;
+  overflow: hidden !important;
+  text-overflow: ellipsis !important;
+}
+
+.admin-booking-wa-action-grid .admin-booking-wa-card small {
+  color: var(--text-muted) !important;
+  font-size: 0.7rem !important;
+  font-weight: 680 !important;
+  line-height: 1.25 !important;
+  white-space: nowrap !important;
+  overflow: hidden !important;
+  text-overflow: ellipsis !important;
+}
+
+.admin-booking-wa-action-grid .admin-booking-wa-card em {
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  min-height: 28px !important;
+  margin: 0 !important;
+  padding: 0 9px !important;
+  border: 1px solid rgba(37, 211, 102, 0.22) !important;
+  border-radius: 999px !important;
+  background: rgba(37, 211, 102, 0.09) !important;
+  color: #b9ffd0 !important;
+  font-size: 0.68rem !important;
+  font-style: normal !important;
+  font-weight: 900 !important;
+  letter-spacing: 0.02em !important;
+  white-space: nowrap !important;
+}
+
+.admin-booking-wa-hint {
+  margin: 0 !important;
+  padding: 9px 10px !important;
+  border: 1px solid rgba(255, 107, 107, 0.18) !important;
+  border-radius: 10px !important;
+  background: rgba(255, 107, 107, 0.055) !important;
+  color: rgba(255, 202, 202, 0.9) !important;
+  font-size: 0.72rem !important;
+  font-weight: 760 !important;
+}
+
+@media (min-width: 760px) {
+  .admin-booking-wa-action-grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
+  }
+
+  .admin-booking-wa-action-grid .admin-booking-wa-card {
+    grid-template-columns: 34px minmax(0, 1fr) !important;
+    align-items: start !important;
+  }
+
+  .admin-booking-wa-action-grid .admin-booking-wa-card em {
+    grid-column: 1 / -1 !important;
+    width: fit-content !important;
+    margin-left: 44px !important;
+  }
+}
+
+@media (max-width: 520px) {
+  .admin-booking-wa-action-grid .admin-booking-wa-card {
+    grid-template-columns: 34px minmax(0, 1fr) !important;
+  }
+
+  .admin-booking-wa-action-grid .admin-booking-wa-card em {
+    grid-column: 1 / -1 !important;
+    width: fit-content !important;
+    margin-left: 44px !important;
+  }
+}
