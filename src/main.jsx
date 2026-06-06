@@ -10,9 +10,11 @@ import "./styles/public-calendar.css";
 import "./styles/admin-auth.css";
 import "./styles/admin-shell.css";
 import "./styles/admin-calendar.css";
+import "./styles/admin-settings.css";
 
 ReactDOM.createRoot(document.getElementById("root")).render(
   <React.StrictMode>
     <App />
   </React.StrictMode>
 );
+
