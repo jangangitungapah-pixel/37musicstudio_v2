@@ -2503,3 +2503,132 @@ body.is-admin-calendar-resizing * {
     bottom: 5px;
   }
 }
+
+
+/* ================================
+   Booking Adjustment Engine
+================================ */
+
+.admin-booking-adjustment-card {
+  grid-column: 1 / -1;
+  display: grid;
+  gap: 12px;
+  padding: 13px;
+  border: 1px solid rgba(245, 184, 75, 0.22);
+  border-radius: 14px;
+  background:
+    radial-gradient(circle at top right, rgba(245, 184, 75, 0.12), transparent 44%),
+    rgba(255, 255, 255, 0.035);
+}
+
+.admin-booking-adjustment-card.tone-due,
+.admin-booking-adjustment-card.tone-unpaid {
+  border-color: rgba(255, 207, 112, 0.28);
+  background:
+    radial-gradient(circle at top right, rgba(255, 207, 112, 0.13), transparent 44%),
+    rgba(255, 207, 112, 0.045);
+}
+
+.admin-booking-adjustment-card.tone-overpaid {
+  border-color: rgba(114, 194, 255, 0.28);
+  background:
+    radial-gradient(circle at top right, rgba(114, 194, 255, 0.13), transparent 44%),
+    rgba(114, 194, 255, 0.04);
+}
+
+.admin-booking-adjustment-card.tone-paid {
+  border-color: rgba(114, 255, 157, 0.22);
+  background:
+    radial-gradient(circle at top right, rgba(114, 255, 157, 0.11), transparent 44%),
+    rgba(114, 255, 157, 0.035);
+}
+
+.admin-booking-adjustment-head {
+  display: grid;
+  gap: 4px;
+}
+
+.admin-booking-adjustment-head span,
+.admin-booking-adjustment-grid span,
+.admin-booking-customer-message span {
+  color: var(--text-muted);
+  font-size: 0.68rem;
+  font-weight: 860;
+  letter-spacing: 0.075em;
+  text-transform: uppercase;
+}
+
+.admin-booking-adjustment-head strong {
+  color: var(--text-main);
+  font-size: 1rem;
+  font-weight: 820;
+  letter-spacing: -0.035em;
+}
+
+.admin-booking-adjustment-head small {
+  color: var(--text-muted);
+  font-size: 0.78rem;
+  font-weight: 680;
+  line-height: 1.35;
+}
+
+.admin-booking-adjustment-grid {
+  display: grid;
+  gap: 8px;
+}
+
+.admin-booking-adjustment-grid div {
+  display: grid;
+  gap: 4px;
+  padding: 10px;
+  border-radius: 11px;
+  background: rgba(0, 0, 0, 0.16);
+}
+
+.admin-booking-adjustment-grid strong {
+  color: var(--text-main);
+  font-size: 0.94rem;
+  font-weight: 820;
+}
+
+.admin-booking-customer-message {
+  display: grid;
+  gap: 8px;
+}
+
+.admin-booking-customer-message > div {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.admin-booking-customer-message button {
+  min-height: 32px;
+  padding: 0 11px;
+  border: 1px solid rgba(245, 184, 75, 0.28);
+  border-radius: 9px;
+  background: rgba(245, 184, 75, 0.1);
+  color: var(--accent);
+  font-size: 0.76rem;
+  font-weight: 840;
+}
+
+.admin-booking-customer-message textarea {
+  width: 100%;
+  min-height: 128px;
+  resize: vertical;
+  border: 1px solid rgba(255, 255, 255, 0.11);
+  border-radius: 12px;
+  background: rgba(0, 0, 0, 0.2);
+  color: var(--text-main);
+  font-size: 0.82rem;
+  font-weight: 600;
+  line-height: 1.5;
+}
+
+@media (min-width: 680px) {
+  .admin-booking-adjustment-grid {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
+}

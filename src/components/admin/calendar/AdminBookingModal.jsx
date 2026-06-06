@@ -4,6 +4,10 @@ import { Trash2, X } from "lucide-react";
 import { publicCalendarRooms } from "../../../data/publicCalendar.js";
 import { getPriceSettings } from "../../../utils/priceSettingsStorage.js";
 import AdminSelect from "../common/AdminSelect.jsx";
+import {
+  getBookingChangeImpact,
+  getSuggestedPaymentStatus,
+} from "../../../utils/bookingChangeEngine.js";
 
 const scheduleTypes = [
   { value: "booking", label: "Booking Customer" },
@@ -333,6 +337,19 @@ export default function AdminBookingModal({
   ]);
 
 
+  const bookingImpact = useMemo(() => {
+    return getBookingChangeImpact({
+      originalEvent: initialEvent,
+      nextBooking: {
+        ...form,
+        price: Number(cleanMoney(form.price) || 0),
+        deposit: Number(cleanMoney(form.deposit) || 0),
+      },
+    });
+  }, [initialEvent, form]);
+
+
+
   function calculateBasePrice(option, currentForm) {
     const durationHours = Math.max(
       Number(option.minimumHours || 1),
@@ -513,11 +530,6 @@ export default function AdminBookingModal({
     const price = Number(cleanMoney(form.price) || 0);
     const deposit = Number(cleanMoney(form.deposit) || 0);
 
-    if (deposit > price && price > 0) {
-      alert("DP tidak boleh lebih besar dari harga.");
-      return;
-    }
-
     const label =
       form.type === "maintenance"
         ? "Room Maintenance"
@@ -532,6 +544,7 @@ export default function AdminBookingModal({
       peopleCount: Number(form.peopleCount || 0),
       label,
       publicLabel: form.type === "booking" ? "Booked" : label,
+      changeImpact: bookingImpact,
     });
   };
 
@@ -546,6 +559,19 @@ export default function AdminBookingModal({
       onDelete();
     }
   };
+
+  async function handleCopyCustomerMessage() {
+    if (!bookingImpact?.customerMessage) {
+      return;
+    }
+
+    try {
+      await navigator.clipboard.writeText(bookingImpact.customerMessage);
+      alert("Pesan customer sudah disalin.");
+    } catch {
+      alert("Gagal copy pesan. Silakan copy manual.");
+    }
+  }
 
   const durationHours = getDurationHours(form.startTime, form.endTime);
 
