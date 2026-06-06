@@ -1,20 +1,608 @@
-﻿.admin-calendar-page {
-  min-height: 100vh;
-  padding: 70px 0 100px;
+﻿/* ================================
+   Admin Calendar Grid
+   Timetable Format
+   Header: Day + Date
+   Left Corner: Time
+================================ */
+
+.admin-calendar-grid-shell {
+  --calendar-line: rgba(255, 255, 255, 0.105);
+  --calendar-line-strong: rgba(245, 184, 75, 0.36);
+  --calendar-radius: 32px;
+  --calendar-cell-radius: 18px;
+
+  display: grid;
+  gap: 18px;
+  padding: 18px;
+  border: 1px solid var(--calendar-line);
+  border-radius: var(--calendar-radius);
+  background:
+    linear-gradient(145deg, rgba(255, 255, 255, 0.072), rgba(255, 255, 255, 0.028)),
+    rgba(0, 0, 0, 0.2);
+  box-shadow:
+    0 22px 70px rgba(0, 0, 0, 0.28),
+    inset 0 1px 0 rgba(255, 255, 255, 0.045);
 }
 
-.admin-calendar-container {
-  width: min(100% - 40px, var(--container));
-  margin-inline: auto;
+/* Toolbar */
+
+.admin-calendar-grid-toolbar {
+  display: grid;
+  gap: 18px;
+  padding: 2px;
 }
 
-.admin-calendar-hero h1 {
+.admin-calendar-grid-toolbar h2 {
   margin: 0;
-  font-size: clamp(2.4rem, 10vw, 5.5rem);
-  line-height: 0.9;
-  letter-spacing: -0.085em;
+  max-width: 720px;
+  font-size: clamp(1.65rem, 5.8vw, 3.3rem);
+  line-height: 0.98;
+  letter-spacing: -0.07em;
 }
 
-.admin-calendar-hero p:not(.section-eyebrow) {
+.admin-calendar-grid-toolbar span {
+  display: block;
+  margin-top: 8px;
+  max-width: 640px;
+  color: var(--text-muted);
+  font-size: 0.92rem;
+  font-weight: 760;
+}
+
+.admin-calendar-toolbar-actions {
+  display: grid;
+  gap: 10px;
+}
+
+.admin-calendar-view-toggle,
+.admin-calendar-room-filter,
+.admin-calendar-nav,
+.admin-calendar-status-row {
+  display: flex;
+  gap: 8px;
+  overflow-x: auto;
+  padding-bottom: 2px;
+  scrollbar-width: none;
+}
+
+.admin-calendar-view-toggle::-webkit-scrollbar,
+.admin-calendar-room-filter::-webkit-scrollbar,
+.admin-calendar-nav::-webkit-scrollbar,
+.admin-calendar-status-row::-webkit-scrollbar {
+  display: none;
+}
+
+.admin-calendar-view-toggle,
+.admin-calendar-nav {
+  width: fit-content;
+  max-width: 100%;
+  padding: 5px;
+  border: 1px solid var(--calendar-line);
+  border-radius: 999px;
+  background: rgba(0, 0, 0, 0.2);
+}
+
+.admin-calendar-view-toggle button,
+.admin-calendar-room-filter button,
+.admin-calendar-nav button {
+  min-height: 40px;
+  flex: 0 0 auto;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 7px;
+  padding: 0 13px;
+  border: 1px solid transparent;
+  border-radius: 999px;
+  background: transparent;
   color: var(--text-soft);
+  font-size: 0.84rem;
+  font-weight: 850;
+}
+
+.admin-calendar-room-filter button {
+  border-color: var(--calendar-line);
+  background: rgba(255, 255, 255, 0.045);
+}
+
+.admin-calendar-view-toggle button:hover,
+.admin-calendar-room-filter button:hover,
+.admin-calendar-nav button:hover {
+  color: #ffffff;
+  background: rgba(255, 255, 255, 0.065);
+}
+
+.admin-calendar-view-toggle button.is-active,
+.admin-calendar-room-filter button.is-active {
+  border-color: rgba(245, 184, 75, 0.38);
+  background:
+    linear-gradient(135deg, rgba(245, 184, 75, 0.24), rgba(245, 184, 75, 0.09));
+  color: var(--accent-strong);
+  box-shadow: 0 0 0 3px rgba(245, 184, 75, 0.08);
+}
+
+/* Legend */
+
+.admin-calendar-status-row {
+  padding: 2px 0 4px;
+}
+
+.admin-calendar-status-row span {
+  min-height: 34px;
+  flex: 0 0 auto;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 0 11px;
+  border: 1px solid var(--calendar-line);
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.042);
+  color: var(--text-muted);
+  font-size: 0.78rem;
+  font-weight: 850;
+}
+
+.status-dot {
+  width: 9px;
+  height: 9px;
+  flex: 0 0 9px;
+  border-radius: 999px;
+}
+
+.status-dot.status-available {
+  background: #72ff9d;
+  box-shadow: 0 0 14px rgba(114, 255, 157, 0.35);
+}
+
+.status-dot.status-pending {
+  background: #ffcf70;
+  box-shadow: 0 0 14px rgba(255, 207, 112, 0.35);
+}
+
+.status-dot.status-booked {
+  background: #ff6b6b;
+  box-shadow: 0 0 14px rgba(255, 107, 107, 0.35);
+}
+
+.status-dot.status-maintenance {
+  background: #8aa0ff;
+  box-shadow: 0 0 14px rgba(138, 160, 255, 0.35);
+}
+
+/* Timetable Grid */
+
+.admin-time-calendar-scroll {
+  overflow: auto;
+  max-width: 100%;
+  padding-bottom: 8px;
+  scrollbar-width: thin;
+  scrollbar-color: rgba(245, 184, 75, 0.42) rgba(255, 255, 255, 0.05);
+}
+
+.admin-time-calendar-scroll::-webkit-scrollbar {
+  height: 10px;
+  width: 10px;
+}
+
+.admin-time-calendar-scroll::-webkit-scrollbar-track {
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.045);
+}
+
+.admin-time-calendar-scroll::-webkit-scrollbar-thumb {
+  border-radius: 999px;
+  background: rgba(245, 184, 75, 0.42);
+}
+
+.admin-time-calendar-grid {
+  min-width: 860px;
+  display: grid;
+  gap: 8px;
+}
+
+.admin-time-calendar-scroll.view-day .admin-time-calendar-grid {
+  min-width: 420px;
+}
+
+.admin-time-calendar-scroll.view-week .admin-time-calendar-grid {
+  min-width: 980px;
+}
+
+.admin-time-calendar-scroll.view-month .admin-time-calendar-grid {
+  min-width: 3600px;
+}
+
+.admin-time-row {
+  display: contents;
+}
+
+.admin-time-corner,
+.admin-time-day-head,
+.admin-time-hour-cell,
+.admin-time-slot-cell {
+  border: 1px solid var(--calendar-line);
+  border-radius: var(--calendar-cell-radius);
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.052), rgba(255, 255, 255, 0.024)),
+    rgba(0, 0, 0, 0.16);
+}
+
+.admin-time-corner,
+.admin-time-hour-cell {
+  position: sticky;
+  left: 0;
+  z-index: 8;
+  display: grid;
+  place-items: center;
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.06), rgba(255, 255, 255, 0.028)),
+    #101010;
+}
+
+.admin-time-corner {
+  min-height: 74px;
+  top: 0;
+  z-index: 12;
+  color: var(--accent);
+  font-size: 0.75rem;
+  font-weight: 950;
+  letter-spacing: 0.11em;
+  text-transform: uppercase;
+}
+
+.admin-time-hour-cell {
+  min-height: 72px;
+  color: var(--text-muted);
+  font-size: 0.82rem;
+  font-weight: 950;
+}
+
+.admin-time-day-head {
+  position: sticky;
+  top: 0;
+  z-index: 10;
+  min-height: 74px;
+  display: grid;
+  align-content: center;
+  gap: 4px;
+  padding: 12px;
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.075), rgba(255, 255, 255, 0.032)),
+    #101010;
+}
+
+.admin-time-day-head strong {
+  color: var(--text-main);
+  font-size: 0.96rem;
+}
+
+.admin-time-day-head span {
+  color: var(--text-muted);
+  font-size: 0.78rem;
+  font-weight: 780;
+}
+
+.admin-time-day-head.is-today {
+  border-color: rgba(245, 184, 75, 0.45);
+  background:
+    radial-gradient(circle at top right, rgba(245, 184, 75, 0.18), transparent 42%),
+    #101010;
+  box-shadow: 0 0 0 3px rgba(245, 184, 75, 0.07);
+}
+
+.admin-time-slot-cell {
+  position: relative;
+  min-height: 72px;
+  display: grid;
+  align-content: center;
+  gap: 4px;
+  padding: 10px 11px 10px 15px;
+  color: var(--text-main);
+  text-align: left;
+  overflow: hidden;
+  cursor: pointer;
+  transition:
+    border-color 150ms ease,
+    background 150ms ease,
+    transform 150ms ease;
+}
+
+.admin-time-slot-cell:hover {
+  transform: translateY(-1px);
+  border-color: rgba(245, 184, 75, 0.26);
+  background:
+    linear-gradient(180deg, rgba(245, 184, 75, 0.08), rgba(255, 255, 255, 0.026)),
+    rgba(0, 0, 0, 0.16);
+}
+
+.admin-time-slot-cell::before,
+.admin-time-event-pill::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 11px;
+  bottom: 11px;
+  width: 3px;
+  border-radius: 999px;
+}
+
+.admin-time-slot-cell.status-available {
+  border-color: rgba(114, 255, 157, 0.22);
+  background:
+    linear-gradient(180deg, rgba(114, 255, 157, 0.07), rgba(255, 255, 255, 0.022)),
+    rgba(0, 0, 0, 0.14);
+}
+
+.admin-time-slot-cell.status-available::before,
+.admin-time-event-pill.status-available::before {
+  background: #72ff9d;
+}
+
+.admin-time-slot-cell.status-available strong {
+  color: rgba(114, 255, 157, 0.92);
+  font-size: 0.82rem;
+}
+
+.admin-time-slot-cell.status-available span {
+  color: var(--text-muted);
+  font-size: 0.72rem;
+  font-weight: 760;
+}
+
+.admin-time-slot-cell.has-event {
+  align-content: start;
+}
+
+.admin-time-event-pill {
+  position: relative;
+  display: grid;
+  gap: 2px;
+  min-height: 42px;
+  padding: 7px 8px 7px 12px;
+  border: 1px solid var(--calendar-line);
+  border-radius: 13px;
+  background: rgba(255, 255, 255, 0.052);
+  overflow: hidden;
+}
+
+.admin-time-event-pill strong {
+  color: var(--text-main);
+  font-size: 0.76rem;
+  line-height: 1.15;
+  letter-spacing: -0.02em;
+}
+
+.admin-time-event-pill small {
+  color: var(--text-muted);
+  font-size: 0.68rem;
+  font-weight: 760;
+}
+
+.admin-time-event-pill.status-pending {
+  border-color: rgba(255, 207, 112, 0.25);
+  background: rgba(255, 207, 112, 0.085);
+}
+
+.admin-time-event-pill.status-pending::before {
+  background: #ffcf70;
+}
+
+.admin-time-event-pill.status-booked {
+  border-color: rgba(255, 107, 107, 0.25);
+  background: rgba(255, 107, 107, 0.085);
+}
+
+.admin-time-event-pill.status-booked::before {
+  background: #ff6b6b;
+}
+
+.admin-time-event-pill.status-maintenance {
+  border-color: rgba(138, 160, 255, 0.25);
+  background: rgba(138, 160, 255, 0.085);
+}
+
+.admin-time-event-pill.status-maintenance::before {
+  background: #8aa0ff;
+}
+
+.admin-time-slot-cell em {
+  color: var(--accent);
+  font-size: 0.7rem;
+  font-style: normal;
+  font-weight: 900;
+}
+
+/* Responsive */
+
+@media (min-width: 860px) {
+  .admin-calendar-grid-shell {
+    padding: 22px;
+  }
+
+  .admin-calendar-grid-toolbar {
+    grid-template-columns: minmax(0, 1fr) auto;
+    align-items: start;
+  }
+
+  .admin-calendar-toolbar-actions {
+    justify-items: end;
+  }
+}
+
+@media (max-width: 720px) {
+  .admin-calendar-view-toggle,
+  .admin-calendar-nav {
+    width: 100%;
+  }
+
+  .admin-calendar-view-toggle button {
+    flex: 1 0 auto;
+  }
+
+  .admin-time-calendar-scroll.view-day .admin-time-calendar-grid {
+    min-width: 360px;
+  }
+
+  .admin-time-calendar-scroll.view-week .admin-time-calendar-grid {
+    min-width: 940px;
+  }
+}
+
+@media (max-width: 420px) {
+  .admin-calendar-grid-shell {
+    padding: 14px;
+    border-radius: 28px;
+  }
+
+  .admin-calendar-grid-toolbar h2 {
+    font-size: 1.55rem;
+  }
+
+  .admin-calendar-grid-toolbar span {
+    font-size: 0.84rem;
+  }
+
+  .admin-calendar-view-toggle button,
+  .admin-calendar-room-filter button,
+  .admin-calendar-nav button {
+    min-height: 40px;
+    font-size: 0.8rem;
+  }
+
+  .admin-time-corner,
+  .admin-time-day-head {
+    min-height: 68px;
+  }
+
+  .admin-time-hour-cell,
+  .admin-time-slot-cell {
+    min-height: 66px;
+  }
+}
+
+/* ================================
+   Compact Timetable Grid Override
+   Empty slots are clean and dense
+================================ */
+
+.admin-time-calendar-grid {
+  gap: 4px;
+}
+
+.admin-time-calendar-scroll.view-day .admin-time-calendar-grid {
+  min-width: 340px;
+}
+
+.admin-time-calendar-scroll.view-week .admin-time-calendar-grid {
+  min-width: 880px;
+}
+
+.admin-time-calendar-scroll.view-month .admin-time-calendar-grid {
+  min-width: 3000px;
+}
+
+.admin-time-corner,
+.admin-time-day-head {
+  min-height: 58px;
+  border-radius: 14px;
+}
+
+.admin-time-hour-cell,
+.admin-time-slot-cell {
+  min-height: 42px;
+  border-radius: 12px;
+}
+
+.admin-time-hour-cell {
+  font-size: 0.76rem;
+}
+
+.admin-time-day-head {
+  padding: 8px 10px;
+}
+
+.admin-time-day-head strong {
+  font-size: 0.82rem;
+}
+
+.admin-time-day-head span {
+  font-size: 0.7rem;
+}
+
+.admin-time-slot-cell {
+  padding: 5px;
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.035), rgba(255, 255, 255, 0.018)),
+    rgba(0, 0, 0, 0.12);
+}
+
+.admin-time-slot-cell.is-empty {
+  border-color: rgba(255, 255, 255, 0.075);
+  background: rgba(255, 255, 255, 0.018);
+}
+
+.admin-time-slot-cell.is-empty::before {
+  display: none;
+}
+
+.admin-time-slot-cell.is-empty:hover {
+  border-color: rgba(245, 184, 75, 0.28);
+  background: rgba(245, 184, 75, 0.055);
+  transform: none;
+}
+
+.admin-time-event-pill {
+  min-height: 32px;
+  padding: 5px 7px 5px 10px;
+  border-radius: 10px;
+}
+
+.admin-time-event-pill::before {
+  top: 7px;
+  bottom: 7px;
+}
+
+.admin-time-event-pill strong {
+  font-size: 0.68rem;
+}
+
+.admin-time-event-pill small {
+  font-size: 0.62rem;
+}
+
+.admin-time-slot-cell em {
+  font-size: 0.64rem;
+}
+
+@media (min-width: 1180px) {
+  .admin-time-calendar-grid {
+    gap: 5px;
+  }
+
+  .admin-time-hour-cell,
+  .admin-time-slot-cell {
+    min-height: 46px;
+  }
+}
+
+@media (max-width: 720px) {
+  .admin-time-calendar-scroll.view-week .admin-time-calendar-grid {
+    min-width: 820px;
+  }
+
+  .admin-time-calendar-scroll.view-day .admin-time-calendar-grid {
+    min-width: 320px;
+  }
+}
+
+@media (max-width: 420px) {
+  .admin-time-corner,
+  .admin-time-day-head {
+    min-height: 54px;
+  }
+
+  .admin-time-hour-cell,
+  .admin-time-slot-cell {
+    min-height: 40px;
+  }
 }
