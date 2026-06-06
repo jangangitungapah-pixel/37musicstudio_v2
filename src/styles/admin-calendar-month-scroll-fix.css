@@ -1,0 +1,65 @@
+/* ================================
+   Calendar Month Scroll Fix
+   Allows month view to scroll fully to last day
+================================ */
+
+.admin-time-calendar-scroll.view-month {
+  overflow-x: auto !important;
+  overflow-y: auto !important;
+  overscroll-behavior-x: contain;
+  scroll-padding-inline: 12px 48px;
+}
+
+.admin-time-calendar-scroll.view-month .admin-time-calendar-grid {
+  max-width: none !important;
+  width: max-content !important;
+  min-width: max-content !important;
+}
+
+/* Month view tighter cells */
+.admin-time-calendar-scroll.view-month .admin-time-corner,
+.admin-time-calendar-scroll.view-month .admin-time-hour-cell {
+  min-width: 76px !important;
+}
+
+.admin-time-calendar-scroll.view-month .admin-time-day-head,
+.admin-time-calendar-scroll.view-month .admin-time-slot-cell {
+  min-width: 104px !important;
+}
+
+.admin-time-calendar-scroll.view-month .admin-time-day-head {
+  padding-inline: 7px !important;
+}
+
+.admin-time-calendar-scroll.view-month .admin-time-day-head strong {
+  font-size: 0.72rem !important;
+}
+
+.admin-time-calendar-scroll.view-month .admin-time-day-head span {
+  font-size: 0.6rem !important;
+}
+
+.admin-time-calendar-scroll.view-month .admin-time-event-pill strong {
+  font-size: 0.68rem !important;
+}
+
+.admin-time-calendar-scroll.view-month .admin-time-event-pill small {
+  font-size: 0.58rem !important;
+}
+
+/* Right breathing room so last date is not clipped */
+.admin-time-calendar-scroll.view-month {
+  padding-right: 0 !important;
+}
+
+@media (max-width: 640px) {
+  .admin-time-calendar-scroll.view-month .admin-time-corner,
+  .admin-time-calendar-scroll.view-month .admin-time-hour-cell {
+    min-width: 72px !important;
+  }
+
+  .admin-time-calendar-scroll.view-month .admin-time-day-head,
+  .admin-time-calendar-scroll.view-month .admin-time-slot-cell {
+    min-width: 104px !important;
+  }
+}

@@ -306,3 +306,99 @@
     min-width: 760px !important;
   }
 }
+
+
+/* ================================
+   Booking Block Client Name
+================================ */
+
+.admin-time-event-pill .admin-event-client-name {
+  display: block;
+  max-width: 100%;
+  color: #fffaf2 !important;
+  font-size: 0.82rem !important;
+  font-weight: 920 !important;
+  line-height: 1.12 !important;
+  letter-spacing: -0.04em !important;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.admin-time-event-pill .admin-event-meta {
+  display: block;
+  max-width: 100%;
+  color: rgba(255, 250, 242, 0.58) !important;
+  font-size: 0.63rem !important;
+  font-weight: 720 !important;
+  line-height: 1.15 !important;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.admin-time-calendar-scroll.view-month .admin-time-event-pill .admin-event-client-name {
+  font-size: 0.68rem !important;
+}
+
+.admin-time-calendar-scroll.view-month .admin-time-event-pill .admin-event-meta {
+  font-size: 0.56rem !important;
+}
+
+@media (max-width: 640px) {
+  .admin-time-event-pill .admin-event-client-name {
+    font-size: 0.7rem !important;
+  }
+
+  .admin-time-event-pill .admin-event-meta {
+    font-size: 0.58rem !important;
+  }
+}
+
+
+/* ================================
+   Force Client Name Calendar Block
+================================ */
+
+.admin-time-event-pill .admin-event-client-name {
+  display: block !important;
+  max-width: 100% !important;
+  overflow: hidden !important;
+  color: #fffaf2 !important;
+  font-size: 0.82rem !important;
+  font-weight: 950 !important;
+  line-height: 1.12 !important;
+  letter-spacing: -0.045em !important;
+  text-overflow: ellipsis !important;
+  white-space: nowrap !important;
+}
+
+.admin-time-event-pill .admin-event-meta {
+  display: block !important;
+  max-width: 100% !important;
+  overflow: hidden !important;
+  color: rgba(255, 250, 242, 0.6) !important;
+  font-size: 0.62rem !important;
+  font-weight: 730 !important;
+  line-height: 1.15 !important;
+  text-overflow: ellipsis !important;
+  white-space: nowrap !important;
+}
+
+.admin-time-calendar-scroll.view-month .admin-time-event-pill .admin-event-client-name {
+  font-size: 0.68rem !important;
+}
+
+.admin-time-calendar-scroll.view-month .admin-time-event-pill .admin-event-meta {
+  font-size: 0.55rem !important;
+}
+
+@media (max-width: 640px) {
+  .admin-time-event-pill .admin-event-client-name {
+    font-size: 0.7rem !important;
+  }
+
+  .admin-time-event-pill .admin-event-meta {
+    font-size: 0.56rem !important;
+  }
+}

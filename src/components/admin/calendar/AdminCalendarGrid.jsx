@@ -288,6 +288,50 @@ function getPaymentShortLabel(paymentStatus) {
   return map[paymentStatus] || "Unpaid";
 }
 
+function getEventClientTitle(event) {
+  const clientName =
+    event?.customerName ||
+    event?.clientName ||
+    event?.customer?.name ||
+    "";
+
+  if (String(clientName).trim()) {
+    return String(clientName).trim();
+  }
+
+  return event?.label || event?.packageName || getStatusLabel(event?.status);
+}
+
+function getEventBlockMeta(event) {
+  const packageName = event?.packageName || event?.label || getStatusLabel(event?.status);
+  const roomName = event?.room || "-";
+
+  if (packageName && roomName) {
+    return `${packageName} / ${roomName}`;
+  }
+
+  return packageName || roomName;
+}
+
+function getEventPrimaryTitle(event) {
+  if ((event.type === "booking" || !event.type) && event.customerName) {
+    return event.customerName;
+  }
+
+  return event.label || event.packageName || getStatusLabel(event.status);
+}
+
+function getEventSecondaryTitle(event) {
+  const packageName = event.packageName || event.label || getStatusLabel(event.status);
+  const roomName = event.room || "-";
+
+  if (event.type === "booking" || !event.type) {
+    return packageName ? `${packageName} · ${roomName}` : roomName;
+  }
+
+  return roomName;
+}
+
 function getEventsForCell(events, { date, hour, room }) {
   return events.filter((event) => {
     const matchDate = event.date === date;
@@ -425,10 +469,24 @@ export default function AdminCalendarGrid() {
 
 
   const gridColumnStyle = useMemo(() => {
+    const hourColumnWidth = viewMode === "month" ? 76 : 92;
+    const dayColumnWidth = viewMode === "month" ? 104 : 132;
+    const monthRightSpace = 48;
+    const monthGridWidth = hourColumnWidth + columns.length * dayColumnWidth + monthRightSpace;
+
+    if (viewMode === "month") {
+      return {
+        gridTemplateColumns: `${hourColumnWidth}px repeat(${columns.length}, ${dayColumnWidth}px)`,
+        width: `${monthGridWidth}px`,
+        minWidth: `${monthGridWidth}px`,
+      };
+    }
+
     return {
-      gridTemplateColumns: `92px repeat(${columns.length}, minmax(132px, 1fr))`,
+      gridTemplateColumns: `${hourColumnWidth}px repeat(${columns.length}, minmax(${dayColumnWidth}px, 1fr))`,
+      minWidth: "100%",
     };
-  }, [columns.length]);
+  }, [columns.length, viewMode]);
 
   const goPrevious = () => {
     if (viewMode === "day") {
@@ -1295,8 +1353,8 @@ export default function AdminCalendarGrid() {
                   >
                     {slotEvents.slice(0, 2).map((event) => (
                       <span className={`admin-time-event-pill status-${event.status} payment-${event.paymentStatus || "unpaid"}`} key={event.id}>
-                        <strong>{event.label || getStatusLabel(event.status)}</strong>
-                        <small>{event.room}</small>
+                        <strong className="admin-event-client-name">{getEventClientTitle(event)}</strong>
+                        <small className="admin-event-meta">{getEventBlockMeta(event)}</small>
                         <span className={`admin-event-payment-chip payment-${event.paymentStatus || "unpaid"}`}>
                           {getPaymentShortLabel(event.paymentStatus)}
                         </span>
