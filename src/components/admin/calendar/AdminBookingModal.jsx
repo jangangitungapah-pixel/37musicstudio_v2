@@ -1,14 +1,16 @@
-import { useEffect, useMemo, useState } from "react";
+﻿import { useEffect, useMemo, useState } from "react";
 import { Trash2, X } from "lucide-react";
 
 import { publicCalendarRooms } from "../../../data/publicCalendar.js";
 import { getPriceSettings } from "../../../utils/priceSettingsStorage.js";
 import AdminSelect from "../common/AdminSelect.jsx";
 import {
-  getBookingChangeImpact,
+  formatCurrency as formatFinanceCurrency,
+  getBookingFinanceImpact,
+  getPaymentLabel,
+  getResolvedBookingPrice,
   getSuggestedPaymentStatus,
-} from "../../../utils/bookingChangeEngine.js";
-
+} from "../../../utils/bookingFinanceEngine.js";
 const scheduleTypes = [
   { value: "booking", label: "Booking Customer" },
   { value: "maintenance", label: "Maintenance" },
@@ -129,7 +131,7 @@ function buildPriceOptions(priceSettings) {
       price: Number(item.price || 0),
       sessionCategory: "Latihan Band",
       packageName: item.name,
-      description: `${item.durationHours} jam · ${formatCurrency(item.price)}`,
+      description: `${item.durationHours} jam Â· ${formatCurrency(item.price)}`,
     }));
 
   const recordingSessions = (priceSettings.recordingSessions || [])
@@ -144,24 +146,13 @@ function buildPriceOptions(priceSettings) {
       price: Number(item.price || 0),
       sessionCategory: "Recording",
       packageName: item.name,
-      description: `${item.durationHours} jam · ${formatCurrency(item.price)}`,
+      description: `${item.durationHours} jam Â· ${formatCurrency(item.price)}`,
     }));
 
   return [
     ...baseRoomPrices,
     ...packages,
     ...recordingSessions,
-    {
-      id: "custom",
-      kind: "custom",
-      label: "Custom Price",
-      roomName: "",
-      durationHours: null,
-      price: 0,
-      sessionCategory: "Other",
-      packageName: "Custom Price",
-      description: "Isi harga manual",
-    },
   ];
 }
 
@@ -178,13 +169,8 @@ function inferPriceOptionId(event, defaultRoom) {
     return `package-${event.selectedPackageId}`;
   }
 
-  if (event?.packageName === "Custom Price") {
-    return "custom";
-  }
-
   return `base-${event?.room || defaultRoom || publicCalendarRooms[0]}`;
 }
-
 
 function getEventRangeFromModalPayload(payload) {
   const startHour = getTimeNumber(payload.startTime);
@@ -242,7 +228,7 @@ export default function AdminBookingModal({
   initialEvent = null,
   mode = "create",
   onClose,
-  onSave,  onDelete,
+  onSave, onDelete,
   calendarEvents = [],
 }) {
   const isEditMode = mode === "edit";
@@ -325,6 +311,15 @@ export default function AdminBookingModal({
     return priceOptions.find((item) => item.id === form.priceOptionId) || priceOptions.at(-1);
   }, [form.priceOptionId, priceOptions]);
 
+  const resolvedBookingPrice = useMemo(() => {
+    return getResolvedBookingPrice(selectedPriceOption, form);
+  }, [
+    selectedPriceOption,
+    form.startTime,
+    form.endTime,
+    form.room,
+  ]);
+
   const bookingConflict = useMemo(() => {
     return getBookingConflict(calendarEvents, form, initialEvent?.id);
   }, [
@@ -336,20 +331,23 @@ export default function AdminBookingModal({
     initialEvent?.id,
   ]);
 
-
-  const bookingImpact = useMemo(() => {
-    return getBookingChangeImpact({
+  const effectivePaymentStatus = useMemo(() => {
+    return getSuggestedPaymentStatus({
+      price: resolvedBookingPrice,
+      deposit: form.deposit,
+    });
+  }, [resolvedBookingPrice, form.deposit]);
+  const bookingFinanceImpact = useMemo(() => {
+    return getBookingFinanceImpact({
       originalEvent: initialEvent,
       nextBooking: {
         ...form,
-        price: Number(cleanMoney(form.price) || 0),
-        deposit: Number(cleanMoney(form.deposit) || 0),
+        price: resolvedBookingPrice,
+        paymentStatus: effectivePaymentStatus,
       },
+      resolvedPrice: resolvedBookingPrice,
     });
-  }, [initialEvent, form]);
-
-
-
+  }, [initialEvent, form, resolvedBookingPrice, effectivePaymentStatus]);
   function calculateBasePrice(option, currentForm) {
     const durationHours = Math.max(
       Number(option.minimumHours || 1),
@@ -544,7 +542,6 @@ export default function AdminBookingModal({
       peopleCount: Number(form.peopleCount || 0),
       label,
       publicLabel: form.type === "booking" ? "Booked" : label,
-      changeImpact: bookingImpact,
     });
   };
 
@@ -561,12 +558,12 @@ export default function AdminBookingModal({
   };
 
   async function handleCopyCustomerMessage() {
-    if (!bookingImpact?.customerMessage) {
+    if (!bookingFinanceImpact?.customerMessage) {
       return;
     }
 
     try {
-      await navigator.clipboard.writeText(bookingImpact.customerMessage);
+      await navigator.clipboard.writeText(bookingFinanceImpact.customerMessage);
       alert("Pesan customer sudah disalin.");
     } catch {
       alert("Gagal copy pesan. Silakan copy manual.");
@@ -591,7 +588,7 @@ export default function AdminBookingModal({
             </span>
             <h2>{isEditMode ? "Edit Jadwal" : "Tambah Jadwal"}</h2>
             <p>
-              {form.date} · {form.startTime} - {form.endTime}
+              {form.date} Â· {form.startTime} - {form.endTime}
             </p>
           </div>
 
@@ -670,7 +667,7 @@ export default function AdminBookingModal({
               <strong>Jadwal bentrok</strong>
               <span>
                 {bookingConflict.label || bookingConflict.packageName || bookingConflict.customerName || "Booking lain"}
-                {" "}· {bookingConflict.time} · {bookingConflict.room}
+                {" "}Â· {bookingConflict.time} Â· {bookingConflict.room}
               </span>
             </div>
           )}
@@ -731,18 +728,16 @@ export default function AdminBookingModal({
                     }))}
                   />
 
-                  <label>
-                    <span>Harga</span>
-                    <input
-                      inputMode="numeric"
-                      value={form.price}
-                      placeholder="Contoh: 75000"
-                      onChange={(event) => updateField("price", event.target.value)}
-                    />
-                  </label>
+                  <div className="admin-booking-price-summary admin-booking-auto-price-card">
+                    <span>Harga Otomatis</span>
+                    <strong>{formatFinanceCurrency(resolvedBookingPrice)}</strong>
+                    <small>
+                      {selectedPriceOption?.label || "Paket dari Settings"} Â· {durationHours} jam Â· {form.room}
+                    </small>
+                  </div>
 
                   <label>
-                    <span>DP</span>
+                    <span>Sudah Dibayar / DP</span>
                     <input
                       inputMode="numeric"
                       value={form.deposit}
@@ -751,23 +746,54 @@ export default function AdminBookingModal({
                     />
                   </label>
 
-                  <AdminSelect
-                    label="Status Pembayaran"
-                    value={form.paymentStatus}
-                    onChange={(nextValue) => updateField("paymentStatus", nextValue)}
-                    options={paymentStatuses.map((item) => ({
-                      value: item.value,
-                      label: item.label,
-                    }))}
-                  />
-
-                  <div className="admin-booking-price-summary">
-                    <span>Pricing Preview</span>
-                    <strong>{formatCurrency(form.price)}</strong>
-                    <small>
-                      {selectedPriceOption?.label || "Custom Price"} · {durationHours} jam · {form.room}
-                    </small>
+                  <div className="admin-booking-payment-status-card">
+                    <span>Status Pembayaran</span>
+                    <strong>{getPaymentLabel(effectivePaymentStatus)}</strong>
+                    <small>Status dihitung otomatis dari pembayaran.</small>
                   </div>
+
+                  {bookingFinanceImpact && (
+                    <div className={`admin-booking-adjustment-card tone-${bookingFinanceImpact.tone}`}>
+                      <div className="admin-booking-adjustment-head">
+                        <span>Smart Adjustment</span>
+                        <strong>{bookingFinanceImpact.title}</strong>
+                        <small>{bookingFinanceImpact.action}</small>
+                      </div>
+
+                      <div className="admin-booking-adjustment-grid">
+                        <div>
+                          <span>Total</span>
+                          <strong>{formatFinanceCurrency(bookingFinanceImpact.newPrice)}</strong>
+                        </div>
+
+                        <div>
+                          <span>Dibayar</span>
+                          <strong>{formatFinanceCurrency(bookingFinanceImpact.paidAmount)}</strong>
+                        </div>
+
+                        <div>
+                          <span>Sisa</span>
+                          <strong>{formatFinanceCurrency(bookingFinanceImpact.remainingAmount)}</strong>
+                        </div>
+
+                        <div>
+                          <span>Kelebihan</span>
+                          <strong>{formatFinanceCurrency(bookingFinanceImpact.overpaidAmount)}</strong>
+                        </div>
+                      </div>
+
+                      <div className="admin-booking-customer-message">
+                        <div>
+                          <span>Pesan Customer</span>
+                          <button type="button" onClick={handleCopyCustomerMessage}>
+                            Copy
+                          </button>
+                        </div>
+
+                        <textarea readOnly rows="7" value={bookingFinanceImpact.customerMessage} />
+                      </div>
+                    </div>
+                  )}
                 </div>
               </div>
             </>
