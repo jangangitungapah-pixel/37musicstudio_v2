@@ -430,6 +430,7 @@
 }
 
 @media (max-width: 720px) {
+
   .admin-calendar-view-toggle,
   .admin-calendar-nav {
     width: 100%;
@@ -596,6 +597,7 @@
 }
 
 @media (max-width: 420px) {
+
   .admin-time-corner,
   .admin-time-day-head {
     min-height: 54px;
@@ -759,6 +761,7 @@
 }
 
 @media (max-width: 720px) {
+
   .admin-time-corner,
   .admin-time-day-head {
     min-height: 48px;
@@ -775,6 +778,7 @@
 }
 
 @media (max-width: 420px) {
+
   .admin-time-corner,
   .admin-time-day-head {
     min-height: 44px;
@@ -1074,6 +1078,7 @@
 .admin-time-slot-cell.has-event:hover {
   background: rgba(245, 184, 75, 0.08) !important;
 }
+
 /* ================================
    Calendar event row span
 ================================ */
@@ -1096,6 +1101,7 @@
 .admin-time-slot-cell.has-event:hover {
   background: rgba(245, 184, 75, 0.08) !important;
 }
+
 /* ================================
    Multi-hour event visual block fix
    Make booked block fill full span height
@@ -1156,4 +1162,243 @@
   font-size: 0.64rem;
   line-height: 1.1;
   opacity: 0.82;
+}
+
+/* ================================
+   Booking modal price summary
+================================ */
+
+.admin-booking-price-summary {
+  grid-column: 1 / -1;
+  display: grid;
+  gap: 6px;
+  padding: 14px;
+  border: 1px solid rgba(245, 184, 75, 0.22);
+  border-radius: 18px;
+  background:
+    radial-gradient(circle at top right, rgba(245, 184, 75, 0.12), transparent 42%),
+    rgba(245, 184, 75, 0.055);
+}
+
+.admin-booking-price-summary span {
+  color: var(--accent);
+  font-size: 0.72rem;
+  font-weight: 950;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.admin-booking-price-summary strong {
+  color: var(--text-main);
+  font-size: 1.35rem;
+  line-height: 1;
+  letter-spacing: -0.05em;
+}
+
+.admin-booking-price-summary small {
+  color: var(--text-muted);
+  font-size: 0.8rem;
+  font-weight: 760;
+}
+
+/* ================================
+   Booking Detail Modal
+================================ */
+
+.admin-booking-detail-modal {
+  width: min(100%, 760px);
+  max-height: min(90svh, 820px);
+  display: grid;
+  grid-template-rows: auto 1fr auto;
+  border: 1px solid var(--border-soft);
+  border-radius: 28px;
+  background:
+    radial-gradient(circle at top right, rgba(245, 184, 75, 0.13), transparent 34%),
+    #101010;
+  box-shadow: 0 28px 100px rgba(0, 0, 0, 0.62);
+  overflow: hidden;
+}
+
+.admin-booking-detail-header {
+  min-height: 100px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 20px;
+  border-bottom: 1px solid var(--border-soft);
+  background: rgba(255, 255, 255, 0.035);
+}
+
+.admin-booking-detail-header h2 {
+  margin: 8px 0 0;
+  font-size: clamp(1.45rem, 5vw, 2.3rem);
+  line-height: 1;
+  letter-spacing: -0.06em;
+}
+
+.admin-booking-detail-header p {
+  margin: 7px 0 0;
+  color: var(--text-muted);
+  font-size: 0.9rem;
+}
+
+.admin-booking-detail-header button {
+  width: 42px;
+  height: 42px;
+  flex: 0 0 auto;
+  display: grid;
+  place-items: center;
+  border: 1px solid var(--border-soft);
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.055);
+  color: var(--text-main);
+}
+
+.admin-booking-detail-status {
+  width: fit-content;
+  display: inline-flex;
+  padding: 6px 9px;
+  border-radius: 999px;
+  background: rgba(245, 184, 75, 0.1);
+  color: var(--accent);
+  font-size: 0.68rem;
+  font-weight: 950;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.admin-booking-detail-status.status-booked {
+  background: rgba(255, 107, 107, 0.12);
+  color: #ff9c9c;
+}
+
+.admin-booking-detail-status.status-pending {
+  background: rgba(255, 207, 112, 0.12);
+  color: #ffcf70;
+}
+
+.admin-booking-detail-status.status-maintenance {
+  background: rgba(138, 160, 255, 0.12);
+  color: #9eadff;
+}
+
+.admin-booking-detail-body {
+  display: grid;
+  gap: 14px;
+  padding: 18px;
+  overflow: auto;
+}
+
+.admin-booking-detail-summary {
+  display: grid;
+  gap: 10px;
+}
+
+.admin-booking-detail-summary div,
+.admin-booking-detail-section,
+.admin-booking-detail-notes div {
+  border: 1px solid var(--border-soft);
+  border-radius: 20px;
+  background: rgba(255, 255, 255, 0.035);
+}
+
+.admin-booking-detail-summary div {
+  display: grid;
+  gap: 6px;
+  padding: 15px;
+}
+
+.admin-booking-detail-summary span,
+.admin-booking-detail-grid span,
+.admin-booking-detail-notes span {
+  color: var(--text-muted);
+  font-size: 0.72rem;
+  font-weight: 900;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.admin-booking-detail-summary strong,
+.admin-booking-detail-grid strong,
+.admin-booking-detail-notes strong {
+  color: var(--text-main);
+  font-size: 0.94rem;
+  line-height: 1.25;
+}
+
+.admin-booking-detail-section {
+  display: grid;
+  gap: 12px;
+  padding: 15px;
+}
+
+.admin-booking-detail-section>p {
+  margin: 0;
+  color: var(--accent);
+  font-size: 0.74rem;
+  font-weight: 950;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+
+.admin-booking-detail-grid {
+  display: grid;
+  gap: 10px;
+}
+
+.admin-booking-detail-grid div {
+  display: grid;
+  gap: 6px;
+  padding: 13px;
+  border-radius: 16px;
+  background: rgba(0, 0, 0, 0.14);
+}
+
+.admin-booking-detail-notes {
+  display: grid;
+  gap: 10px;
+}
+
+.admin-booking-detail-notes div {
+  display: grid;
+  gap: 7px;
+  padding: 13px;
+}
+
+.admin-booking-detail-actions {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+  padding: 14px 18px 18px;
+  border-top: 1px solid var(--border-soft);
+  background: #101010;
+}
+
+.admin-booking-detail-actions .admin-modal-submit {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+}
+
+@media (min-width: 680px) {
+  .admin-booking-detail-summary {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
+
+  .admin-booking-detail-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 520px) {
+  .admin-booking-detail-modal {
+    max-height: 92svh;
+    border-radius: 24px;
+  }
+
+  .admin-booking-detail-actions {
+    grid-template-columns: 1fr;
+  }
 }

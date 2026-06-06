@@ -18,21 +18,6 @@ const statusByType = {
   block: [{ value: "blocked", label: "Blocked" }],
 };
 
-const sessionCategories = [
-  "Latihan Band",
-  "Recording",
-  "Podcast / Content",
-  "Vocal Take",
-  "Other",
-];
-
-const fallbackPackageOptions = [
-  "Regular Session",
-  "Recording Basic",
-  "Band Package",
-  "Custom",
-];
-
 const paymentStatuses = [
   { value: "unpaid", label: "Belum Bayar" },
   { value: "down_payment", label: "DP" },
@@ -59,8 +44,20 @@ function addHoursLabel(startTime, durationHours) {
   return `${String(endHour).padStart(2, "0")}.00`;
 }
 
+function getDurationHours(startTime, endTime) {
+  return Math.max(1, getTimeNumber(endTime) - getTimeNumber(startTime));
+}
+
 function cleanMoney(value) {
   return String(value || "").replace(/[^\d]/g, "");
+}
+
+function formatCurrency(value) {
+  return new Intl.NumberFormat("id-ID", {
+    style: "currency",
+    currency: "IDR",
+    maximumFractionDigits: 0,
+  }).format(Number(value || 0));
 }
 
 function parseEventTime(time, fallbackStart = "10.00") {
@@ -97,6 +94,91 @@ function inferType(event) {
   return "booking";
 }
 
+function buildPriceOptions(priceSettings) {
+  const baseRoomPrices = (priceSettings.baseRoomPrices || [])
+    .filter((item) => item.isActive)
+    .map((item) => ({
+      id: `base-${item.roomName}`,
+      kind: "base",
+      label: `Regular Hourly - ${item.roomName}`,
+      roomName: item.roomName,
+      durationHours: null,
+      hourlyPrice: Number(item.hourlyPrice || 0),
+      minimumHours: Number(item.minimumHours || 1),
+      price: Number(item.hourlyPrice || 0),
+      sessionCategory: "Latihan Band",
+      packageName: `Regular Hourly - ${item.roomName}`,
+      description: `${formatCurrency(item.hourlyPrice)}/jam`,
+    }));
+
+  const packages = (priceSettings.packages || [])
+    .filter((item) => item.isActive)
+    .map((item) => ({
+      id: `package-${item.id}`,
+      sourceId: item.id,
+      kind: "package",
+      label: item.name,
+      roomName: item.roomName,
+      durationHours: Number(item.durationHours || 1),
+      price: Number(item.price || 0),
+      sessionCategory: "Latihan Band",
+      packageName: item.name,
+      description: `${item.durationHours} jam · ${formatCurrency(item.price)}`,
+    }));
+
+  const recordingSessions = (priceSettings.recordingSessions || [])
+    .filter((item) => item.isActive)
+    .map((item) => ({
+      id: `recording-${item.id}`,
+      sourceId: item.id,
+      kind: "recording",
+      label: item.name,
+      roomName: item.roomName,
+      durationHours: Number(item.durationHours || 1),
+      price: Number(item.price || 0),
+      sessionCategory: "Recording",
+      packageName: item.name,
+      description: `${item.durationHours} jam · ${formatCurrency(item.price)}`,
+    }));
+
+  return [
+    ...baseRoomPrices,
+    ...packages,
+    ...recordingSessions,
+    {
+      id: "custom",
+      kind: "custom",
+      label: "Custom Price",
+      roomName: "",
+      durationHours: null,
+      price: 0,
+      sessionCategory: "Other",
+      packageName: "Custom Price",
+      description: "Isi harga manual",
+    },
+  ];
+}
+
+function inferPriceOptionId(event, defaultRoom) {
+  if (event?.priceOptionId) {
+    return event.priceOptionId;
+  }
+
+  if (event?.selectedRecordingSessionId) {
+    return `recording-${event.selectedRecordingSessionId}`;
+  }
+
+  if (event?.selectedPackageId) {
+    return `package-${event.selectedPackageId}`;
+  }
+
+  if (event?.packageName === "Custom Price") {
+    return "custom";
+  }
+
+  return `base-${event?.room || defaultRoom || publicCalendarRooms[0]}`;
+}
+
 export default function AdminBookingModal({
   slot,
   defaultRoom,
@@ -112,14 +194,17 @@ export default function AdminBookingModal({
 
   const [priceSettings] = useState(() => getPriceSettings());
 
-  const activeRecordingSessions = useMemo(() => {
-    return (priceSettings.recordingSessions || []).filter((item) => item.isActive);
+  const priceOptions = useMemo(() => {
+    return buildPriceOptions(priceSettings);
   }, [priceSettings]);
 
-  const packageOptions = useMemo(() => {
-    const recordingNames = activeRecordingSessions.map((item) => item.name);
-    return Array.from(new Set([...fallbackPackageOptions, ...recordingNames]));
-  }, [activeRecordingSessions]);
+  const roomOptions = useMemo(() => {
+    const priceRooms = priceOptions
+      .map((item) => item.roomName)
+      .filter(Boolean);
+
+    return Array.from(new Set([...publicCalendarRooms, ...priceRooms]));
+  }, [priceOptions]);
 
   const [form, setForm] = useState({
     type: inferredType,
@@ -127,16 +212,22 @@ export default function AdminBookingModal({
     date: initialEvent?.date || slot?.date || "",
     startTime: parsedTime.startTime,
     endTime: parsedTime.endTime,
+    status: initialEvent?.status || "pending",
+
     customerName: initialEvent?.customerName || "",
     customerPhone: initialEvent?.customerPhone || "",
     peopleCount: String(initialEvent?.peopleCount || "4"),
+
+    priceOptionId: inferPriceOptionId(initialEvent, defaultRoom),
     sessionCategory: initialEvent?.sessionCategory || "Latihan Band",
-    packageName: initialEvent?.packageName || "Regular Session",
+    packageName: initialEvent?.packageName || "Regular Hourly",
+    selectedPackageId: initialEvent?.selectedPackageId || "",
     selectedRecordingSessionId: initialEvent?.selectedRecordingSessionId || "",
-    status: initialEvent?.status || "pending",
+
     price: String(initialEvent?.price || ""),
     deposit: String(initialEvent?.deposit || ""),
     paymentStatus: initialEvent?.paymentStatus || "unpaid",
+
     customerNote: initialEvent?.customerNote || "",
     adminNote: initialEvent?.adminNote || "",
   });
@@ -152,30 +243,105 @@ export default function AdminBookingModal({
     return () => window.removeEventListener("keydown", handleKeyDown);
   }, [onClose]);
 
+  useEffect(() => {
+    if (isEditMode) {
+      return;
+    }
+
+    setForm((current) => {
+      const currentOption = priceOptions.find((item) => item.id === current.priceOptionId);
+
+      if (!currentOption || current.price) {
+        return current;
+      }
+
+      return applyPriceOption(currentOption.id, current);
+    });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
   const statusOptions = useMemo(() => {
     return statusByType[form.type] || statusByType.booking;
   }, [form.type]);
 
-  const applyRecordingSession = (sessionId, currentForm) => {
-    const selectedSession = activeRecordingSessions.find((item) => item.id === sessionId);
+  const selectedPriceOption = useMemo(() => {
+    return priceOptions.find((item) => item.id === form.priceOptionId) || priceOptions.at(-1);
+  }, [form.priceOptionId, priceOptions]);
 
-    if (!selectedSession) {
+  function calculateBasePrice(option, currentForm) {
+    const durationHours = Math.max(
+      Number(option.minimumHours || 1),
+      getDurationHours(currentForm.startTime, currentForm.endTime)
+    );
+
+    return Number(option.hourlyPrice || 0) * durationHours;
+  }
+
+  function applyPriceOption(optionId, currentForm) {
+    const option = priceOptions.find((item) => item.id === optionId);
+
+    if (!option) {
+      return currentForm;
+    }
+
+    if (option.kind === "custom") {
       return {
         ...currentForm,
+        priceOptionId: option.id,
+        packageName: "Custom Price",
+        sessionCategory: "Other",
+        selectedPackageId: "",
         selectedRecordingSessionId: "",
       };
     }
 
-    return {
-      ...currentForm,
-      selectedRecordingSessionId: selectedSession.id,
-      sessionCategory: "Recording",
-      packageName: selectedSession.name,
-      room: selectedSession.roomName || currentForm.room,
-      endTime: addHoursLabel(currentForm.startTime, selectedSession.durationHours),
-      price: String(selectedSession.price || ""),
-    };
-  };
+    if (option.kind === "base") {
+      const nextForm = {
+        ...currentForm,
+        priceOptionId: option.id,
+        room: option.roomName || currentForm.room,
+        packageName: option.packageName,
+        sessionCategory: option.sessionCategory,
+        selectedPackageId: "",
+        selectedRecordingSessionId: "",
+      };
+
+      return {
+        ...nextForm,
+        price: String(calculateBasePrice(option, nextForm)),
+      };
+    }
+
+    if (option.kind === "package") {
+      return {
+        ...currentForm,
+        priceOptionId: option.id,
+        room: option.roomName || currentForm.room,
+        endTime: addHoursLabel(currentForm.startTime, option.durationHours),
+        packageName: option.packageName,
+        sessionCategory: option.sessionCategory,
+        selectedPackageId: option.sourceId,
+        selectedRecordingSessionId: "",
+        price: String(option.price || ""),
+      };
+    }
+
+    if (option.kind === "recording") {
+      return {
+        ...currentForm,
+        priceOptionId: option.id,
+        room: option.roomName || currentForm.room,
+        endTime: addHoursLabel(currentForm.startTime, option.durationHours),
+        packageName: option.packageName,
+        sessionCategory: option.sessionCategory,
+        selectedPackageId: "",
+        selectedRecordingSessionId: option.sourceId,
+        price: String(option.price || ""),
+      };
+    }
+
+    return currentForm;
+  }
 
   const updateField = (field, value) => {
     setForm((current) => {
@@ -187,39 +353,69 @@ export default function AdminBookingModal({
       if (field === "type") {
         if (value === "booking") {
           next.status = "pending";
-          next.sessionCategory = "Latihan Band";
-          next.packageName = "Regular Session";
+          next = applyPriceOption(next.priceOptionId, next);
         }
 
         if (value === "maintenance") {
           next.status = "maintenance";
+          next.packageName = "Room Maintenance";
           next.sessionCategory = "Other";
-          next.packageName = "Custom";
-          next.selectedRecordingSessionId = "";
         }
 
         if (value === "block") {
           next.status = "blocked";
+          next.packageName = "Room Blocked";
           next.sessionCategory = "Other";
-          next.packageName = "Custom";
-          next.selectedRecordingSessionId = "";
         }
       }
 
-      if (field === "sessionCategory" && value !== "Recording") {
-        next.selectedRecordingSessionId = "";
+      if (field === "priceOptionId") {
+        next = applyPriceOption(value, next);
+      }
+
+      if (field === "room") {
+        const option = priceOptions.find((item) => item.id === next.priceOptionId);
+
+        if (option?.kind === "base") {
+          const matchingBaseOption = priceOptions.find(
+            (item) => item.kind === "base" && item.roomName === value
+          );
+
+          if (matchingBaseOption) {
+            next = applyPriceOption(matchingBaseOption.id, {
+              ...next,
+              priceOptionId: matchingBaseOption.id,
+            });
+          }
+        }
       }
 
       if (field === "startTime") {
-        if (next.selectedRecordingSessionId) {
-          next = applyRecordingSession(next.selectedRecordingSessionId, next);
-        } else if (getTimeNumber(next.endTime) <= getTimeNumber(value)) {
-          next.endTime = getNextHourLabel(value);
+        const option = priceOptions.find((item) => item.id === next.priceOptionId);
+
+        if (option?.kind === "package" || option?.kind === "recording") {
+          next = applyPriceOption(option.id, next);
+        } else {
+          if (getTimeNumber(next.endTime) <= getTimeNumber(value)) {
+            next.endTime = getNextHourLabel(value);
+          }
+
+          if (option?.kind === "base") {
+            next = applyPriceOption(option.id, next);
+          }
         }
       }
 
-      if (field === "selectedRecordingSessionId") {
-        next = applyRecordingSession(value, next);
+      if (field === "endTime") {
+        const option = priceOptions.find((item) => item.id === next.priceOptionId);
+
+        if (option?.kind === "base") {
+          next = applyPriceOption(option.id, next);
+        }
+      }
+
+      if (field === "price" || field === "deposit") {
+        next[field] = cleanMoney(value);
       }
 
       return next;
@@ -281,6 +477,8 @@ export default function AdminBookingModal({
     }
   };
 
+  const durationHours = getDurationHours(form.startTime, form.endTime);
+
   return (
     <div className="admin-modal-backdrop" role="presentation" onMouseDown={onClose}>
       <section
@@ -297,7 +495,7 @@ export default function AdminBookingModal({
             </span>
             <h2>{isEditMode ? "Edit Jadwal" : "Tambah Jadwal"}</h2>
             <p>
-              {slot?.dayName || "Calendar"} · {form.date} · {form.startTime}
+              {form.date} · {form.startTime} - {form.endTime}
             </p>
           </div>
 
@@ -325,7 +523,7 @@ export default function AdminBookingModal({
               <label>
                 <span>Room</span>
                 <select value={form.room} onChange={(event) => updateField("room", event.target.value)}>
-                  {publicCalendarRooms.map((room) => (
+                  {roomOptions.map((room) => (
                     <option value={room} key={room}>
                       {room}
                     </option>
@@ -415,43 +613,15 @@ export default function AdminBookingModal({
               </div>
 
               <div className="admin-booking-section">
-                <p className="admin-booking-section-title">Booking & Payment</p>
+                <p className="admin-booking-section-title">Paket & Pembayaran</p>
 
                 <div className="admin-booking-grid">
-                  <label>
-                    <span>Kategori Sesi</span>
-                    <select value={form.sessionCategory} onChange={(event) => updateField("sessionCategory", event.target.value)}>
-                      {sessionCategories.map((item) => (
-                        <option value={item} key={item}>
-                          {item}
-                        </option>
-                      ))}
-                    </select>
-                  </label>
-
-                  {form.sessionCategory === "Recording" && (
-                    <label>
-                      <span>Recording Session</span>
-                      <select
-                        value={form.selectedRecordingSessionId}
-                        onChange={(event) => updateField("selectedRecordingSessionId", event.target.value)}
-                      >
-                        <option value="">Custom recording price</option>
-                        {activeRecordingSessions.map((session) => (
-                          <option value={session.id} key={session.id}>
-                            {session.name} · {session.durationHours} jam · Rp{Number(session.price || 0).toLocaleString("id-ID")}
-                          </option>
-                        ))}
-                      </select>
-                    </label>
-                  )}
-
-                  <label>
-                    <span>Paket</span>
-                    <select value={form.packageName} onChange={(event) => updateField("packageName", event.target.value)}>
-                      {packageOptions.map((item) => (
-                        <option value={item} key={item}>
-                          {item}
+                  <label className="admin-booking-wide">
+                    <span>Pilih Paket</span>
+                    <select value={form.priceOptionId} onChange={(event) => updateField("priceOptionId", event.target.value)}>
+                      {priceOptions.map((option) => (
+                        <option value={option.id} key={option.id}>
+                          {option.label} · {option.description}
                         </option>
                       ))}
                     </select>
@@ -463,7 +633,7 @@ export default function AdminBookingModal({
                       inputMode="numeric"
                       value={form.price}
                       placeholder="Contoh: 75000"
-                      onChange={(event) => updateField("price", cleanMoney(event.target.value))}
+                      onChange={(event) => updateField("price", event.target.value)}
                     />
                   </label>
 
@@ -473,7 +643,7 @@ export default function AdminBookingModal({
                       inputMode="numeric"
                       value={form.deposit}
                       placeholder="Contoh: 25000"
-                      onChange={(event) => updateField("deposit", cleanMoney(event.target.value))}
+                      onChange={(event) => updateField("deposit", event.target.value)}
                     />
                   </label>
 
@@ -487,6 +657,14 @@ export default function AdminBookingModal({
                       ))}
                     </select>
                   </label>
+
+                  <div className="admin-booking-price-summary">
+                    <span>Pricing Preview</span>
+                    <strong>{formatCurrency(form.price)}</strong>
+                    <small>
+                      {selectedPriceOption?.label || "Custom Price"} · {durationHours} jam · {form.room}
+                    </small>
+                  </div>
                 </div>
               </div>
             </>

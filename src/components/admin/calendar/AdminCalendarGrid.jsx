@@ -8,6 +8,7 @@ import {
   updateCalendarEvent,
 } from "../../../utils/calendarStorage.js";
 import AdminBookingModal from "./AdminBookingModal.jsx";
+import AdminBookingDetailModal from "./AdminBookingDetailModal.jsx";
 
 const viewOptions = [
   { value: "day", label: "Hari" },
@@ -212,6 +213,7 @@ export default function AdminCalendarGrid() {
   const [events, setEvents] = useState(() => getCalendarEvents());
   const [selectedSlot, setSelectedSlot] = useState(null);
   const [selectedEvent, setSelectedEvent] = useState(null);
+  const [selectedDetailEvent, setSelectedDetailEvent] = useState(null);
 
   const roomOptions = useMemo(() => ["all", ...publicCalendarRooms], []);
 
@@ -268,14 +270,27 @@ export default function AdminCalendarGrid() {
     });
   }
 
+  function handleOpenDetailModal(event) {
+    setSelectedSlot(null);
+    setSelectedEvent(null);
+    setSelectedDetailEvent(event);
+  }
+
   function handleOpenEditModal(event) {
     setSelectedSlot(null);
+    setSelectedDetailEvent(null);
     setSelectedEvent(event);
+  }
+
+  function handleEditFromDetail() {
+    setSelectedEvent(selectedDetailEvent);
+    setSelectedDetailEvent(null);
   }
 
   function closeModal() {
     setSelectedSlot(null);
     setSelectedEvent(null);
+    setSelectedDetailEvent(null);
   }
 
   function handleSaveModalBooking(payload) {
@@ -478,7 +493,7 @@ export default function AdminCalendarGrid() {
                     className="admin-time-slot-cell has-event"
                     key={column.value + "-" + hour}
                     style={cellGridStyle}
-                    onClick={() => handleOpenEditModal(slotEvents[0])}
+                    onClick={() => handleOpenDetailModal(slotEvents[0])}
                   >
                     {slotEvents.slice(0, 2).map((event) => (
                       <span className={`admin-time-event-pill status-${event.status}`} key={event.id}>
@@ -497,7 +512,13 @@ export default function AdminCalendarGrid() {
           ))}
         </div>
       </div>
-
+      {selectedDetailEvent && (
+        <AdminBookingDetailModal
+          event={selectedDetailEvent}
+          onClose={closeModal}
+          onEdit={handleEditFromDetail}
+        />
+      )}
       {(selectedSlot || selectedEvent) && (
         <AdminBookingModal
           slot={selectedSlot || selectedEvent}
