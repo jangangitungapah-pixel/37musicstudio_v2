@@ -1,7 +1,12 @@
 ﻿import { useMemo, useState } from "react";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import { publicCalendarRooms } from "../../../data/publicCalendar.js";
-import { addCalendarEvent, deleteCalendarEvent, getCalendarEvents, updateCalendarEvent } from "../../../utils/calendarStorage.js";
+import {
+  addCalendarEvent,
+  deleteCalendarEvent,
+  getCalendarEvents,
+  updateCalendarEvent,
+} from "../../../utils/calendarStorage.js";
 import AdminBookingModal from "./AdminBookingModal.jsx";
 
 const viewOptions = [
@@ -73,23 +78,73 @@ function formatMonthYear(date) {
   }).format(date);
 }
 
-function getStatusLabel(status) {
-  const map = {
-    available: "Tersedia",
-    pending: "Pending",
-    booked: "Booked",
-    maintenance: "Maintenance",
-  };
-
-  return map[status] || status;
-}
-
 function getEventStartTime(time) {
   if (!time) {
     return "";
   }
 
   return time.split(" - ")[0].trim();
+}
+
+function getEventEndTime(time) {
+  if (!time || !time.includes(" - ")) {
+    return "";
+  }
+
+  return time.split(" - ")[1].trim();
+}
+
+function getHourNumber(time) {
+  return Number.parseInt(String(time || "0").split(".")[0], 10);
+}
+
+function getEventDurationSpan(event) {
+  const startHour = getHourNumber(getEventStartTime(event.time));
+  const endTime = getEventEndTime(event.time);
+  const endHour = endTime ? getHourNumber(endTime) : startHour + 1;
+
+  return Math.max(1, endHour - startHour);
+}
+
+function isCellCoveredByPreviousSpan(events, { date, hour, room }) {
+  const currentHour = getHourNumber(hour);
+
+  return events.some((event) => {
+    const matchDate = event.date === date;
+    const matchRoom = room === "all" || event.room === room;
+
+    if (!matchDate || !matchRoom) {
+      return false;
+    }
+
+    const startHour = getHourNumber(getEventStartTime(event.time));
+    const span = getEventDurationSpan(event);
+    const endHour = startHour + span;
+
+    return currentHour > startHour && currentHour < endHour;
+  });
+}
+
+function getStatusLabel(status) {
+  const map = {
+    available: "Tersedia",
+    pending: "Pending",
+    booked: "Booked",
+    maintenance: "Maintenance",
+    blocked: "Blocked",
+  };
+
+  return map[status] || status;
+}
+
+function getEventsForCell(events, { date, hour, room }) {
+  return events.filter((event) => {
+    const matchDate = event.date === date;
+    const matchHour = getEventStartTime(event.time) === hour;
+    const matchRoom = room === "all" || event.room === room;
+
+    return matchDate && matchHour && matchRoom;
+  });
 }
 
 function getColumnsForView(viewMode, activeDate) {
@@ -100,7 +155,6 @@ function getColumnsForView(viewMode, activeDate) {
       dayName: dayNames[date.getDay()],
       label: formatDateShort(date),
       isToday: toDateInputValue(date) === toDateInputValue(new Date()),
-      inCurrentMonth: true,
     }));
   }
 
@@ -116,7 +170,6 @@ function getColumnsForView(viewMode, activeDate) {
         dayName: dayNames[date.getDay()],
         label: formatDateShort(date),
         isToday: toDateInputValue(date) === toDateInputValue(new Date()),
-        inCurrentMonth: true,
       };
     });
   }
@@ -134,7 +187,6 @@ function getColumnsForView(viewMode, activeDate) {
       dayName: dayNames[date.getDay()],
       label: formatDateShort(date),
       isToday: toDateInputValue(date) === toDateInputValue(new Date()),
-      inCurrentMonth: true,
     };
   });
 }
@@ -177,16 +229,6 @@ export default function AdminCalendarGrid() {
     };
   }, [columns.length]);
 
-  function getEventsForCell({ date, hour }) {
-    return events.filter((event) => {
-      const matchDate = event.date === date;
-      const matchHour = getEventStartTime(event.time) === hour;
-      const matchRoom = selectedRoom === "all" || event.room === selectedRoom;
-
-      return matchDate && matchHour && matchRoom;
-    });
-  }
-
   const goPrevious = () => {
     if (viewMode === "day") {
       setActiveDate((current) => addDays(current, -1));
@@ -226,33 +268,14 @@ export default function AdminCalendarGrid() {
     });
   }
 
-  function handleSaveBooking(payload) {
-    const time = payload.startTime + " - " + payload.endTime;
-
-    const isConflict = events.some((event) => {
-      const sameDate = event.date === payload.date;
-      const sameRoom = event.room === payload.room;
-      const sameStart = getEventStartTime(event.time) === payload.startTime;
-
-      return sameDate && sameRoom && sameStart;
-    });
-
-    if (isConflict) {
-      alert("Slot ini sudah memiliki jadwal untuk room tersebut.");
-      return;
-    }
-
-    const nextEvents = addCalendarEvent({
-      ...payload,
-      time,
-    });
-
-    setEvents(nextEvents);
-    setSelectedSlot(null);
-  }
   function handleOpenEditModal(event) {
     setSelectedSlot(null);
     setSelectedEvent(event);
+  }
+
+  function closeModal() {
+    setSelectedSlot(null);
+    setSelectedEvent(null);
   }
 
   function handleSaveModalBooking(payload) {
@@ -301,6 +324,7 @@ export default function AdminCalendarGrid() {
     setEvents(nextEvents);
     setSelectedEvent(null);
   }
+
   return (
     <section className="admin-calendar-grid-shell">
       <div className="admin-calendar-grid-toolbar">
@@ -365,27 +389,68 @@ export default function AdminCalendarGrid() {
 
       <div className={`admin-time-calendar-scroll view-${viewMode}`}>
         <div className="admin-time-calendar-grid" style={gridColumnStyle}>
-          <div className="admin-time-corner">Jam</div>
+          <div
+            className="admin-time-corner"
+            style={{
+              gridColumn: 1,
+              gridRow: 1,
+            }}
+          >
+            Jam
+          </div>
 
-          {columns.map((column) => (
+          {columns.map((column, columnIndex) => (
             <div
               className={`admin-time-day-head ${column.isToday ? "is-today" : ""}`}
               key={column.value}
+              style={{
+                gridColumn: columnIndex + 2,
+                gridRow: 1,
+              }}
             >
               <strong>{column.dayName}</strong>
               <span>{column.label}</span>
             </div>
           ))}
 
-          {adminCalendarHours.map((hour) => (
+          {adminCalendarHours.map((hour, hourIndex) => (
             <div className="admin-time-row" key={hour}>
-              <div className="admin-time-hour-cell">{hour}</div>
+              <div
+                className="admin-time-hour-cell"
+                style={{
+                  gridColumn: 1,
+                  gridRow: hourIndex + 2,
+                }}
+              >
+                {hour}
+              </div>
 
-              {columns.map((column) => {
-                const slotEvents = getEventsForCell({
+              {columns.map((column, columnIndex) => {
+                const slotEvents = getEventsForCell(events, {
                   date: column.value,
                   hour,
+                  room: selectedRoom,
                 });
+
+                const isCoveredByPreviousEvent = isCellCoveredByPreviousSpan(events, {
+                  date: column.value,
+                  hour,
+                  room: selectedRoom,
+                });
+
+                if (isCoveredByPreviousEvent) {
+                  return null;
+                }
+
+                const eventSpan =
+                  slotEvents.length > 0
+                    ? Math.max(...slotEvents.map((event) => getEventDurationSpan(event)))
+                    : 1;
+
+                const cellGridStyle = {
+                  gridColumn: columnIndex + 2,
+                  gridRow: `${hourIndex + 2} / span ${eventSpan}`,
+                };
 
                 if (slotEvents.length === 0) {
                   return (
@@ -393,6 +458,7 @@ export default function AdminCalendarGrid() {
                       type="button"
                       className="admin-time-slot-cell is-empty"
                       key={column.value + "-" + hour}
+                      style={cellGridStyle}
                       aria-label={"Tambah jadwal " + column.label + " jam " + hour}
                       onClick={() =>
                         handleOpenCreateModal({
@@ -410,12 +476,13 @@ export default function AdminCalendarGrid() {
                   <button
                     type="button"
                     className="admin-time-slot-cell has-event"
-                    key={`${column.value}-${hour}`}
+                    key={column.value + "-" + hour}
+                    style={cellGridStyle}
                     onClick={() => handleOpenEditModal(slotEvents[0])}
                   >
                     {slotEvents.slice(0, 2).map((event) => (
                       <span className={`admin-time-event-pill status-${event.status}`} key={event.id}>
-                        <strong>{event.label}</strong>
+                        <strong>{event.label || getStatusLabel(event.status)}</strong>
                         <small>{event.room}</small>
                       </span>
                     ))}
@@ -430,16 +497,14 @@ export default function AdminCalendarGrid() {
           ))}
         </div>
       </div>
+
       {(selectedSlot || selectedEvent) && (
         <AdminBookingModal
           slot={selectedSlot || selectedEvent}
           defaultRoom={(selectedSlot || selectedEvent)?.room}
           mode={selectedEvent ? "edit" : "create"}
           initialEvent={selectedEvent}
-          onClose={() => {
-            setSelectedSlot(null);
-            setSelectedEvent(null);
-          }}
+          onClose={closeModal}
           onSave={handleSaveModalBooking}
           onDelete={selectedEvent ? handleDeleteModalBooking : undefined}
         />
@@ -447,7 +512,3 @@ export default function AdminCalendarGrid() {
     </section>
   );
 }
-
-
-
-
