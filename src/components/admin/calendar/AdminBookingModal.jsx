@@ -511,27 +511,25 @@ export default function AdminBookingModal({
             <p className="admin-booking-section-title">Slot</p>
 
             <div className="admin-booking-grid">
-              <label>
-                <span>Tipe Jadwal</span>
-                <select value={form.type} onChange={(event) => updateField("type", event.target.value)}>
-                  {scheduleTypes.map((item) => (
-                    <option value={item.value} key={item.value}>
-                      {item.label}
-                    </option>
-                  ))}
-                </select>
-              </label>
+              <AdminSelect
+                label="Tipe Jadwal"
+                value={form.type}
+                onChange={(nextValue) => updateField("type", nextValue)}
+                options={scheduleTypes.map((item) => ({
+                  value: item.value,
+                  label: item.label,
+                }))}
+              />
 
-              <label>
-                <span>Room</span>
-                <select value={form.room} onChange={(event) => updateField("room", event.target.value)}>
-                  {roomOptions.map((room) => (
-                    <option value={room} key={room}>
-                      {room}
-                    </option>
-                  ))}
-                </select>
-              </label>
+              <AdminSelect
+                label="Room"
+                value={form.room}
+                onChange={(nextValue) => updateField("room", nextValue)}
+                options={roomOptions.map((room) => ({
+                  value: room,
+                  label: room,
+                }))}
+              />
 
               <label>
                 <span>Tanggal</span>
@@ -542,38 +540,35 @@ export default function AdminBookingModal({
                 />
               </label>
 
-              <label>
-                <span>Jam Mulai</span>
-                <select value={form.startTime} onChange={(event) => updateField("startTime", event.target.value)}>
-                  {timeOptions.slice(0, -1).map((time) => (
-                    <option value={time} key={time}>
-                      {time}
-                    </option>
-                  ))}
-                </select>
-              </label>
+              <AdminSelect
+                label="Jam Mulai"
+                value={form.startTime}
+                onChange={(nextValue) => updateField("startTime", nextValue)}
+                options={timeOptions.slice(0, -1).map((time) => ({
+                  value: time,
+                  label: time,
+                }))}
+              />
 
-              <label>
-                <span>Jam Selesai</span>
-                <select value={form.endTime} onChange={(event) => updateField("endTime", event.target.value)}>
-                  {timeOptions.slice(1).map((time) => (
-                    <option value={time} key={time}>
-                      {time}
-                    </option>
-                  ))}
-                </select>
-              </label>
+              <AdminSelect
+                label="Jam Selesai"
+                value={form.endTime}
+                onChange={(nextValue) => updateField("endTime", nextValue)}
+                options={timeOptions.slice(1).map((time) => ({
+                  value: time,
+                  label: time,
+                }))}
+              />
 
-              <label>
-                <span>Status</span>
-                <select value={form.status} onChange={(event) => updateField("status", event.target.value)}>
-                  {statusOptions.map((status) => (
-                    <option value={status.value} key={status.value}>
-                      {status.label}
-                    </option>
-                  ))}
-                </select>
-              </label>
+              <AdminSelect
+                label="Status"
+                value={form.status}
+                onChange={(nextValue) => updateField("status", nextValue)}
+                options={statusOptions.map((status) => ({
+                  value: status.value,
+                  label: status.label,
+                }))}
+              />
             </div>
           </div>
 
@@ -650,16 +645,15 @@ export default function AdminBookingModal({
                     />
                   </label>
 
-                  <label>
-                    <span>Status Pembayaran</span>
-                    <select value={form.paymentStatus} onChange={(event) => updateField("paymentStatus", event.target.value)}>
-                      {paymentStatuses.map((item) => (
-                        <option value={item.value} key={item.value}>
-                          {item.label}
-                        </option>
-                      ))}
-                    </select>
-                  </label>
+                  <AdminSelect
+                    label="Status Pembayaran"
+                    value={form.paymentStatus}
+                    onChange={(nextValue) => updateField("paymentStatus", nextValue)}
+                    options={paymentStatuses.map((item) => ({
+                      value: item.value,
+                      label: item.label,
+                    }))}
+                  />
 
                   <div className="admin-booking-price-summary">
                     <span>Pricing Preview</span>
