@@ -1787,3 +1787,62 @@
   cursor: not-allowed;
   filter: grayscale(0.2);
 }
+
+
+/* ================================
+   Booking Detail Quick Actions
+================================ */
+
+.admin-booking-quick-actions {
+  border-color: rgba(245, 184, 75, 0.22) !important;
+  background:
+    radial-gradient(circle at top right, rgba(245, 184, 75, 0.11), transparent 42%),
+    rgba(255, 255, 255, 0.035) !important;
+}
+
+.admin-booking-quick-action-grid {
+  display: grid;
+  gap: 8px;
+}
+
+.admin-booking-quick-action-grid button {
+  min-height: 38px;
+  padding: 0 11px;
+  border: 1px solid rgba(245, 184, 75, 0.22);
+  border-radius: 10px;
+  background: rgba(245, 184, 75, 0.075);
+  color: var(--text-main);
+  font-size: 0.78rem;
+  font-weight: 820;
+  text-align: center;
+}
+
+.admin-booking-quick-action-grid button:hover {
+  border-color: rgba(245, 184, 75, 0.42);
+  background: rgba(245, 184, 75, 0.13);
+}
+
+.admin-booking-quick-action-grid button.is-danger {
+  border-color: rgba(255, 107, 107, 0.28);
+  background: rgba(255, 107, 107, 0.08);
+  color: #ffb3b3;
+}
+
+.admin-booking-detail-status.status-cancelled {
+  background: rgba(255, 107, 107, 0.14);
+  color: #ff9c9c;
+}
+
+.admin-time-event-pill.status-cancelled {
+  opacity: 0.72;
+}
+
+.admin-time-event-pill.status-cancelled::before {
+  background: #ff6b6b;
+}
+
+@media (min-width: 560px) {
+  .admin-booking-quick-action-grid {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
+}

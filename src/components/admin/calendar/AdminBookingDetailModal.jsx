@@ -31,7 +31,7 @@ function getPaymentLabel(status) {
   return map[status] || status || "-";
 }
 
-export default function AdminBookingDetailModal({ event, onClose, onEdit }) {
+export default function AdminBookingDetailModal({ event, onClose, onEdit, onQuickUpdate }) {
   const isBooking = event?.type === "booking" || !event?.type;
 
   return (
