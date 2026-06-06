@@ -1,0 +1,572 @@
+/* ================================
+   Admin Calendar Final Polish
+   Spatial, compact, and operational
+================================ */
+
+.admin-calendar-grid-shell {
+  --calendar-line: rgba(255, 255, 255, 0.075);
+  --calendar-line-strong: rgba(255, 255, 255, 0.13);
+  --calendar-panel: rgba(9, 7, 15, 0.66);
+  --calendar-panel-strong: rgba(15, 11, 24, 0.82);
+  --calendar-purple: rgba(143, 92, 255, 0.16);
+  --calendar-orange: rgba(255, 138, 61, 0.13);
+
+  display: grid;
+  gap: 14px;
+  min-width: 0;
+}
+
+/* ================================
+   Toolbar
+================================ */
+
+.admin-calendar-grid-toolbar {
+  position: relative;
+  overflow: hidden;
+  display: grid;
+  gap: 16px;
+  padding: 16px;
+  border: 1px solid var(--calendar-line-strong);
+  border-radius: 18px;
+  background:
+    radial-gradient(circle at 0% 0%, var(--calendar-purple), transparent 34%),
+    radial-gradient(circle at 100% 0%, var(--calendar-orange), transparent 32%),
+    linear-gradient(145deg, rgba(255, 255, 255, 0.064), rgba(255, 255, 255, 0.022)),
+    var(--calendar-panel);
+  box-shadow:
+    0 18px 54px rgba(0, 0, 0, 0.24),
+    inset 0 1px 0 rgba(255, 255, 255, 0.06);
+  backdrop-filter: blur(18px) saturate(1.12);
+}
+
+.admin-calendar-grid-toolbar::before {
+  content: "";
+  position: absolute;
+  inset: 1px;
+  pointer-events: none;
+  border-radius: 17px;
+  background:
+    linear-gradient(120deg, rgba(255, 255, 255, 0.075), transparent 36%),
+    radial-gradient(circle at 75% 12%, rgba(255, 184, 77, 0.09), transparent 28%);
+}
+
+.admin-calendar-grid-toolbar > * {
+  position: relative;
+  z-index: 1;
+}
+
+.admin-calendar-grid-toolbar .section-eyebrow {
+  margin: 0 0 7px;
+  color: var(--purple-strong) !important;
+  font-size: 0.7rem;
+  font-weight: 950;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+.admin-calendar-grid-toolbar h2 {
+  margin: 0;
+  max-width: 840px;
+  color: var(--text-main);
+  font-size: clamp(1.45rem, 3.4vw, 2.35rem);
+  font-weight: 860;
+  line-height: 0.98;
+  letter-spacing: -0.07em;
+}
+
+.admin-calendar-grid-toolbar span {
+  display: inline-flex;
+  margin-top: 8px;
+  color: var(--text-muted);
+  font-size: 0.84rem;
+  font-weight: 660;
+}
+
+.admin-calendar-toolbar-actions {
+  display: grid;
+  gap: 10px;
+  align-content: start;
+}
+
+.admin-calendar-view-toggle,
+.admin-calendar-room-filter,
+.admin-calendar-nav {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 7px;
+}
+
+.admin-calendar-view-toggle button,
+.admin-calendar-room-filter button,
+.admin-calendar-nav button,
+.admin-calendar-filter-group button {
+  min-height: 36px;
+  padding: 0 11px;
+  border: 1px solid rgba(255, 255, 255, 0.105);
+  border-radius: 11px;
+  background:
+    linear-gradient(145deg, rgba(255, 255, 255, 0.052), rgba(255, 255, 255, 0.018)),
+    rgba(0, 0, 0, 0.18);
+  color: var(--text-muted);
+  font-size: 0.77rem;
+  font-weight: 850;
+  white-space: nowrap;
+}
+
+.admin-calendar-view-toggle button:hover,
+.admin-calendar-room-filter button:hover,
+.admin-calendar-nav button:hover,
+.admin-calendar-filter-group button:hover {
+  border-color: rgba(143, 92, 255, 0.28);
+  color: var(--text-main);
+  background:
+    radial-gradient(circle at 0% 0%, rgba(143, 92, 255, 0.13), transparent 38%),
+    rgba(255, 255, 255, 0.045);
+}
+
+.admin-calendar-view-toggle button.is-active,
+.admin-calendar-room-filter button.is-active,
+.admin-calendar-filter-group button.is-active {
+  border-color: rgba(255, 184, 77, 0.38);
+  background:
+    radial-gradient(circle at 0% 0%, rgba(143, 92, 255, 0.18), transparent 38%),
+    linear-gradient(135deg, rgba(255, 184, 77, 0.17), rgba(255, 138, 61, 0.075));
+  color: var(--accent-strong);
+  box-shadow:
+    0 10px 24px rgba(255, 138, 61, 0.08),
+    inset 0 1px 0 rgba(255, 255, 255, 0.07);
+}
+
+.admin-calendar-nav button {
+  min-width: 38px;
+}
+
+.admin-calendar-nav button:nth-child(2) {
+  padding-inline: 14px;
+}
+
+/* ================================
+   Summary
+================================ */
+
+.admin-calendar-summary-row {
+  display: grid;
+  gap: 10px;
+}
+
+.admin-calendar-summary-row article {
+  position: relative;
+  overflow: hidden;
+  min-height: 104px;
+  padding: 13px;
+  border-radius: 16px !important;
+}
+
+.admin-calendar-summary-row article::before {
+  content: "";
+  position: absolute;
+  inset: 0 0 auto;
+  height: 2px;
+  background: linear-gradient(90deg, rgba(143, 92, 255, 0.72), rgba(255, 184, 77, 0.72));
+  opacity: 0.62;
+}
+
+.admin-calendar-summary-row article span {
+  color: var(--text-muted);
+  font-size: 0.66rem;
+  font-weight: 920;
+  letter-spacing: 0.095em;
+  text-transform: uppercase;
+}
+
+.admin-calendar-summary-row article strong {
+  margin-top: 4px;
+  color: var(--text-main);
+  font-size: clamp(1.35rem, 2.8vw, 2rem);
+  font-weight: 820;
+  line-height: 1;
+  letter-spacing: -0.065em;
+}
+
+.admin-calendar-summary-row article small {
+  color: rgba(255, 250, 242, 0.48);
+  font-size: 0.72rem;
+  font-weight: 680;
+}
+
+/* ================================
+   Filters
+================================ */
+
+.admin-calendar-filter-bar {
+  display: grid;
+  gap: 11px;
+  padding: 12px;
+  border-radius: 16px !important;
+}
+
+.admin-calendar-search-box {
+  display: grid;
+  gap: 7px;
+}
+
+.admin-calendar-search-box span,
+.admin-calendar-filter-group > span {
+  color: var(--text-muted);
+  font-size: 0.66rem;
+  font-weight: 920;
+  letter-spacing: 0.095em;
+  text-transform: uppercase;
+}
+
+.admin-calendar-search-box input {
+  min-height: 42px;
+  padding-inline: 13px;
+  border-radius: 12px !important;
+}
+
+.admin-calendar-filter-group {
+  display: grid;
+  gap: 7px;
+  min-width: 0;
+}
+
+.admin-calendar-filter-group > div {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 7px;
+}
+
+/* ================================
+   Legend
+================================ */
+
+.admin-calendar-status-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 7px;
+  padding: 10px;
+  border: 1px solid rgba(255, 255, 255, 0.085);
+  border-radius: 14px;
+  background:
+    linear-gradient(145deg, rgba(255, 255, 255, 0.038), rgba(255, 255, 255, 0.014)),
+    rgba(0, 0, 0, 0.12);
+}
+
+.admin-calendar-status-row span {
+  min-height: 30px;
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  padding: 0 9px;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.035);
+  color: var(--text-muted);
+  font-size: 0.72rem;
+  font-weight: 780;
+}
+
+.status-dot,
+.payment-dot {
+  width: 8px;
+  height: 8px;
+  flex: 0 0 8px;
+  border-radius: 999px;
+}
+
+/* ================================
+   Calendar Grid
+================================ */
+
+.admin-time-calendar-scroll {
+  border: 1px solid rgba(255, 255, 255, 0.105);
+  border-radius: 18px;
+  background:
+    radial-gradient(circle at 0% 0%, rgba(143, 92, 255, 0.075), transparent 34%),
+    radial-gradient(circle at 100% 0%, rgba(255, 138, 61, 0.055), transparent 32%),
+    rgba(5, 4, 9, 0.72);
+  box-shadow:
+    0 18px 54px rgba(0, 0, 0, 0.26),
+    inset 0 1px 0 rgba(255, 255, 255, 0.045);
+  overflow: auto;
+}
+
+.admin-time-calendar-grid {
+  min-width: 860px;
+  position: relative;
+  isolation: isolate;
+}
+
+.admin-time-corner,
+.admin-time-day-head,
+.admin-time-hour-cell {
+  background:
+    linear-gradient(180deg, rgba(15, 12, 22, 0.96), rgba(9, 7, 14, 0.94)) !important;
+  border-color: rgba(255, 255, 255, 0.085) !important;
+}
+
+.admin-time-corner {
+  position: sticky;
+  left: 0;
+  top: 0;
+  z-index: 35;
+  display: grid;
+  place-items: center;
+  color: var(--text-muted);
+  font-size: 0.72rem;
+  font-weight: 900;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.admin-time-day-head {
+  position: sticky;
+  top: 0;
+  z-index: 30;
+  min-height: 58px;
+  display: grid;
+  align-content: center;
+  gap: 2px;
+  padding: 10px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.095) !important;
+}
+
+.admin-time-day-head strong {
+  color: var(--text-main);
+  font-size: 0.86rem;
+  font-weight: 880;
+}
+
+.admin-time-day-head span {
+  color: var(--text-muted);
+  font-size: 0.72rem;
+  font-weight: 720;
+}
+
+.admin-time-day-head.is-today {
+  background:
+    radial-gradient(circle at top, rgba(255, 184, 77, 0.18), transparent 48%),
+    linear-gradient(180deg, rgba(18, 13, 18, 0.98), rgba(9, 7, 14, 0.94)) !important;
+}
+
+.admin-time-hour-cell {
+  position: sticky;
+  left: 0;
+  z-index: 24;
+  min-height: 56px;
+  display: grid;
+  place-items: center;
+  color: rgba(255, 250, 242, 0.48);
+  font-size: 0.76rem;
+  font-weight: 820;
+  letter-spacing: -0.02em;
+}
+
+.admin-time-slot-cell {
+  min-height: 56px;
+  border-color: rgba(255, 255, 255, 0.062) !important;
+  background:
+    linear-gradient(145deg, rgba(255, 255, 255, 0.018), rgba(255, 255, 255, 0.006)),
+    rgba(255, 255, 255, 0.006) !important;
+}
+
+.admin-time-slot-cell.is-empty {
+  position: relative;
+}
+
+.admin-time-slot-cell.is-empty::after {
+  content: "";
+  position: absolute;
+  inset: 8px;
+  border: 1px dashed transparent;
+  border-radius: 10px;
+  transition:
+    border-color 150ms ease,
+    background 150ms ease;
+}
+
+.admin-time-slot-cell.is-empty:hover::after {
+  border-color: rgba(143, 92, 255, 0.24);
+  background:
+    radial-gradient(circle at center, rgba(143, 92, 255, 0.08), transparent 62%);
+}
+
+.admin-time-slot-cell.has-event {
+  padding: 4px;
+  cursor: grab;
+  background:
+    radial-gradient(circle at top right, rgba(255, 184, 77, 0.08), transparent 42%),
+    rgba(255, 255, 255, 0.018) !important;
+}
+
+.admin-time-slot-cell.has-event:active {
+  cursor: grabbing;
+}
+
+.admin-time-event-pill {
+  width: 100%;
+  height: 100%;
+  min-height: 48px;
+  display: grid;
+  align-content: start;
+  gap: 4px;
+  padding: 10px 10px 14px;
+  border: 1px solid rgba(255, 184, 77, 0.16);
+  border-radius: 12px;
+  background:
+    radial-gradient(circle at 0% 0%, rgba(143, 92, 255, 0.1), transparent 36%),
+    linear-gradient(145deg, rgba(255, 255, 255, 0.07), rgba(255, 255, 255, 0.026)),
+    rgba(12, 9, 16, 0.78);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.055),
+    0 10px 22px rgba(0, 0, 0, 0.2);
+}
+
+.admin-time-event-pill strong {
+  overflow: hidden;
+  color: var(--text-main);
+  font-size: 0.78rem;
+  font-weight: 880;
+  line-height: 1.15;
+  letter-spacing: -0.035em;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.admin-time-event-pill small {
+  overflow: hidden;
+  color: var(--text-muted);
+  font-size: 0.68rem;
+  font-weight: 700;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.admin-time-resize-handle {
+  opacity: 0.55;
+}
+
+.admin-time-slot-cell.has-event:hover .admin-time-resize-handle {
+  opacity: 1;
+}
+
+/* ================================
+   Drag / Resize Feedback
+================================ */
+
+.admin-calendar-drag-feedback {
+  width: fit-content;
+  max-width: 100%;
+  padding: 10px 12px;
+  border-radius: 13px;
+}
+
+.admin-calendar-drop-guide {
+  border-radius: 12px;
+  border-color: rgba(255, 107, 107, 0.48);
+  background:
+    repeating-linear-gradient(
+      -45deg,
+      rgba(255, 107, 107, 0.11) 0,
+      rgba(255, 107, 107, 0.11) 8px,
+      rgba(143, 92, 255, 0.055) 8px,
+      rgba(143, 92, 255, 0.055) 16px
+    );
+}
+
+.admin-calendar-drag-ghost {
+  border-radius: 14px;
+}
+
+/* ================================
+   Responsive
+================================ */
+
+@media (min-width: 940px) {
+  .admin-calendar-grid-toolbar {
+    grid-template-columns: minmax(0, 1fr) auto;
+    align-items: end;
+  }
+
+  .admin-calendar-toolbar-actions {
+    justify-items: end;
+  }
+
+  .admin-calendar-summary-row {
+    grid-template-columns: repeat(5, minmax(0, 1fr));
+  }
+
+  .admin-calendar-filter-bar {
+    grid-template-columns: minmax(240px, 1fr) minmax(260px, 1.1fr) minmax(190px, 0.8fr);
+    align-items: end;
+  }
+}
+
+@media (max-width: 939px) {
+  .admin-calendar-toolbar-actions {
+    overflow-x: auto;
+    padding-bottom: 2px;
+  }
+
+  .admin-calendar-view-toggle,
+  .admin-calendar-room-filter,
+  .admin-calendar-nav,
+  .admin-calendar-filter-group > div {
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    padding-bottom: 2px;
+  }
+
+  .admin-calendar-view-toggle button,
+  .admin-calendar-room-filter button,
+  .admin-calendar-nav button,
+  .admin-calendar-filter-group button {
+    flex: 0 0 auto;
+  }
+
+  .admin-calendar-summary-row {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .admin-calendar-summary-row article:last-child {
+    grid-column: 1 / -1;
+  }
+}
+
+@media (max-width: 520px) {
+  .admin-calendar-grid-shell {
+    gap: 11px;
+  }
+
+  .admin-calendar-grid-toolbar,
+  .admin-calendar-filter-bar {
+    padding: 12px;
+    border-radius: 15px;
+  }
+
+  .admin-calendar-grid-toolbar h2 {
+    font-size: 1.35rem;
+  }
+
+  .admin-calendar-summary-row {
+    grid-template-columns: 1fr;
+  }
+
+  .admin-calendar-summary-row article:last-child {
+    grid-column: auto;
+  }
+
+  .admin-calendar-status-row {
+    flex-wrap: nowrap;
+    overflow-x: auto;
+  }
+
+  .admin-calendar-status-row span {
+    flex: 0 0 auto;
+  }
+
+  .admin-time-calendar-grid {
+    min-width: 760px;
+  }
+}

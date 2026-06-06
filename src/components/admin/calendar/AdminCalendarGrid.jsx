@@ -16,17 +16,17 @@ const viewOptions = [
   { value: "month", label: "Bulan" },
 ];
 const statusFilterOptions = [
-  { value: "all", label: "All" },
-  { value: "pending", label: "Pending" },
+  { value: "all", label: "Semua" },
+  { value: "pending", label: "Menunggu" },
   { value: "booked", label: "Booked" },
   { value: "maintenance", label: "Maintenance" },
   { value: "blocked", label: "Blocked" },
-  { value: "cancelled", label: "Cancelled" },
+  { value: "cancelled", label: "Batal" },
 ];
 
 const paymentFilterOptions = [
-  { value: "all", label: "All" },
-  { value: "unpaid", label: "Unpaid" },
+  { value: "all", label: "Semua" },
+  { value: "unpaid", label: "Belum Bayar" },
   { value: "down_payment", label: "DP" },
   { value: "paid", label: "Lunas" },
 ];
@@ -1023,10 +1023,10 @@ export default function AdminCalendarGrid() {
     <section className="admin-calendar-grid-shell">
       <div className="admin-calendar-grid-toolbar">
         <div>
-          <p className="section-eyebrow">Calendar grid</p>
+          <p className="section-eyebrow">Jadwal Studio</p>
           <h2>{rangeLabel}</h2>
           <span>
-            Kelola jadwal studio per jam.
+            Atur booking, status, dan pembayaran per room.
           </span>
         </div>
 
@@ -1075,7 +1075,7 @@ export default function AdminCalendarGrid() {
 
       <div className="admin-calendar-summary-row">
         <article>
-          <span>Total Booking</span>
+          <span>Total Jadwal</span>
           <strong>{visibleSummary.totalBookings}</strong>
           <small>{rangeLabel}</small>
         </article>
@@ -1083,7 +1083,7 @@ export default function AdminCalendarGrid() {
         <article>
           <span>Pending</span>
           <strong>{visibleSummary.pendingBookings}</strong>
-          <small>Perlu follow up</small>
+          <small>Perlu follow-up</small>
         </article>
 
         <article>
@@ -1095,22 +1095,22 @@ export default function AdminCalendarGrid() {
         <article>
           <span>Lunas</span>
           <strong>{visibleSummary.paidBookings}</strong>
-          <small>Paid booking</small>
+          <small>Sudah lunas</small>
         </article>
 
         <article>
-          <span>Est. Income</span>
+          <span>Estimasi Omzet</span>
           <strong>{formatCurrencyCompact(visibleSummary.estimatedIncome)}</strong>
-          <small>Aktif, non-cancelled</small>
+          <small>Booking aktif</small>
         </article>
       </div>
 
       <div className="admin-calendar-filter-bar">
         <label className="admin-calendar-search-box">
-          <span>Search</span>
+          <span>Cari</span>
           <input
             value={searchQuery}
-            placeholder="Cari customer, WA, paket..."
+            placeholder="Cari nama, WA, paket..."
             onChange={(event) => setSearchQuery(event.target.value)}
           />
         </label>
@@ -1132,7 +1132,7 @@ export default function AdminCalendarGrid() {
         </div>
 
         <div className="admin-calendar-filter-group">
-          <span>Payment</span>
+          <span>Pembayaran</span>
           <div>
             {paymentFilterOptions.map((option) => (
               <button
@@ -1296,7 +1296,10 @@ export default function AdminCalendarGrid() {
                     {slotEvents.slice(0, 2).map((event) => (
                       <span className={`admin-time-event-pill status-${event.status} payment-${event.paymentStatus || "unpaid"}`} key={event.id}>
                         <strong>{event.label || getStatusLabel(event.status)}</strong>
-                        <small>{event.room} · {getPaymentShortLabel(event.paymentStatus)}</small>
+                        <small>{event.room}</small>
+                        <span className={`admin-event-payment-chip payment-${event.paymentStatus || "unpaid"}`}>
+                          {getPaymentShortLabel(event.paymentStatus)}
+                        </span>
                         <span
                           className="admin-time-resize-handle"
                           aria-hidden="true"

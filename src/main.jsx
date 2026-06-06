@@ -16,6 +16,8 @@ import "./styles/admin-typography.css";
 import "./styles/admin-density.css";
 import "./styles/admin-ambient-components.css";
 import "./styles/admin-motion.css";
+import "./styles/admin-calendar-final-polish.css";
+import "./styles/admin-calendar-tune.css";
 
 ReactDOM.createRoot(document.getElementById("root")).render(
   <React.StrictMode>

@@ -1,0 +1,308 @@
+/* ================================
+   Admin Calendar Finishing Tune
+   Compact, readable, product-grade
+================================ */
+
+/* Topbar dibuat lebih low-profile saat halaman calendar */
+.admin-shell:has(.admin-calendar-grid-shell) .admin-main-topbar {
+  min-height: 62px;
+  opacity: 0.92;
+}
+
+.admin-shell:has(.admin-calendar-grid-shell) .admin-topbar-copy h1 {
+  font-size: 0.96rem;
+}
+
+.admin-shell:has(.admin-calendar-grid-shell) .admin-topbar-copy p {
+  font-size: 0.74rem;
+}
+
+/* Sidebar active: lebih purple-orange, bukan brownish */
+.admin-nav-link.is-active {
+  border-color: rgba(143, 92, 255, 0.34) !important;
+  background:
+    radial-gradient(circle at 0% 50%, rgba(143, 92, 255, 0.3), transparent 44%),
+    radial-gradient(circle at 100% 50%, rgba(255, 138, 61, 0.15), transparent 44%),
+    linear-gradient(135deg, rgba(143, 92, 255, 0.12), rgba(255, 184, 77, 0.09)) !important;
+  color: var(--accent-strong) !important;
+}
+
+/* Hero lebih compact */
+.admin-calendar-grid-toolbar {
+  min-height: auto !important;
+  padding: 14px 15px !important;
+  border-radius: 16px !important;
+}
+
+.admin-calendar-grid-toolbar h2 {
+  font-size: clamp(1.36rem, 2.75vw, 2rem) !important;
+  letter-spacing: -0.062em !important;
+}
+
+.admin-calendar-grid-toolbar span {
+  margin-top: 7px !important;
+  font-size: 0.78rem !important;
+}
+
+.admin-calendar-grid-toolbar .section-eyebrow {
+  margin-bottom: 6px !important;
+  color: #b999ff !important;
+}
+
+.admin-calendar-toolbar-actions {
+  gap: 8px !important;
+}
+
+.admin-calendar-view-toggle,
+.admin-calendar-room-filter,
+.admin-calendar-nav {
+  gap: 6px !important;
+}
+
+.admin-calendar-view-toggle button,
+.admin-calendar-room-filter button,
+.admin-calendar-nav button,
+.admin-calendar-filter-group button {
+  min-height: 34px !important;
+  border-radius: 10px !important;
+  font-size: 0.72rem !important;
+}
+
+/* Summary cards lebih rapi */
+.admin-calendar-summary-row {
+  gap: 8px !important;
+}
+
+.admin-calendar-summary-row article {
+  min-height: 88px !important;
+  padding: 12px !important;
+  border-radius: 14px !important;
+}
+
+.admin-calendar-summary-row article span {
+  font-size: 0.62rem !important;
+}
+
+.admin-calendar-summary-row article strong {
+  margin-top: 3px !important;
+  font-size: clamp(1.25rem, 2.4vw, 1.74rem) !important;
+  letter-spacing: -0.055em !important;
+}
+
+.admin-calendar-summary-row article small {
+  font-size: 0.68rem !important;
+}
+
+/* Filter bar lebih compact */
+.admin-calendar-filter-bar {
+  padding: 11px !important;
+  gap: 10px !important;
+  border-radius: 14px !important;
+}
+
+.admin-calendar-search-box input {
+  min-height: 40px !important;
+}
+
+.admin-calendar-filter-group > div {
+  gap: 6px !important;
+}
+
+/* Legend lebih readable */
+.admin-calendar-status-row {
+  padding: 9px !important;
+  gap: 6px !important;
+  border-radius: 13px !important;
+}
+
+.admin-calendar-status-row span {
+  min-height: 29px !important;
+  padding-inline: 9px !important;
+  font-size: 0.7rem !important;
+  color: rgba(255, 250, 242, 0.62) !important;
+}
+
+.status-dot,
+.payment-dot {
+  box-shadow: 0 0 12px currentColor;
+}
+
+/* Grid contrast naik tipis */
+.admin-time-calendar-scroll {
+  border-color: rgba(255, 255, 255, 0.13) !important;
+  background:
+    radial-gradient(circle at 0% 0%, rgba(143, 92, 255, 0.082), transparent 34%),
+    radial-gradient(circle at 100% 0%, rgba(255, 138, 61, 0.064), transparent 32%),
+    rgba(5, 4, 9, 0.78) !important;
+}
+
+.admin-time-corner,
+.admin-time-day-head,
+.admin-time-hour-cell {
+  background:
+    linear-gradient(180deg, rgba(18, 14, 27, 0.98), rgba(9, 7, 14, 0.96)) !important;
+}
+
+.admin-time-hour-cell {
+  color: rgba(255, 250, 242, 0.58) !important;
+  font-size: 0.74rem !important;
+}
+
+.admin-time-day-head {
+  min-height: 54px !important;
+}
+
+.admin-time-day-head strong {
+  font-size: 0.82rem !important;
+}
+
+.admin-time-day-head span {
+  font-size: 0.69rem !important;
+}
+
+/* Cell kosong lebih kebaca tapi tetap dark */
+.admin-time-slot-cell {
+  min-height: 56px !important;
+  background:
+    linear-gradient(145deg, rgba(255, 255, 255, 0.026), rgba(255, 255, 255, 0.008)),
+    rgba(255, 255, 255, 0.01) !important;
+}
+
+.admin-time-row:nth-child(even) .admin-time-slot-cell {
+  background:
+    linear-gradient(145deg, rgba(143, 92, 255, 0.018), rgba(255, 255, 255, 0.006)),
+    rgba(255, 255, 255, 0.008) !important;
+}
+
+/* Event block lebih standout */
+.admin-time-slot-cell.has-event {
+  padding: 4px !important;
+  background:
+    radial-gradient(circle at top right, rgba(255, 184, 77, 0.12), transparent 42%),
+    rgba(255, 255, 255, 0.024) !important;
+}
+
+.admin-time-event-pill {
+  position: relative;
+  overflow: hidden;
+  min-height: 52px !important;
+  padding: 10px 10px 15px 13px !important;
+  border-color: rgba(255, 184, 77, 0.26) !important;
+  background:
+    radial-gradient(circle at 0% 0%, rgba(143, 92, 255, 0.16), transparent 38%),
+    radial-gradient(circle at 100% 0%, rgba(255, 138, 61, 0.14), transparent 38%),
+    linear-gradient(145deg, rgba(255, 255, 255, 0.084), rgba(255, 255, 255, 0.026)),
+    rgba(13, 10, 18, 0.88) !important;
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.07),
+    0 12px 26px rgba(0, 0, 0, 0.24),
+    0 0 0 1px rgba(255, 184, 77, 0.035) !important;
+}
+
+.admin-time-event-pill::before {
+  content: "";
+  position: absolute;
+  left: 4px;
+  top: 8px;
+  bottom: 8px;
+  width: 3px;
+  border-radius: 999px;
+  background: linear-gradient(180deg, #ffd27a, #ff8a3d);
+  box-shadow: 0 0 14px rgba(255, 184, 77, 0.32);
+}
+
+.admin-time-slot-cell.has-event:hover .admin-time-event-pill {
+  border-color: rgba(255, 184, 77, 0.42) !important;
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.08),
+    0 16px 34px rgba(0, 0, 0, 0.3),
+    0 0 0 3px rgba(143, 92, 255, 0.055) !important;
+}
+
+.admin-time-event-pill strong {
+  font-size: 0.82rem !important;
+  font-weight: 900 !important;
+  color: #fffaf2 !important;
+}
+
+.admin-time-event-pill small {
+  color: rgba(255, 250, 242, 0.62) !important;
+  font-size: 0.68rem !important;
+}
+
+/* Payment chip di dalam event */
+.admin-event-payment-chip {
+  width: fit-content;
+  max-width: 100%;
+  min-height: 20px;
+  display: inline-flex;
+  align-items: center;
+  padding: 0 7px;
+  border-radius: 999px;
+  border: 1px solid rgba(255, 184, 77, 0.22);
+  background: rgba(255, 184, 77, 0.09);
+  color: var(--accent-strong);
+  font-size: 0.62rem;
+  font-weight: 920;
+  letter-spacing: 0.03em;
+  text-transform: uppercase;
+}
+
+.admin-event-payment-chip.payment-paid {
+  border-color: rgba(114, 255, 157, 0.22);
+  background: rgba(114, 255, 157, 0.08);
+  color: #b9ffd0;
+}
+
+.admin-event-payment-chip.payment-down_payment {
+  border-color: rgba(255, 207, 112, 0.26);
+  background: rgba(255, 207, 112, 0.1);
+  color: #ffd27a;
+}
+
+.admin-event-payment-chip.payment-unpaid {
+  border-color: rgba(255, 107, 107, 0.24);
+  background: rgba(255, 107, 107, 0.08);
+  color: #ffb3b3;
+}
+
+/* Drag feedback tetap jelas */
+.admin-calendar-drag-feedback {
+  border-color: rgba(143, 92, 255, 0.28) !important;
+  background:
+    radial-gradient(circle at top right, rgba(143, 92, 255, 0.16), transparent 42%),
+    rgba(12, 9, 18, 0.96) !important;
+}
+
+/* Mobile tune */
+@media (max-width: 939px) {
+  .admin-calendar-grid-toolbar {
+    gap: 12px !important;
+  }
+
+  .admin-calendar-toolbar-actions {
+    justify-items: stretch !important;
+  }
+
+  .admin-calendar-summary-row {
+    grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+  }
+}
+
+@media (max-width: 520px) {
+  .admin-calendar-grid-toolbar h2 {
+    font-size: 1.25rem !important;
+  }
+
+  .admin-calendar-summary-row {
+    grid-template-columns: 1fr !important;
+  }
+
+  .admin-calendar-summary-row article {
+    min-height: 82px !important;
+  }
+
+  .admin-time-calendar-grid {
+    min-width: 760px !important;
+  }
+}
