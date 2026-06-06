@@ -1,8 +1,7 @@
 ﻿import { useMemo, useState } from "react";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import { publicCalendarRooms } from "../../../data/publicCalendar.js";
-import { addCalendarEvent, getCalendarEvents } from "../../../utils/calendarStorage.js";
-import AdminBookingModal from "./AdminBookingModal.jsx";
+import { getCalendarEvents } from "../../../utils/calendarStorage.js";
 
 const viewOptions = [
   { value: "day", label: "Hari" },
@@ -157,8 +156,7 @@ export default function AdminCalendarGrid() {
   const [viewMode, setViewMode] = useState("week");
   const [activeDate, setActiveDate] = useState(new Date());
   const [selectedRoom, setSelectedRoom] = useState("all");
-  const [events, setEvents] = useState(() => getCalendarEvents());
-  const [selectedSlot, setSelectedSlot] = useState(null);
+  const [events] = useState(() => getCalendarEvents());
 
   const roomOptions = useMemo(() => ["all", ...publicCalendarRooms], []);
 
@@ -214,40 +212,6 @@ export default function AdminCalendarGrid() {
     setActiveDate((current) => addMonths(current, 1));
   };
 
-  function handleOpenCreateModal({ date, dateLabel, dayName, hour }) {
-    setSelectedSlot({
-      date,
-      dateLabel,
-      dayName,
-      hour,
-      room: selectedRoom === "all" ? publicCalendarRooms[0] : selectedRoom,
-    });
-  }
-
-  function handleSaveBooking(payload) {
-    const time = payload.startTime + " - " + payload.endTime;
-
-    const isConflict = events.some((event) => {
-      const sameDate = event.date === payload.date;
-      const sameRoom = event.room === payload.room;
-      const sameStart = getEventStartTime(event.time) === payload.startTime;
-
-      return sameDate && sameRoom && sameStart;
-    });
-
-    if (isConflict) {
-      alert("Slot ini sudah memiliki jadwal untuk room tersebut.");
-      return;
-    }
-
-    const nextEvents = addCalendarEvent({
-      ...payload,
-      time,
-    });
-
-    setEvents(nextEvents);
-    setSelectedSlot(null);
-  }
   return (
     <section className="admin-calendar-grid-shell">
       <div className="admin-calendar-grid-toolbar">
@@ -336,19 +300,11 @@ export default function AdminCalendarGrid() {
 
                 if (slotEvents.length === 0) {
                   return (
-                    <button
+                                        <button
                       type="button"
                       className="admin-time-slot-cell is-empty"
-                      key={column.value + "-" + hour}
-                      aria-label={"Tambah jadwal " + column.label + " jam " + hour}
-                      onClick={() =>
-                        handleOpenCreateModal({
-                          date: column.value,
-                          dateLabel: column.label,
-                          dayName: column.dayName,
-                          hour,
-                        })
-                      }
+                      key={`${column.value}-${hour}`}
+                      aria-label={`Tambah jadwal ${column.label} jam ${hour}`}
                     />
                   );
                 }
@@ -376,17 +332,7 @@ export default function AdminCalendarGrid() {
           ))}
         </div>
       </div>
-      {selectedSlot && (
-        <AdminBookingModal
-          slot={selectedSlot}
-          defaultRoom={selectedSlot.room}
-          onClose={() => setSelectedSlot(null)}
-          onSave={handleSaveBooking}
-        />
-      )}
     </section>
   );
 }
-
-
 
