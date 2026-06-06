@@ -1,4 +1,5 @@
 import { useMemo, useState } from "react";
+import { Pencil, Plus, Trash2, X } from "lucide-react";
 import {
   getPriceSettings,
   resetPriceSettings,
@@ -83,12 +84,22 @@ const priceTabs = [
   },
 ];
 
+const roomOptions = ["Recording Room", "Rehearsal Room", "Content Room"];
+
 function formatCurrency(value) {
   return new Intl.NumberFormat("id-ID", {
     style: "currency",
     currency: "IDR",
     maximumFractionDigits: 0,
   }).format(Number(value || 0));
+}
+
+function cleanMoney(value) {
+  return String(value || "").replace(/[^\d]/g, "");
+}
+
+function createId(prefix) {
+  return `${prefix}-${Date.now()}`;
 }
 
 export default function AdminSettingsTabs() {
@@ -105,8 +116,8 @@ export default function AdminSettingsTabs() {
           <p className="section-eyebrow">Settings</p>
           <h2>Studio configuration center.</h2>
           <p>
-            Semua pengaturan operasional studio nanti dikumpulkan di sini. Untuk tahap awal,
-            kita mulai dari pricing engine agar booking, billing, dan POS bisa punya sumber
+            Semua pengaturan operasional studio dikumpulkan di sini. Untuk tahap awal,
+            kita mulai dari pricing engine agar booking, billing, dan POS punya sumber
             harga yang konsisten.
           </p>
         </div>
@@ -155,10 +166,17 @@ export default function AdminSettingsTabs() {
 function PriceSettingsTab() {
   const [activePriceTab, setActivePriceTab] = useState("base");
   const [priceSettings, setPriceSettings] = useState(() => getPriceSettings());
+  const [recordingModalMode, setRecordingModalMode] = useState(null);
+  const [selectedRecordingSession, setSelectedRecordingSession] = useState(null);
 
   const activePriceTabData = useMemo(() => {
     return priceTabs.find((tab) => tab.id === activePriceTab) || priceTabs[0];
   }, [activePriceTab]);
+
+  const persistSettings = (nextSettings) => {
+    setPriceSettings(nextSettings);
+    savePriceSettings(nextSettings);
+  };
 
   const handleReset = () => {
     const confirmed = window.confirm("Reset price settings ke data default?");
@@ -171,9 +189,55 @@ function PriceSettingsTab() {
     setPriceSettings(nextSettings);
   };
 
-  const handleSaveSnapshot = () => {
-    savePriceSettings(priceSettings);
-    alert("Price settings snapshot tersimpan.");
+  const handleCreateItem = () => {
+    if (activePriceTab !== "recording") {
+      alert("Untuk sementara create item baru baru aktif di Recording Sessions.");
+      return;
+    }
+
+    setSelectedRecordingSession(null);
+    setRecordingModalMode("create");
+  };
+
+  const handleEditRecordingSession = (item) => {
+    setSelectedRecordingSession(item);
+    setRecordingModalMode("edit");
+  };
+
+  const handleSaveRecordingSession = (payload) => {
+    const nextItem = {
+      ...payload,
+      id: payload.id || createId("rec"),
+    };
+
+    const nextSettings = {
+      ...priceSettings,
+      recordingSessions:
+        recordingModalMode === "edit"
+          ? priceSettings.recordingSessions.map((item) =>
+            item.id === nextItem.id ? nextItem : item
+          )
+          : [nextItem, ...priceSettings.recordingSessions],
+    };
+
+    persistSettings(nextSettings);
+    setRecordingModalMode(null);
+    setSelectedRecordingSession(null);
+  };
+
+  const handleDeleteRecordingSession = (itemId) => {
+    const confirmed = window.confirm("Hapus recording session ini?");
+
+    if (!confirmed) {
+      return;
+    }
+
+    const nextSettings = {
+      ...priceSettings,
+      recordingSessions: priceSettings.recordingSessions.filter((item) => item.id !== itemId),
+    };
+
+    persistSettings(nextSettings);
   };
 
   return (
@@ -183,9 +247,8 @@ function PriceSettingsTab() {
           <p className="section-eyebrow">Price settings</p>
           <h3>Pricing engine</h3>
           <p>
-            Di sini nanti admin bisa mengatur harga dasar, paket per durasi, recording
-            session, add-on, dan aturan pembayaran. Untuk sekarang data masih preview
-            dan sudah tersimpan di localStorage.
+            Di sini admin bisa mengatur harga dasar, paket per durasi, recording
+            session, add-on, dan aturan pembayaran. Data tersimpan di localStorage.
           </p>
         </div>
 
@@ -194,8 +257,9 @@ function PriceSettingsTab() {
             Reset default
           </button>
 
-          <button type="button" className="admin-settings-primary-action" onClick={handleSaveSnapshot}>
-            Save snapshot
+          <button type="button" className="admin-settings-primary-action" onClick={handleCreateItem}>
+            <Plus size={17} />
+            Create item
           </button>
         </div>
       </div>
@@ -223,8 +287,9 @@ function PriceSettingsTab() {
               <p>{activePriceTabData.description}</p>
             </div>
 
-            <button type="button" className="admin-settings-primary-action">
-              Create item
+            <button type="button" className="admin-settings-primary-action" onClick={handleCreateItem}>
+              <Plus size={17} />
+              {activePriceTab === "recording" ? "Create recording session" : "Create item"}
             </button>
           </div>
 
@@ -237,7 +302,11 @@ function PriceSettingsTab() {
           )}
 
           {activePriceTab === "recording" && (
-            <RecordingSessionSection items={priceSettings.recordingSessions} />
+            <RecordingSessionSection
+              items={priceSettings.recordingSessions}
+              onEdit={handleEditRecordingSession}
+              onDelete={handleDeleteRecordingSession}
+            />
           )}
 
           {activePriceTab === "addons" && (
@@ -249,6 +318,18 @@ function PriceSettingsTab() {
           )}
         </section>
       </div>
+
+      {recordingModalMode && (
+        <RecordingSessionModal
+          mode={recordingModalMode}
+          initialItem={selectedRecordingSession}
+          onClose={() => {
+            setRecordingModalMode(null);
+            setSelectedRecordingSession(null);
+          }}
+          onSave={handleSaveRecordingSession}
+        />
+      )}
     </div>
   );
 }
@@ -295,20 +376,49 @@ function PackagePriceSection({ items }) {
   );
 }
 
-function RecordingSessionSection({ items }) {
+function RecordingSessionSection({ items, onEdit, onDelete }) {
+  if (items.length === 0) {
+    return (
+      <div className="admin-settings-empty-state">
+        <span>RECORDING</span>
+        <h4>Belum ada recording session.</h4>
+        <p>
+          Klik tombol Create recording session untuk membuat paket recording baru,
+          tentukan jumlah jam dan harga.
+        </p>
+      </div>
+    );
+  }
+
   return (
     <div className="admin-price-card-grid">
       {items.map((item) => (
         <article className="admin-price-item-card is-recording" key={item.id}>
-          <span>Recording Session</span>
+          <div className="admin-price-card-top">
+            <span>Recording Session</span>
+            <em>{item.isActive ? "Active" : "Inactive"}</em>
+          </div>
+
           <strong>{item.name}</strong>
           <p>{item.description}</p>
 
-          <div>
+          <div className="admin-price-chip-row">
             <small>{item.roomName}</small>
             <small>{item.durationHours} jam</small>
             <small>{formatCurrency(item.price)}</small>
           </div>
+
+          <footer className="admin-price-card-actions">
+            <button type="button" onClick={() => onEdit(item)}>
+              <Pencil size={15} />
+              Edit
+            </button>
+
+            <button type="button" className="is-danger" onClick={() => onDelete(item.id)}>
+              <Trash2 size={15} />
+              Delete
+            </button>
+          </footer>
         </article>
       ))}
     </div>
@@ -355,6 +465,148 @@ function PaymentRulesSection({ rules }) {
         <span>Refund Policy</span>
         <strong>{rules.refundPolicy}</strong>
       </div>
+    </div>
+  );
+}
+
+function RecordingSessionModal({ mode, initialItem, onClose, onSave }) {
+  const [form, setForm] = useState({
+    id: initialItem?.id || "",
+    name: initialItem?.name || "",
+    roomName: initialItem?.roomName || "Recording Room",
+    durationHours: String(initialItem?.durationHours || "2"),
+    price: String(initialItem?.price || ""),
+    description: initialItem?.description || "",
+    isActive: initialItem?.isActive ?? true,
+  });
+
+  const updateField = (field, value) => {
+    setForm((current) => ({
+      ...current,
+      [field]: value,
+    }));
+  };
+
+  const handleSubmit = (event) => {
+    event.preventDefault();
+
+    if (!form.name.trim()) {
+      alert("Nama recording session wajib diisi.");
+      return;
+    }
+
+    if (Number(form.durationHours) <= 0) {
+      alert("Durasi harus lebih dari 0 jam.");
+      return;
+    }
+
+    const price = Number(cleanMoney(form.price) || 0);
+
+    if (price <= 0) {
+      alert("Harga harus lebih dari 0.");
+      return;
+    }
+
+    onSave({
+      ...form,
+      durationHours: Number(form.durationHours),
+      price,
+    });
+  };
+
+  return (
+    <div className="admin-modal-backdrop" role="presentation" onMouseDown={onClose}>
+      <section
+        className="admin-price-modal"
+        role="dialog"
+        aria-modal="true"
+        aria-label={mode === "edit" ? "Edit recording session" : "Create recording session"}
+        onMouseDown={(event) => event.stopPropagation()}
+      >
+        <header className="admin-price-modal-header">
+          <div>
+            <span>{mode === "edit" ? "Edit Session" : "New Session"}</span>
+            <h3>{mode === "edit" ? "Edit Recording Session" : "Create Recording Session"}</h3>
+            <p>Tentukan nama paket, room, durasi jam, dan harga.</p>
+          </div>
+
+          <button type="button" aria-label="Tutup modal" onClick={onClose}>
+            <X size={20} />
+          </button>
+        </header>
+
+        <form className="admin-price-modal-form" onSubmit={handleSubmit}>
+          <label>
+            <span>Nama Session</span>
+            <input
+              value={form.name}
+              placeholder="Contoh: Recording Vocal 2 Jam"
+              onChange={(event) => updateField("name", event.target.value)}
+            />
+          </label>
+
+          <label>
+            <span>Room</span>
+            <select value={form.roomName} onChange={(event) => updateField("roomName", event.target.value)}>
+              {roomOptions.map((room) => (
+                <option value={room} key={room}>
+                  {room}
+                </option>
+              ))}
+            </select>
+          </label>
+
+          <label>
+            <span>Durasi Jam</span>
+            <input
+              type="number"
+              min="1"
+              step="1"
+              value={form.durationHours}
+              onChange={(event) => updateField("durationHours", event.target.value)}
+            />
+          </label>
+
+          <label>
+            <span>Harga</span>
+            <input
+              inputMode="numeric"
+              value={form.price}
+              placeholder="Contoh: 300000"
+              onChange={(event) => updateField("price", cleanMoney(event.target.value))}
+            />
+          </label>
+
+          <label className="admin-price-modal-wide">
+            <span>Deskripsi</span>
+            <textarea
+              rows="4"
+              value={form.description}
+              placeholder="Contoh: Paket recording vocal basic selama 2 jam."
+              onChange={(event) => updateField("description", event.target.value)}
+            />
+          </label>
+
+          <label className="admin-price-toggle">
+            <input
+              type="checkbox"
+              checked={form.isActive}
+              onChange={(event) => updateField("isActive", event.target.checked)}
+            />
+            <span>Aktifkan session ini</span>
+          </label>
+
+          <footer className="admin-price-modal-actions">
+            <button type="button" className="admin-settings-secondary-action" onClick={onClose}>
+              Batal
+            </button>
+
+            <button type="submit" className="admin-settings-primary-action">
+              {mode === "edit" ? "Simpan Perubahan" : "Create Session"}
+            </button>
+          </footer>
+        </form>
+      </section>
     </div>
   );
 }

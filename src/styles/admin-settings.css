@@ -303,6 +303,7 @@
 }
 
 @media (max-width: 520px) {
+
   .admin-settings-hero,
   .admin-settings-panel-head,
   .admin-settings-empty-state {
@@ -317,6 +318,7 @@
     width: 100%;
   }
 }
+
 /* ================================
    Price Engine Sections
 ================================ */
@@ -446,7 +448,7 @@
 }
 
 .admin-price-table-head span,
-.admin-price-table-row > * {
+.admin-price-table-row>* {
   min-height: 50px;
   display: flex;
   align-items: center;
@@ -496,7 +498,7 @@
     rgba(0, 0, 0, 0.14);
 }
 
-.admin-price-item-card > span {
+.admin-price-item-card>span {
   width: fit-content;
   padding: 5px 8px;
   border-radius: 999px;
@@ -618,6 +620,7 @@
 }
 
 @media (max-width: 520px) {
+
   .admin-price-head-actions,
   .admin-settings-secondary-action,
   .admin-price-content-head .admin-settings-primary-action {
@@ -626,5 +629,231 @@
 
   .admin-price-subtabs button {
     min-width: 190px;
+  }
+}
+
+/* ================================
+   Recording Session CRUD Modal
+================================ */
+
+.admin-settings-primary-action {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+}
+
+.admin-price-card-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.admin-price-card-top>span {
+  width: fit-content;
+  padding: 5px 8px;
+  border-radius: 999px;
+  background: rgba(245, 184, 75, 0.1);
+  color: var(--accent);
+  font-size: 0.68rem;
+  font-weight: 950;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.admin-price-card-top em {
+  padding: 5px 8px;
+  border-radius: 999px;
+  background: rgba(114, 255, 157, 0.1);
+  color: #72ff9d;
+  font-size: 0.66rem;
+  font-style: normal;
+  font-weight: 950;
+  text-transform: uppercase;
+}
+
+.admin-price-chip-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.admin-price-card-actions {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  margin-top: 4px;
+}
+
+.admin-price-card-actions button {
+  min-height: 36px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 7px;
+  padding: 0 11px;
+  border: 1px solid var(--border-soft);
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.055);
+  color: var(--text-main);
+  font-size: 0.78rem;
+  font-weight: 900;
+}
+
+.admin-price-card-actions button.is-danger {
+  border-color: rgba(255, 107, 107, 0.24);
+  background: rgba(255, 107, 107, 0.08);
+  color: #ff9c9c;
+}
+
+.admin-price-modal {
+  width: min(100%, 760px);
+  max-height: min(92svh, 820px);
+  display: grid;
+  grid-template-rows: auto 1fr;
+  border: 1px solid var(--border-soft);
+  border-radius: 28px;
+  background:
+    radial-gradient(circle at top right, rgba(245, 184, 75, 0.12), transparent 34%),
+    #101010;
+  box-shadow: 0 28px 100px rgba(0, 0, 0, 0.62);
+  overflow: hidden;
+}
+
+.admin-price-modal-header {
+  min-height: 88px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 18px 20px;
+  border-bottom: 1px solid var(--border-soft);
+  background: rgba(255, 255, 255, 0.035);
+}
+
+.admin-price-modal-header span {
+  display: inline-flex;
+  width: fit-content;
+  margin-bottom: 7px;
+  padding: 5px 8px;
+  border-radius: 999px;
+  background: var(--accent-soft);
+  color: var(--accent);
+  font-size: 0.7rem;
+  font-weight: 950;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.admin-price-modal-header h3 {
+  margin: 0;
+  font-size: 1.45rem;
+  letter-spacing: -0.05em;
+}
+
+.admin-price-modal-header p {
+  margin: 4px 0 0;
+  color: var(--text-muted);
+  font-size: 0.9rem;
+}
+
+.admin-price-modal-header button {
+  width: 42px;
+  height: 42px;
+  flex: 0 0 auto;
+  display: grid;
+  place-items: center;
+  border: 1px solid var(--border-soft);
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.055);
+  color: var(--text-main);
+}
+
+.admin-price-modal-form {
+  display: grid;
+  gap: 13px;
+  padding: 18px;
+  overflow: auto;
+}
+
+.admin-price-modal-form label {
+  display: grid;
+  gap: 7px;
+}
+
+.admin-price-modal-form label span {
+  color: var(--text-soft);
+  font-size: 0.83rem;
+  font-weight: 850;
+}
+
+.admin-price-modal-form input,
+.admin-price-modal-form select,
+.admin-price-modal-form textarea {
+  width: 100%;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 16px;
+  background: rgba(0, 0, 0, 0.22);
+  color: var(--text-main);
+  outline: none;
+}
+
+.admin-price-modal-form input,
+.admin-price-modal-form select {
+  height: 48px;
+  padding: 0 13px;
+}
+
+.admin-price-modal-form textarea {
+  resize: vertical;
+  padding: 12px 13px;
+}
+
+.admin-price-modal-form select option {
+  color: #111;
+}
+
+.admin-price-modal-form input:focus,
+.admin-price-modal-form select:focus,
+.admin-price-modal-form textarea:focus {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 4px rgba(245, 184, 75, 0.1);
+}
+
+.admin-price-modal-wide {
+  grid-column: 1 / -1;
+}
+
+.admin-price-toggle {
+  grid-column: 1 / -1;
+  display: flex !important;
+  align-items: center;
+  gap: 10px !important;
+  padding: 13px;
+  border: 1px solid var(--border-soft);
+  border-radius: 16px;
+  background: rgba(255, 255, 255, 0.035);
+}
+
+.admin-price-toggle input {
+  width: 18px;
+  height: 18px;
+}
+
+.admin-price-modal-actions {
+  grid-column: 1 / -1;
+  display: grid;
+  gap: 10px;
+  padding-top: 4px;
+}
+
+@media (min-width: 720px) {
+  .admin-price-modal-form {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .admin-price-modal-actions {
+    grid-template-columns: 1fr 1fr;
   }
 }
