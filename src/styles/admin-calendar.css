@@ -2416,3 +2416,90 @@ body.is-admin-calendar-dragging .admin-time-slot-cell.is-empty[data-calendar-slo
     }
   }
 }
+
+
+/* ================================
+   Calendar Resize Booking
+================================ */
+
+body.is-admin-calendar-resizing {
+  cursor: ns-resize !important;
+  user-select: none;
+}
+
+body.is-admin-calendar-resizing * {
+  cursor: ns-resize !important;
+}
+
+.admin-time-event-pill {
+  position: relative;
+}
+
+.admin-time-resize-handle {
+  position: absolute;
+  left: 11px;
+  right: 11px;
+  bottom: 4px;
+  height: 8px;
+  display: block;
+  border-radius: 999px;
+  cursor: ns-resize;
+  opacity: 0;
+  background:
+    linear-gradient(90deg, transparent, rgba(245, 184, 75, 0.72), transparent);
+  transition:
+    opacity 140ms ease,
+    transform 140ms ease,
+    background 140ms ease;
+}
+
+.admin-time-resize-handle::after {
+  content: "";
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: 34px;
+  height: 3px;
+  border-radius: 999px;
+  background: rgba(245, 184, 75, 0.75);
+  transform: translate(-50%, -50%);
+  box-shadow:
+    0 -4px 0 rgba(245, 184, 75, 0.28),
+    0 4px 0 rgba(245, 184, 75, 0.28);
+}
+
+.admin-time-slot-cell.has-event:hover .admin-time-resize-handle,
+.admin-time-slot-cell.has-event.is-resize-source .admin-time-resize-handle {
+  opacity: 1;
+}
+
+.admin-time-resize-handle:hover {
+  transform: translateY(-1px);
+  background:
+    linear-gradient(90deg, transparent, rgba(245, 184, 75, 0.95), transparent);
+}
+
+.admin-time-slot-cell.has-event.is-resize-source {
+  opacity: 0.58 !important;
+  filter: saturate(0.85);
+}
+
+.admin-calendar-drop-guide:not(.is-conflict) {
+  border-color: rgba(255, 107, 107, 0.42);
+}
+
+.admin-calendar-drag-feedback.is-resize {
+  border-color: rgba(245, 184, 75, 0.28);
+}
+
+.admin-calendar-drag-feedback.is-resize strong {
+  color: var(--accent);
+}
+
+@media (max-width: 520px) {
+  .admin-time-resize-handle {
+    opacity: 0.8;
+    height: 10px;
+    bottom: 5px;
+  }
+}

@@ -621,6 +621,227 @@ export default function AdminCalendarGrid() {
     });
   }
 
+  function buildResizePatch(bookingEvent, targetSlot) {
+    if (!targetSlot?.hour || targetSlot.date !== bookingEvent.date) {
+      return null;
+    }
+
+    const startTime = getEventStartTime(bookingEvent.time);
+    const startHour = getHourNumber(startTime);
+    const targetHour = getHourNumber(targetSlot.hour);
+    const endHour = Math.max(startHour + 1, Math.min(targetHour + 1, 23));
+
+    return {
+      time: `${startTime} - ${formatHourLabel(endHour)}`,
+    };
+  }
+
+  function findResizeConflict(bookingEvent, patch) {
+    const patchRange = getPatchTimeRange(patch);
+
+    return events.find((event) => {
+      const isSameEvent = event.id === bookingEvent.id;
+      const sameDate = event.date === bookingEvent.date;
+      const sameRoom = event.room === bookingEvent.room;
+      const isCancelled = event.status === "cancelled";
+
+      if (isSameEvent || isCancelled || !sameDate || !sameRoom) {
+        return false;
+      }
+
+      return hasTimeOverlap(patchRange, getEventTimeRange(event));
+    });
+  }
+
+  function getResizePreviewForSlot(bookingEvent, targetSlot) {
+    if (!targetSlot || targetSlot.date !== bookingEvent.date) {
+      return null;
+    }
+
+    const columnIndex = columns.findIndex((column) => column.value === bookingEvent.date);
+    const startHour = getHourNumber(getEventStartTime(bookingEvent.time));
+    const startHourLabel = formatHourLabel(startHour);
+    const startHourIndex = adminCalendarHours.indexOf(startHourLabel);
+    const patch = buildResizePatch(bookingEvent, targetSlot);
+
+    if (columnIndex < 0 || startHourIndex < 0 || !patch) {
+      return null;
+    }
+
+    const patchRange = getPatchTimeRange(patch);
+    const span = Math.max(1, patchRange.endHour - patchRange.startHour);
+    const conflict = findResizeConflict(bookingEvent, patch);
+
+    return {
+      date: bookingEvent.date,
+      hour: startHourLabel,
+      span,
+      label: conflict ? "Bentrok" : "Resize",
+      isConflict: Boolean(conflict),
+      gridColumn: columnIndex + 2,
+      gridRow: `${startHourIndex + 2} / span ${span}`,
+    };
+  }
+
+  function buildResizeGhost(bookingEvent, pointerEvent, targetSlot) {
+    const patch = targetSlot ? buildResizePatch(bookingEvent, targetSlot) : null;
+    const preview = targetSlot ? getResizePreviewForSlot(bookingEvent, targetSlot) : null;
+
+    return {
+      x: pointerEvent.clientX,
+      y: pointerEvent.clientY,
+      label: bookingEvent.label || bookingEvent.packageName || bookingEvent.customerName || "Booking",
+      room: bookingEvent.room,
+      time: patch?.time || bookingEvent.time,
+      hours: preview?.span || getEventDurationSpan(bookingEvent),
+      isConflict: Boolean(preview?.isConflict),
+    };
+  }
+
+  function resizeBookingToSlot(bookingEvent, targetSlot) {
+    const patch = buildResizePatch(bookingEvent, targetSlot);
+
+    if (!patch) {
+      showDragFeedback({
+        type: "error",
+        title: "Resize gagal",
+        text: "Tarik handle di tanggal yang sama.",
+      });
+      return;
+    }
+
+    if (patch.time === bookingEvent.time) {
+      return;
+    }
+
+    const conflict = findResizeConflict(bookingEvent, patch);
+
+    if (conflict) {
+      showDragFeedback({
+        type: "error",
+        title: "Jadwal bentrok",
+        text: `${conflict.label || conflict.packageName || conflict.customerName || "Booking lain"} · ${conflict.time}`,
+      });
+      return;
+    }
+
+    const nextEvents = updateCalendarEvent(bookingEvent.id, patch);
+    const nextEvent = nextEvents.find((event) => event.id === bookingEvent.id);
+
+    setEvents(nextEvents);
+    setSelectedDetailEvent((current) => (current?.id === bookingEvent.id ? nextEvent : current));
+
+    showDragFeedback({
+      type: "success",
+      title: "Durasi diubah",
+      text: patch.time,
+    });
+  }
+
+  function handleResizePointerDown(pointerEvent, bookingEvent) {
+    if (pointerEvent.button !== 0) {
+      return;
+    }
+
+    pointerEvent.preventDefault();
+    pointerEvent.stopPropagation();
+
+    const sourceElement = pointerEvent.currentTarget.closest(".admin-time-slot-cell.has-event");
+
+    try {
+      pointerEvent.currentTarget.setPointerCapture(pointerEvent.pointerId);
+    } catch {
+      // Browser may reject pointer capture in edge cases.
+    }
+
+    sourceElement?.classList.add("is-resize-source");
+
+    const pointerStartX = pointerEvent.clientX;
+    const pointerStartY = pointerEvent.clientY;
+
+    dragActionRef.current = {
+      type: "resize",
+      bookingEvent,
+      pointerStartX,
+      pointerStartY,
+      hasMoved: false,
+    };
+
+    setDragGhost(buildResizeGhost(bookingEvent, pointerEvent, null));
+    setDropPreview(null);
+
+    const handlePointerMove = (moveEvent) => {
+      const action = dragActionRef.current;
+
+      if (!action) {
+        return;
+      }
+
+      const distanceX = Math.abs(moveEvent.clientX - action.pointerStartX);
+      const distanceY = Math.abs(moveEvent.clientY - action.pointerStartY);
+      const hasMovedEnough = distanceX > 3 || distanceY > 3;
+
+      if (!hasMovedEnough) {
+        return;
+      }
+
+      action.hasMoved = true;
+      suppressClickRef.current = true;
+      document.body.classList.add("is-admin-calendar-resizing");
+
+      const targetSlot = getCalendarSlotFromPoint(moveEvent.clientX, moveEvent.clientY);
+      const preview = getResizePreviewForSlot(action.bookingEvent, targetSlot);
+
+      setDropPreview(preview);
+      setDragGhost(buildResizeGhost(action.bookingEvent, moveEvent, targetSlot));
+
+      setDragFeedback({
+        type: preview?.isConflict ? "error" : "resize",
+        title: preview?.isConflict ? "Slot bentrok" : "Ubah durasi",
+        text: preview ? `${preview.date} · ${preview.span} jam` : "Tarik di tanggal yang sama",
+      });
+    };
+
+    const handlePointerUp = (upEvent) => {
+      const action = dragActionRef.current;
+
+      window.removeEventListener("pointermove", handlePointerMove);
+      window.removeEventListener("pointerup", handlePointerUp);
+      document.body.classList.remove("is-admin-calendar-resizing");
+      sourceElement?.classList.remove("is-resize-source");
+
+      try {
+        pointerEvent.currentTarget.releasePointerCapture(upEvent.pointerId);
+      } catch {
+        // Ignore release failures.
+      }
+
+      dragActionRef.current = null;
+      setDragGhost(null);
+      setDropPreview(null);
+
+      if (!action?.hasMoved) {
+        window.setTimeout(() => {
+          suppressClickRef.current = false;
+        }, 0);
+        return;
+      }
+
+      const targetSlot = getCalendarSlotFromPoint(upEvent.clientX, upEvent.clientY);
+
+      if (targetSlot) {
+        resizeBookingToSlot(action.bookingEvent, targetSlot);
+      }
+
+      window.setTimeout(() => {
+        suppressClickRef.current = false;
+      }, 0);
+    };
+
+    window.addEventListener("pointermove", handlePointerMove);
+    window.addEventListener("pointerup", handlePointerUp);
+  }
+
   function handleEventPointerDown(pointerEvent, bookingEvent) {
     if (pointerEvent.button !== 0) {
       return;
@@ -993,7 +1214,7 @@ export default function AdminCalendarGrid() {
                 gridRow: dropPreview.gridRow,
               }}
             >
-              <span>{dropPreview.isConflict ? "Bentrok" : "Drop"}</span>
+              <span>{dropPreview.label || (dropPreview.isConflict ? "Bentrok" : "Drop")}</span>
             </div>
           )}
 
@@ -1076,6 +1297,15 @@ export default function AdminCalendarGrid() {
                       <span className={`admin-time-event-pill status-${event.status} payment-${event.paymentStatus || "unpaid"}`} key={event.id}>
                         <strong>{event.label || getStatusLabel(event.status)}</strong>
                         <small>{event.room} · {getPaymentShortLabel(event.paymentStatus)}</small>
+                        <span
+                          className="admin-time-resize-handle"
+                          aria-hidden="true"
+                          onPointerDown={(pointerEvent) => handleResizePointerDown(pointerEvent, event)}
+                          onClick={(clickEvent) => {
+                            clickEvent.preventDefault();
+                            clickEvent.stopPropagation();
+                          }}
+                        />
                       </span>
                     ))}
 
