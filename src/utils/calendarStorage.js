@@ -46,6 +46,26 @@ export function addCalendarEvent(event) {
   return nextEvents;
 }
 
+
+export function updateCalendarEvent(eventId, payload) {
+  const events = getCalendarEvents();
+
+  const nextEvents = events.map((event) => {
+    if (event.id !== eventId) {
+      return event;
+    }
+
+    return {
+      ...event,
+      ...payload,
+      id: eventId,
+      updatedAt: new Date().toISOString(),
+    };
+  });
+
+  saveCalendarEvents(nextEvents);
+  return nextEvents;
+}
 export function deleteCalendarEvent(eventId) {
   const events = getCalendarEvents();
   const nextEvents = events.filter((event) => event.id !== eventId);

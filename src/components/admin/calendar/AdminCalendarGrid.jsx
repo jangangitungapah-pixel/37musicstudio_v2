@@ -1,7 +1,7 @@
 ﻿import { useMemo, useState } from "react";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import { publicCalendarRooms } from "../../../data/publicCalendar.js";
-import { addCalendarEvent, getCalendarEvents } from "../../../utils/calendarStorage.js";
+import { addCalendarEvent, deleteCalendarEvent, getCalendarEvents, updateCalendarEvent } from "../../../utils/calendarStorage.js";
 import AdminBookingModal from "./AdminBookingModal.jsx";
 
 const viewOptions = [
@@ -159,6 +159,7 @@ export default function AdminCalendarGrid() {
   const [selectedRoom, setSelectedRoom] = useState("all");
   const [events, setEvents] = useState(() => getCalendarEvents());
   const [selectedSlot, setSelectedSlot] = useState(null);
+  const [selectedEvent, setSelectedEvent] = useState(null);
 
   const roomOptions = useMemo(() => ["all", ...publicCalendarRooms], []);
 
@@ -215,6 +216,7 @@ export default function AdminCalendarGrid() {
   };
 
   function handleOpenCreateModal({ date, dateLabel, dayName, hour }) {
+    setSelectedEvent(null);
     setSelectedSlot({
       date,
       dateLabel,
@@ -247,6 +249,57 @@ export default function AdminCalendarGrid() {
 
     setEvents(nextEvents);
     setSelectedSlot(null);
+  }
+  function handleOpenEditModal(event) {
+    setSelectedSlot(null);
+    setSelectedEvent(event);
+  }
+
+  function handleSaveModalBooking(payload) {
+    const time = payload.startTime + " - " + payload.endTime;
+
+    const isConflict = events.some((event) => {
+      const isSameEvent = selectedEvent && event.id === selectedEvent.id;
+      const sameDate = event.date === payload.date;
+      const sameRoom = event.room === payload.room;
+      const sameStart = getEventStartTime(event.time) === payload.startTime;
+
+      return !isSameEvent && sameDate && sameRoom && sameStart;
+    });
+
+    if (isConflict) {
+      alert("Slot ini sudah memiliki jadwal untuk room tersebut.");
+      return;
+    }
+
+    if (selectedEvent) {
+      const nextEvents = updateCalendarEvent(selectedEvent.id, {
+        ...payload,
+        time,
+      });
+
+      setEvents(nextEvents);
+      setSelectedEvent(null);
+      return;
+    }
+
+    const nextEvents = addCalendarEvent({
+      ...payload,
+      time,
+    });
+
+    setEvents(nextEvents);
+    setSelectedSlot(null);
+  }
+
+  function handleDeleteModalBooking() {
+    if (!selectedEvent) {
+      return;
+    }
+
+    const nextEvents = deleteCalendarEvent(selectedEvent.id);
+    setEvents(nextEvents);
+    setSelectedEvent(null);
   }
   return (
     <section className="admin-calendar-grid-shell">
@@ -358,6 +411,7 @@ export default function AdminCalendarGrid() {
                     type="button"
                     className="admin-time-slot-cell has-event"
                     key={`${column.value}-${hour}`}
+                    onClick={() => handleOpenEditModal(slotEvents[0])}
                   >
                     {slotEvents.slice(0, 2).map((event) => (
                       <span className={`admin-time-event-pill status-${event.status}`} key={event.id}>
@@ -376,17 +430,24 @@ export default function AdminCalendarGrid() {
           ))}
         </div>
       </div>
-      {selectedSlot && (
+      {(selectedSlot || selectedEvent) && (
         <AdminBookingModal
-          slot={selectedSlot}
-          defaultRoom={selectedSlot.room}
-          onClose={() => setSelectedSlot(null)}
-          onSave={handleSaveBooking}
+          slot={selectedSlot || selectedEvent}
+          defaultRoom={(selectedSlot || selectedEvent)?.room}
+          mode={selectedEvent ? "edit" : "create"}
+          initialEvent={selectedEvent}
+          onClose={() => {
+            setSelectedSlot(null);
+            setSelectedEvent(null);
+          }}
+          onSave={handleSaveModalBooking}
+          onDelete={selectedEvent ? handleDeleteModalBooking : undefined}
         />
       )}
     </section>
   );
 }
+
 
 
 

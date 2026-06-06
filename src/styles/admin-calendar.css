@@ -1033,3 +1033,21 @@
     grid-template-columns: 1fr;
   }
 }
+
+/* Edit modal destructive action */
+.admin-modal-delete {
+  min-height: 52px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  border: 1px solid rgba(255, 107, 107, 0.28);
+  border-radius: 999px;
+  background: rgba(255, 107, 107, 0.1);
+  color: #ff9c9c;
+  font-weight: 950;
+}
+
+.admin-time-slot-cell.has-event {
+  cursor: pointer;
+}
