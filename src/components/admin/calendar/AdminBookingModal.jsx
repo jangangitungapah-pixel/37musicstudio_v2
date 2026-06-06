@@ -1,5 +1,5 @@
-import { useEffect, useState } from "react";
-import { X } from "lucide-react";
+import { useEffect, useMemo, useState } from "react";
+import { Trash2, X } from "lucide-react";
 import { publicCalendarRooms } from "../../../data/publicCalendar.js";
 
 const scheduleTypes = [
@@ -44,7 +44,7 @@ const timeOptions = Array.from({ length: 14 }, (_, index) => {
 });
 
 function getTimeNumber(time) {
-  return Number.parseInt(time.split(".")[0], 10);
+  return Number.parseInt(String(time || "10.00").split(".")[0], 10);
 }
 
 function getNextHourLabel(startTime) {
@@ -56,24 +56,70 @@ function cleanMoney(value) {
   return String(value || "").replace(/[^\d]/g, "");
 }
 
-export default function AdminBookingModal({ slot, defaultRoom, onClose, onSave }) {
+function parseEventTime(time, fallbackStart = "10.00") {
+  if (!time || typeof time !== "string") {
+    return {
+      startTime: fallbackStart,
+      endTime: getNextHourLabel(fallbackStart),
+    };
+  }
+
+  const parts = time.split("-").map((item) => item.trim());
+  const startTime = parts[0] || fallbackStart;
+  const endTime = parts[1] || getNextHourLabel(startTime);
+
+  return {
+    startTime,
+    endTime,
+  };
+}
+
+function inferType(event) {
+  if (event?.type) {
+    return event.type;
+  }
+
+  if (event?.status === "maintenance") {
+    return "maintenance";
+  }
+
+  if (event?.status === "blocked") {
+    return "block";
+  }
+
+  return "booking";
+}
+
+export default function AdminBookingModal({
+  slot,
+  defaultRoom,
+  initialEvent = null,
+  mode = "create",
+  onClose,
+  onSave,
+  onDelete,
+}) {
+  const isEditMode = mode === "edit";
+  const inferredType = inferType(initialEvent);
+  const parsedTime = parseEventTime(initialEvent?.time, slot?.hour || "10.00");
+
   const [form, setForm] = useState({
-    type: "booking",
-    room: defaultRoom || publicCalendarRooms[0],
-    date: slot?.date || "",
-    startTime: slot?.hour || "10.00",
-    endTime: getNextHourLabel(slot?.hour || "10.00"),
-    customerName: "",
-    customerPhone: "",
-    peopleCount: "4",
-    sessionCategory: "Latihan Band",
-    packageName: "Regular Session",
-    status: "pending",
-    price: "",
-    deposit: "",
-    paymentStatus: "unpaid",
-    customerNote: "",
-    adminNote: "",
+    type: inferredType,
+    room: initialEvent?.room || defaultRoom || publicCalendarRooms[0],
+    date: initialEvent?.date || slot?.date || "",
+    startTime: parsedTime.startTime,
+    endTime: parsedTime.endTime,
+    customerName: initialEvent?.customerName || "",
+    customerPhone: initialEvent?.customerPhone || "",
+    peopleCount: String(initialEvent?.peopleCount || "4"),
+    sessionCategory: initialEvent?.sessionCategory || "Latihan Band",
+    packageName: initialEvent?.packageName || "Regular Session",
+    status: initialEvent?.status || "pending",
+    price: String(initialEvent?.price || ""),
+    deposit: String(initialEvent?.deposit || ""),
+    paymentStatus: initialEvent?.paymentStatus || "unpaid",
+    customerNote: initialEvent?.customerNote || "",
+    adminNote: initialEvent?.adminNote || "",
   });
 
   useEffect(() => {
@@ -86,6 +132,10 @@ export default function AdminBookingModal({ slot, defaultRoom, onClose, onSave }
     window.addEventListener("keydown", handleKeyDown);
     return () => window.removeEventListener("keydown", handleKeyDown);
   }, [onClose]);
+
+  const statusOptions = useMemo(() => {
+    return statusByType[form.type] || statusByType.booking;
+  }, [form.type]);
 
   const updateField = (field, value) => {
     setForm((current) => {
@@ -165,7 +215,17 @@ export default function AdminBookingModal({ slot, defaultRoom, onClose, onSave }
     });
   };
 
-  const statusOptions = statusByType[form.type] || statusByType.booking;
+  const handleDelete = () => {
+    if (!onDelete) {
+      return;
+    }
+
+    const confirmed = window.confirm("Hapus jadwal ini dari calendar?");
+
+    if (confirmed) {
+      onDelete();
+    }
+  };
 
   return (
     <div className="admin-modal-backdrop" role="presentation" onMouseDown={onClose}>
@@ -173,15 +233,17 @@ export default function AdminBookingModal({ slot, defaultRoom, onClose, onSave }
         className="admin-booking-modal"
         role="dialog"
         aria-modal="true"
-        aria-label="Tambah jadwal"
+        aria-label={isEditMode ? "Edit jadwal" : "Tambah jadwal"}
         onMouseDown={(event) => event.stopPropagation()}
       >
         <header className="admin-booking-modal-header">
           <div>
-            <span className="admin-modal-kicker">New Slot</span>
-            <h2>Tambah Jadwal</h2>
+            <span className="admin-modal-kicker">
+              {isEditMode ? "Edit Slot" : "New Slot"}
+            </span>
+            <h2>{isEditMode ? "Edit Jadwal" : "Tambah Jadwal"}</h2>
             <p>
-              {slot?.dayName}, {slot?.dateLabel} · {slot?.hour}
+              {slot?.dayName || "Calendar"} · {form.date} · {form.startTime}
             </p>
           </div>
 
@@ -386,12 +448,19 @@ export default function AdminBookingModal({ slot, defaultRoom, onClose, onSave }
           </div>
 
           <footer className="admin-booking-modal-actions">
+            {isEditMode && (
+              <button type="button" className="admin-modal-delete" onClick={handleDelete}>
+                <Trash2 size={17} />
+                Hapus
+              </button>
+            )}
+
             <button type="button" className="admin-modal-cancel" onClick={onClose}>
               Batal
             </button>
 
             <button type="submit" className="admin-modal-submit">
-              Simpan Jadwal
+              {isEditMode ? "Simpan Perubahan" : "Simpan Jadwal"}
             </button>
           </footer>
         </form>
