@@ -1967,3 +1967,452 @@
 .admin-time-event-pill.payment-unpaid small {
   color: rgba(255, 190, 190, 0.82) !important;
 }
+
+
+/* ================================
+   Calendar Search Filter Bar
+================================ */
+
+.admin-calendar-filter-bar {
+  display: grid;
+  gap: 10px;
+  padding: 12px;
+  border: 1px solid var(--border-soft);
+  border-radius: 14px;
+  background:
+    linear-gradient(145deg, rgba(255, 255, 255, 0.045), rgba(255, 255, 255, 0.018)),
+    rgba(0, 0, 0, 0.14);
+}
+
+.admin-calendar-search-box {
+  display: grid;
+  gap: 6px;
+}
+
+.admin-calendar-search-box span,
+.admin-calendar-filter-group > span {
+  color: var(--text-muted);
+  font-size: 0.68rem;
+  font-weight: 860;
+  letter-spacing: 0.075em;
+  text-transform: uppercase;
+}
+
+.admin-calendar-search-box input {
+  width: 100%;
+  min-height: 42px;
+  padding: 0 12px;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 10px;
+  background: rgba(0, 0, 0, 0.2);
+  color: var(--text-main);
+  outline: none;
+  font-size: 0.9rem;
+  font-weight: 620;
+}
+
+.admin-calendar-search-box input:focus {
+  border-color: rgba(245, 184, 75, 0.62);
+  box-shadow: 0 0 0 3px rgba(245, 184, 75, 0.1);
+}
+
+.admin-calendar-filter-group {
+  display: grid;
+  gap: 7px;
+  min-width: 0;
+}
+
+.admin-calendar-filter-group > div {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.admin-calendar-filter-group button {
+  min-height: 34px;
+  padding: 0 10px;
+  border: 1px solid var(--border-soft);
+  border-radius: 10px;
+  background: rgba(255, 255, 255, 0.045);
+  color: var(--text-muted);
+  font-size: 0.76rem;
+  font-weight: 820;
+}
+
+.admin-calendar-filter-group button:hover {
+  color: var(--text-main);
+  border-color: rgba(245, 184, 75, 0.28);
+}
+
+.admin-calendar-filter-group button.is-active {
+  border-color: rgba(245, 184, 75, 0.46);
+  background: rgba(245, 184, 75, 0.12);
+  color: var(--accent);
+}
+
+@media (min-width: 920px) {
+  .admin-calendar-filter-bar {
+    grid-template-columns: minmax(220px, 1.1fr) minmax(280px, 1.3fr) minmax(220px, 1fr);
+    align-items: end;
+  }
+}
+
+@media (max-width: 520px) {
+  .admin-calendar-filter-bar {
+    padding: 10px;
+    border-radius: 12px;
+  }
+
+  .admin-calendar-filter-group > div {
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    padding-bottom: 2px;
+  }
+
+  .admin-calendar-filter-group button {
+    flex: 0 0 auto;
+  }
+}
+
+
+/* ================================
+   Calendar Summary Panel
+================================ */
+
+.admin-calendar-summary-row {
+  display: grid;
+  gap: 10px;
+}
+
+.admin-calendar-summary-row article {
+  min-width: 0;
+  display: grid;
+  gap: 5px;
+  padding: 13px;
+  border: 1px solid var(--border-soft);
+  border-radius: 14px;
+  background:
+    linear-gradient(145deg, rgba(255, 255, 255, 0.052), rgba(255, 255, 255, 0.018)),
+    rgba(0, 0, 0, 0.16);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.035);
+}
+
+.admin-calendar-summary-row article span {
+  color: var(--text-muted);
+  font-size: 0.68rem;
+  font-weight: 860;
+  letter-spacing: 0.075em;
+  text-transform: uppercase;
+}
+
+.admin-calendar-summary-row article strong {
+  overflow: hidden;
+  color: var(--text-main);
+  font-size: clamp(1.25rem, 2.7vw, 1.9rem);
+  font-weight: 780;
+  line-height: 1;
+  letter-spacing: -0.06em;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.admin-calendar-summary-row article small {
+  overflow: hidden;
+  color: var(--text-muted);
+  font-size: 0.72rem;
+  font-weight: 650;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.admin-calendar-summary-row article:nth-child(2) {
+  border-color: rgba(255, 207, 112, 0.2);
+  background:
+    radial-gradient(circle at top right, rgba(255, 207, 112, 0.12), transparent 46%),
+    rgba(255, 255, 255, 0.032);
+}
+
+.admin-calendar-summary-row article:nth-child(3) {
+  border-color: rgba(245, 184, 75, 0.22);
+}
+
+.admin-calendar-summary-row article:nth-child(4) {
+  border-color: rgba(114, 255, 157, 0.18);
+  background:
+    radial-gradient(circle at top right, rgba(114, 255, 157, 0.1), transparent 46%),
+    rgba(255, 255, 255, 0.032);
+}
+
+.admin-calendar-summary-row article:nth-child(5) {
+  border-color: rgba(245, 184, 75, 0.28);
+  background:
+    radial-gradient(circle at top right, rgba(245, 184, 75, 0.14), transparent 46%),
+    rgba(255, 255, 255, 0.034);
+}
+
+@media (min-width: 760px) {
+  .admin-calendar-summary-row {
+    grid-template-columns: repeat(5, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 759px) {
+  .admin-calendar-summary-row {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .admin-calendar-summary-row article:last-child {
+    grid-column: 1 / -1;
+  }
+}
+
+@media (max-width: 420px) {
+  .admin-calendar-summary-row {
+    grid-template-columns: 1fr;
+  }
+
+  .admin-calendar-summary-row article:last-child {
+    grid-column: auto;
+  }
+}
+
+
+/* ================================
+   Calendar Drag Move
+================================ */
+
+body.is-admin-calendar-dragging {
+  cursor: grabbing !important;
+  user-select: none;
+}
+
+body.is-admin-calendar-dragging * {
+  cursor: grabbing !important;
+}
+
+.admin-time-slot-cell.has-event {
+  touch-action: none;
+  cursor: grab;
+}
+
+.admin-time-slot-cell.has-event:active {
+  cursor: grabbing;
+}
+
+.admin-time-slot-cell.is-empty[data-calendar-slot="true"] {
+  transition:
+    background 120ms ease,
+    box-shadow 120ms ease;
+}
+
+body.is-admin-calendar-dragging .admin-time-slot-cell.is-empty[data-calendar-slot="true"]:hover {
+  background: rgba(245, 184, 75, 0.09) !important;
+  box-shadow: inset 0 0 0 1px rgba(245, 184, 75, 0.26);
+}
+
+.admin-calendar-drag-feedback {
+  display: grid;
+  gap: 4px;
+  width: fit-content;
+  max-width: 100%;
+  padding: 10px 12px;
+  border: 1px solid rgba(245, 184, 75, 0.28);
+  border-radius: 12px;
+  background:
+    radial-gradient(circle at top right, rgba(245, 184, 75, 0.12), transparent 42%),
+    rgba(16, 16, 16, 0.96);
+  box-shadow: 0 14px 42px rgba(0, 0, 0, 0.35);
+}
+
+.admin-calendar-drag-feedback strong {
+  color: var(--text-main);
+  font-size: 0.82rem;
+  font-weight: 860;
+}
+
+.admin-calendar-drag-feedback span {
+  color: var(--text-muted);
+  font-size: 0.76rem;
+  font-weight: 680;
+}
+
+.admin-calendar-drag-feedback.is-success {
+  border-color: rgba(114, 255, 157, 0.24);
+}
+
+.admin-calendar-drag-feedback.is-success strong {
+  color: #b9ffd0;
+}
+
+.admin-calendar-drag-feedback.is-error {
+  border-color: rgba(255, 107, 107, 0.3);
+}
+
+.admin-calendar-drag-feedback.is-error strong {
+  color: #ffb3b3;
+}
+
+@media (max-width: 520px) {
+  .admin-calendar-drag-feedback {
+    width: 100%;
+  }
+}
+
+
+/* Drag source should not block slot hit testing */
+.admin-time-slot-cell.has-event.is-drag-source {
+  opacity: 0.62;
+  pointer-events: none;
+}
+
+
+/* ================================
+   Calendar Drag Ghost Animation
+================================ */
+
+.admin-calendar-drag-ghost {
+  position: fixed;
+  left: var(--ghost-x);
+  top: var(--ghost-y);
+  z-index: 9999;
+  width: min(230px, calc(100vw - 32px));
+  min-height: max(50px, calc(var(--ghost-hours) * 38px));
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  gap: 5px;
+  padding: 12px 13px;
+  border: 1px solid rgba(245, 184, 75, 0.42);
+  border-radius: 13px;
+  background:
+    radial-gradient(circle at top right, rgba(245, 184, 75, 0.18), transparent 48%),
+    linear-gradient(180deg, rgba(25, 22, 15, 0.96), rgba(15, 14, 12, 0.94));
+  box-shadow:
+    0 22px 70px rgba(0, 0, 0, 0.52),
+    0 0 0 1px rgba(245, 184, 75, 0.08),
+    inset 0 1px 0 rgba(255, 255, 255, 0.08);
+  color: var(--text-main);
+  pointer-events: none;
+  transform: translate(14px, -50%) rotate(-1.5deg) scale(1.03);
+  transform-origin: center;
+  animation: adminDragLift 160ms ease-out both;
+  backdrop-filter: blur(14px);
+}
+
+.admin-calendar-drag-ghost strong {
+  overflow: hidden;
+  font-size: 0.88rem;
+  font-weight: 860;
+  line-height: 1.15;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.admin-calendar-drag-ghost span {
+  overflow: hidden;
+  color: var(--text-muted);
+  font-size: 0.76rem;
+  font-weight: 700;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.admin-calendar-drag-ghost.is-conflict {
+  border-color: rgba(255, 107, 107, 0.52);
+  background:
+    radial-gradient(circle at top right, rgba(255, 107, 107, 0.18), transparent 48%),
+    linear-gradient(180deg, rgba(35, 16, 16, 0.96), rgba(16, 12, 12, 0.94));
+}
+
+.admin-calendar-drop-guide {
+  z-index: 12;
+  display: grid;
+  place-items: center;
+  margin: 2px;
+  border: 1px dashed rgba(255, 107, 107, 0.52);
+  border-radius: 10px;
+  background:
+    repeating-linear-gradient(
+      -45deg,
+      rgba(255, 107, 107, 0.09) 0,
+      rgba(255, 107, 107, 0.09) 8px,
+      rgba(255, 107, 107, 0.045) 8px,
+      rgba(255, 107, 107, 0.045) 16px
+    );
+  box-shadow:
+    inset 0 0 0 1px rgba(255, 107, 107, 0.18),
+    0 0 24px rgba(255, 107, 107, 0.08);
+  pointer-events: none;
+  animation: adminDropGuidePulse 900ms ease-in-out infinite;
+}
+
+.admin-calendar-drop-guide span {
+  padding: 5px 8px;
+  border-radius: 999px;
+  background: rgba(18, 10, 10, 0.72);
+  color: #ffb3b3;
+  font-size: 0.68rem;
+  font-weight: 900;
+  letter-spacing: 0.075em;
+  text-transform: uppercase;
+}
+
+.admin-calendar-drop-guide.is-conflict {
+  border-color: rgba(255, 107, 107, 0.78);
+  background:
+    repeating-linear-gradient(
+      -45deg,
+      rgba(255, 107, 107, 0.16) 0,
+      rgba(255, 107, 107, 0.16) 8px,
+      rgba(255, 107, 107, 0.075) 8px,
+      rgba(255, 107, 107, 0.075) 16px
+    );
+}
+
+.admin-time-slot-cell.has-event.is-drag-source {
+  opacity: 0.38 !important;
+  transform: scale(0.985);
+  filter: saturate(0.8);
+}
+
+@keyframes adminDragLift {
+  from {
+    opacity: 0;
+    transform: translate(8px, -46%) rotate(0deg) scale(0.96);
+  }
+
+  to {
+    opacity: 1;
+    transform: translate(14px, -50%) rotate(-1.5deg) scale(1.03);
+  }
+}
+
+@keyframes adminDropGuidePulse {
+  0%,
+  100% {
+    opacity: 0.62;
+  }
+
+  50% {
+    opacity: 1;
+  }
+}
+
+@media (max-width: 520px) {
+  .admin-calendar-drag-ghost {
+    width: min(210px, calc(100vw - 26px));
+    transform: translate(-50%, -112%) rotate(-1deg) scale(1.02);
+  }
+
+  @keyframes adminDragLift {
+    from {
+      opacity: 0;
+      transform: translate(-50%, -104%) rotate(0deg) scale(0.96);
+    }
+
+    to {
+      opacity: 1;
+      transform: translate(-50%, -112%) rotate(-1deg) scale(1.02);
+    }
+  }
+}

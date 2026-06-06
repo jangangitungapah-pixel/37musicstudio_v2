@@ -1,4 +1,4 @@
-﻿import { useMemo, useState } from "react";
+﻿import { useMemo, useRef, useState } from "react";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import { publicCalendarRooms } from "../../../data/publicCalendar.js";
 import {
@@ -15,7 +15,21 @@ const viewOptions = [
   { value: "week", label: "Minggu" },
   { value: "month", label: "Bulan" },
 ];
+const statusFilterOptions = [
+  { value: "all", label: "All" },
+  { value: "pending", label: "Pending" },
+  { value: "booked", label: "Booked" },
+  { value: "maintenance", label: "Maintenance" },
+  { value: "blocked", label: "Blocked" },
+  { value: "cancelled", label: "Cancelled" },
+];
 
+const paymentFilterOptions = [
+  { value: "all", label: "All" },
+  { value: "unpaid", label: "Unpaid" },
+  { value: "down_payment", label: "DP" },
+  { value: "paid", label: "Lunas" },
+];
 const dayNames = ["Min", "Sen", "Sel", "Rab", "Kam", "Jum", "Sab"];
 
 const adminCalendarHours = Array.from({ length: 13 }, (_, index) => {
@@ -79,6 +93,15 @@ function formatMonthYear(date) {
   }).format(date);
 }
 
+function formatCurrencyCompact(value) {
+  return new Intl.NumberFormat("id-ID", {
+    style: "currency",
+    currency: "IDR",
+    notation: "compact",
+    maximumFractionDigits: 1,
+  }).format(Number(value || 0));
+}
+
 function getEventStartTime(time) {
   if (!time) {
     return "";
@@ -107,6 +130,76 @@ function getEventDurationSpan(event) {
   return Math.max(1, endHour - startHour);
 }
 
+function formatHourLabel(hourNumber) {
+  return `${String(Math.min(Math.max(hourNumber, 0), 23)).padStart(2, "0")}.00`;
+}
+
+function getEventTimeRange(event) {
+  const startHour = getHourNumber(getEventStartTime(event.time));
+  const endTime = getEventEndTime(event.time);
+  const parsedEndHour = endTime ? getHourNumber(endTime) : startHour + 1;
+
+  return {
+    startHour,
+    endHour: Math.max(startHour + 1, parsedEndHour),
+  };
+}
+
+function getPatchTimeRange(patch) {
+  const startHour = getHourNumber(getEventStartTime(patch.time));
+  const endTime = getEventEndTime(patch.time);
+  const parsedEndHour = endTime ? getHourNumber(endTime) : startHour + 1;
+
+  return {
+    startHour,
+    endHour: Math.max(startHour + 1, parsedEndHour),
+  };
+}
+
+function hasTimeOverlap(firstRange, secondRange) {
+  return firstRange.startHour < secondRange.endHour && secondRange.startHour < firstRange.endHour;
+}
+
+function getCalendarSlotFromPoint(clientX, clientY) {
+  const dayHeaders = Array.from(document.querySelectorAll("[data-calendar-day]"));
+  const hourCells = Array.from(document.querySelectorAll("[data-calendar-hour]"));
+
+  const dayTarget = dayHeaders.find((element) => {
+    const rect = element.getBoundingClientRect();
+
+    return clientX >= rect.left && clientX <= rect.right;
+  });
+
+  const hourTarget = hourCells.find((element) => {
+    const rect = element.getBoundingClientRect();
+
+    return clientY >= rect.top && clientY <= rect.bottom;
+  });
+
+  if (dayTarget?.dataset?.calendarDay && hourTarget?.dataset?.calendarHour) {
+    return {
+      date: dayTarget.dataset.calendarDay,
+      hour: hourTarget.dataset.calendarHour,
+    };
+  }
+
+  const elementsAtPoint = document.elementsFromPoint(clientX, clientY);
+
+  const target = elementsAtPoint
+    .map((element) => element?.closest?.("[data-calendar-slot='true']"))
+    .find(Boolean);
+
+  if (!target?.dataset?.date || !target?.dataset?.hour) {
+    return null;
+  }
+
+  return {
+    date: target.dataset.date,
+    hour: target.dataset.hour,
+  };
+}
+
+
 function getTimeRangeFromEvent(event) {
   const startHour = getHourNumber(getEventStartTime(event.time));
   const endTime = getEventEndTime(event.time);
@@ -127,11 +220,6 @@ function getTimeRangeFromPayload(payload) {
     endHour: Math.max(startHour + 1, endHour),
   };
 }
-
-function hasTimeOverlap(firstRange, secondRange) {
-  return firstRange.startHour < secondRange.endHour && secondRange.startHour < firstRange.endHour;
-}
-
 
 function isCellCoveredByPreviousSpan(events, { date, hour, room }) {
   const currentHour = getHourNumber(hour);
@@ -163,6 +251,31 @@ function getStatusLabel(status) {
 
   return map[status] || status;
 }
+
+function eventMatchesSearch(event, query) {
+  if (!query) {
+    return true;
+  }
+
+  const haystack = [
+    event.customerName,
+    event.customerPhone,
+    event.packageName,
+    event.label,
+    event.room,
+    event.sessionCategory,
+    event.customerNote,
+    event.adminNote,
+    event.paymentStatus,
+    event.status,
+  ]
+    .filter(Boolean)
+    .join(" ")
+    .toLowerCase();
+
+  return haystack.includes(query.toLowerCase());
+}
+
 
 function getPaymentShortLabel(paymentStatus) {
   const map = {
@@ -247,10 +360,18 @@ export default function AdminCalendarGrid() {
   const [viewMode, setViewMode] = useState("week");
   const [activeDate, setActiveDate] = useState(new Date());
   const [selectedRoom, setSelectedRoom] = useState("all");
+  const [searchQuery, setSearchQuery] = useState("");
+  const [selectedStatus, setSelectedStatus] = useState("all");
+  const [selectedPayment, setSelectedPayment] = useState("all");
   const [events, setEvents] = useState(() => getCalendarEvents());
   const [selectedSlot, setSelectedSlot] = useState(null);
   const [selectedEvent, setSelectedEvent] = useState(null);
   const [selectedDetailEvent, setSelectedDetailEvent] = useState(null);
+  const dragActionRef = useRef(null);
+  const suppressClickRef = useRef(false);
+  const [dragFeedback, setDragFeedback] = useState(null);
+  const [dragGhost, setDragGhost] = useState(null);
+  const [dropPreview, setDropPreview] = useState(null);
 
   const roomOptions = useMemo(() => ["all", ...publicCalendarRooms], []);
 
@@ -261,6 +382,47 @@ export default function AdminCalendarGrid() {
   const rangeLabel = useMemo(() => {
     return getRangeLabel(viewMode, activeDate, columns);
   }, [viewMode, activeDate, columns]);
+
+  const filteredEvents = useMemo(() => {
+    const query = searchQuery.trim();
+
+    return events.filter((event) => {
+      const paymentStatus = event.paymentStatus || "unpaid";
+      const matchesSearch = eventMatchesSearch(event, query);
+      const matchesStatus = selectedStatus === "all" || event.status === selectedStatus;
+      const matchesPayment = selectedPayment === "all" || paymentStatus === selectedPayment;
+
+      return matchesSearch && matchesStatus && matchesPayment;
+    });
+  }, [events, searchQuery, selectedStatus, selectedPayment]);
+
+  const visibleSummary = useMemo(() => {
+    const visibleDates = new Set(columns.map((column) => column.value));
+
+    const visibleEvents = filteredEvents.filter((event) => visibleDates.has(event.date));
+    const activeBookings = visibleEvents.filter((event) => event.status !== "cancelled");
+
+    const totalBookings = activeBookings.length;
+    const pendingBookings = activeBookings.filter((event) => event.status === "pending").length;
+    const downPaymentBookings = activeBookings.filter(
+      (event) => event.paymentStatus === "down_payment"
+    ).length;
+    const paidBookings = activeBookings.filter((event) => event.paymentStatus === "paid").length;
+
+    const estimatedIncome = activeBookings.reduce((total, event) => {
+      return total + Number(event.price || 0);
+    }, 0);
+
+    return {
+      totalBookings,
+      pendingBookings,
+      downPaymentBookings,
+      paidBookings,
+      estimatedIncome,
+    };
+  }, [columns, filteredEvents]);
+
+
 
   const gridColumnStyle = useMemo(() => {
     return {
@@ -328,6 +490,240 @@ export default function AdminCalendarGrid() {
     setSelectedSlot(null);
     setSelectedEvent(null);
     setSelectedDetailEvent(null);
+  }
+
+  function getDropPreviewForSlot(bookingEvent, targetSlot) {
+    if (!targetSlot) {
+      return null;
+    }
+
+    const columnIndex = columns.findIndex((column) => column.value === targetSlot.date);
+    const hourIndex = adminCalendarHours.indexOf(targetSlot.hour);
+
+    if (columnIndex < 0 || hourIndex < 0) {
+      return null;
+    }
+
+    const span = getEventDurationSpan(bookingEvent);
+    const patch = buildMovePatch(bookingEvent, targetSlot);
+
+    if (!patch) {
+      return null;
+    }
+
+    const conflict = findMoveConflict(bookingEvent, patch);
+
+    return {
+      date: targetSlot.date,
+      hour: targetSlot.hour,
+      span,
+      isConflict: Boolean(conflict),
+      gridColumn: columnIndex + 2,
+      gridRow: `${hourIndex + 2} / span ${span}`,
+    };
+  }
+
+  function buildDragGhost(bookingEvent, pointerEvent, targetSlot) {
+    const patch = targetSlot ? buildMovePatch(bookingEvent, targetSlot) : null;
+    const preview = targetSlot ? getDropPreviewForSlot(bookingEvent, targetSlot) : null;
+
+    return {
+      x: pointerEvent.clientX,
+      y: pointerEvent.clientY,
+      label: bookingEvent.label || bookingEvent.packageName || bookingEvent.customerName || "Booking",
+      room: bookingEvent.room,
+      time: patch?.time || bookingEvent.time,
+      hours: getEventDurationSpan(bookingEvent),
+      isConflict: Boolean(preview?.isConflict),
+    };
+  }
+
+  function showDragFeedback(feedback) {
+    setDragFeedback(feedback);
+    window.clearTimeout(showDragFeedback.timeoutId);
+
+    showDragFeedback.timeoutId = window.setTimeout(() => {
+      setDragFeedback(null);
+    }, feedback.type === "error" ? 2600 : 1400);
+  }
+
+  function buildMovePatch(bookingEvent, targetSlot) {
+    const duration = getEventDurationSpan(bookingEvent);
+    const startHour = getHourNumber(targetSlot.hour);
+    const endHour = Math.min(startHour + duration, 23);
+
+    if (!targetSlot.date || !targetSlot.hour || endHour <= startHour) {
+      return null;
+    }
+
+    return {
+      date: targetSlot.date,
+      time: `${targetSlot.hour} - ${formatHourLabel(endHour)}`,
+    };
+  }
+
+  function findMoveConflict(bookingEvent, patch) {
+    const patchRange = getPatchTimeRange(patch);
+
+    return events.find((event) => {
+      const isSameEvent = event.id === bookingEvent.id;
+      const sameDate = event.date === patch.date;
+      const sameRoom = event.room === bookingEvent.room;
+      const isCancelled = event.status === "cancelled";
+
+      if (isSameEvent || isCancelled || !sameDate || !sameRoom) {
+        return false;
+      }
+
+      return hasTimeOverlap(patchRange, getEventTimeRange(event));
+    });
+  }
+
+  function moveBookingToSlot(bookingEvent, targetSlot) {
+    const patch = buildMovePatch(bookingEvent, targetSlot);
+
+    if (!patch) {
+      showDragFeedback({
+        type: "error",
+        title: "Move gagal",
+        text: "Target slot tidak valid.",
+      });
+      return;
+    }
+
+    const currentStart = getEventStartTime(bookingEvent.time);
+
+    if (bookingEvent.date === patch.date && currentStart === targetSlot.hour) {
+      return;
+    }
+
+    const conflict = findMoveConflict(bookingEvent, patch);
+
+    if (conflict) {
+      showDragFeedback({
+        type: "error",
+        title: "Jadwal bentrok",
+        text: `${conflict.label || conflict.packageName || conflict.customerName || "Booking lain"} · ${conflict.time}`,
+      });
+      return;
+    }
+
+    const nextEvents = updateCalendarEvent(bookingEvent.id, patch);
+    const nextEvent = nextEvents.find((event) => event.id === bookingEvent.id);
+
+    setEvents(nextEvents);
+    setSelectedDetailEvent((current) => (current?.id === bookingEvent.id ? nextEvent : current));
+
+    showDragFeedback({
+      type: "success",
+      title: "Jadwal dipindah",
+      text: `${patch.date} · ${patch.time}`,
+    });
+  }
+
+  function handleEventPointerDown(pointerEvent, bookingEvent) {
+    if (pointerEvent.button !== 0) {
+      return;
+    }
+
+    pointerEvent.preventDefault();
+
+    try {
+      pointerEvent.currentTarget.setPointerCapture(pointerEvent.pointerId);
+    } catch {
+      // Browser may reject pointer capture in edge cases.
+    }
+
+    const sourceElement = pointerEvent.currentTarget;
+    sourceElement.classList.add("is-drag-source");
+
+    const pointerStartX = pointerEvent.clientX;
+    const pointerStartY = pointerEvent.clientY;
+
+    dragActionRef.current = {
+      bookingEvent,
+      pointerStartX,
+      pointerStartY,
+      hasMoved: false,
+    };
+
+    const handlePointerMove = (moveEvent) => {
+      const action = dragActionRef.current;
+
+      if (!action) {
+        return;
+      }
+
+      const distanceX = Math.abs(moveEvent.clientX - action.pointerStartX);
+      const distanceY = Math.abs(moveEvent.clientY - action.pointerStartY);
+      const hasMovedEnough = distanceX > 3 || distanceY > 3;
+
+      if (!hasMovedEnough) {
+        return;
+      }
+
+      action.hasMoved = true;
+      suppressClickRef.current = true;
+      document.body.classList.add("is-admin-calendar-dragging");
+
+      const targetSlot = getCalendarSlotFromPoint(moveEvent.clientX, moveEvent.clientY);
+      const preview = getDropPreviewForSlot(action.bookingEvent, targetSlot);
+
+      setDropPreview(preview);
+      setDragGhost(buildDragGhost(action.bookingEvent, moveEvent, targetSlot));
+
+      setDragFeedback({
+        type: preview?.isConflict ? "error" : "move",
+        title: preview?.isConflict ? "Slot bentrok" : "Pindah jadwal",
+        text: targetSlot ? `${targetSlot.date} · ${targetSlot.hour}` : "Arahkan ke slot tujuan",
+      });
+    };
+
+    const handlePointerUp = (upEvent) => {
+      const action = dragActionRef.current;
+
+      window.removeEventListener("pointermove", handlePointerMove);
+      window.removeEventListener("pointerup", handlePointerUp);
+      document.body.classList.remove("is-admin-calendar-dragging");
+      sourceElement.classList.remove("is-drag-source");
+
+      try {
+        sourceElement.releasePointerCapture(upEvent.pointerId);
+      } catch {
+        // Ignore release failures.
+      }
+
+      dragActionRef.current = null;
+      setDragGhost(null);
+      setDropPreview(null);
+
+      if (!action?.hasMoved) {
+        return;
+      }
+
+      const targetSlot = getCalendarSlotFromPoint(upEvent.clientX, upEvent.clientY);
+
+      if (targetSlot) {
+        moveBookingToSlot(action.bookingEvent, targetSlot);
+      }
+
+      window.setTimeout(() => {
+        suppressClickRef.current = false;
+      }, 0);
+    };
+
+    window.addEventListener("pointermove", handlePointerMove);
+    window.addEventListener("pointerup", handlePointerUp);
+  }
+
+  function handleEventClick(clickEvent, bookingEvent) {
+    if (suppressClickRef.current) {
+      clickEvent.preventDefault();
+      clickEvent.stopPropagation();
+      return;
+    }
+
+    handleOpenDetailModal(bookingEvent);
   }
 
   function handleSaveModalBooking(payload) {
@@ -456,6 +852,81 @@ export default function AdminCalendarGrid() {
         </div>
       </div>
 
+      <div className="admin-calendar-summary-row">
+        <article>
+          <span>Total Booking</span>
+          <strong>{visibleSummary.totalBookings}</strong>
+          <small>{rangeLabel}</small>
+        </article>
+
+        <article>
+          <span>Pending</span>
+          <strong>{visibleSummary.pendingBookings}</strong>
+          <small>Perlu follow up</small>
+        </article>
+
+        <article>
+          <span>DP</span>
+          <strong>{visibleSummary.downPaymentBookings}</strong>
+          <small>Belum lunas</small>
+        </article>
+
+        <article>
+          <span>Lunas</span>
+          <strong>{visibleSummary.paidBookings}</strong>
+          <small>Paid booking</small>
+        </article>
+
+        <article>
+          <span>Est. Income</span>
+          <strong>{formatCurrencyCompact(visibleSummary.estimatedIncome)}</strong>
+          <small>Aktif, non-cancelled</small>
+        </article>
+      </div>
+
+      <div className="admin-calendar-filter-bar">
+        <label className="admin-calendar-search-box">
+          <span>Search</span>
+          <input
+            value={searchQuery}
+            placeholder="Cari customer, WA, paket..."
+            onChange={(event) => setSearchQuery(event.target.value)}
+          />
+        </label>
+
+        <div className="admin-calendar-filter-group">
+          <span>Status</span>
+          <div>
+            {statusFilterOptions.map((option) => (
+              <button
+                type="button"
+                key={option.value}
+                className={selectedStatus === option.value ? "is-active" : ""}
+                onClick={() => setSelectedStatus(option.value)}
+              >
+                {option.label}
+              </button>
+            ))}
+          </div>
+        </div>
+
+        <div className="admin-calendar-filter-group">
+          <span>Payment</span>
+          <div>
+            {paymentFilterOptions.map((option) => (
+              <button
+                type="button"
+                key={option.value}
+                className={selectedPayment === option.value ? "is-active" : ""}
+                onClick={() => setSelectedPayment(option.value)}
+              >
+                {option.label}
+              </button>
+            ))}
+          </div>
+        </div>
+      </div>
+
       <div className="admin-calendar-status-row">
         <span><i className="status-dot status-available" /> Tersedia</span>
         <span><i className="status-dot status-pending" /> Pending</span>
@@ -465,6 +936,27 @@ export default function AdminCalendarGrid() {
         <span><i className="payment-dot payment-down_payment" /> DP</span>
         <span><i className="payment-dot payment-paid" /> Lunas</span>
       </div>
+
+      {dragGhost && (
+        <div
+          className={`admin-calendar-drag-ghost ${dragGhost.isConflict ? "is-conflict" : ""}`}
+          style={{
+            "--ghost-x": `${dragGhost.x}px`,
+            "--ghost-y": `${dragGhost.y}px`,
+            "--ghost-hours": dragGhost.hours,
+          }}
+        >
+          <strong>{dragGhost.label}</strong>
+          <span>{dragGhost.room} · {dragGhost.time}</span>
+        </div>
+      )}
+
+      {dragFeedback && (
+        <div className={`admin-calendar-drag-feedback is-${dragFeedback.type}`}>
+          <strong>{dragFeedback.title}</strong>
+          <span>{dragFeedback.text}</span>
+        </div>
+      )}
 
       <div className={`admin-time-calendar-scroll view-${viewMode}`}>
         <div className="admin-time-calendar-grid" style={gridColumnStyle}>
@@ -482,6 +974,7 @@ export default function AdminCalendarGrid() {
             <div
               className={`admin-time-day-head ${column.isToday ? "is-today" : ""}`}
               key={column.value}
+              data-calendar-day={column.value}
               style={{
                 gridColumn: columnIndex + 2,
                 gridRow: 1,
@@ -492,11 +985,24 @@ export default function AdminCalendarGrid() {
             </div>
           ))}
 
+          {dropPreview && (
+            <div
+              className={`admin-calendar-drop-guide ${dropPreview.isConflict ? "is-conflict" : ""}`}
+              style={{
+                gridColumn: dropPreview.gridColumn,
+                gridRow: dropPreview.gridRow,
+              }}
+            >
+              <span>{dropPreview.isConflict ? "Bentrok" : "Drop"}</span>
+            </div>
+          )}
+
           {adminCalendarHours.map((hour, hourIndex) => (
             <div className="admin-time-row" key={hour}>
               <div
                 className="admin-time-hour-cell"
-                style={{
+                  data-calendar-hour={hour}
+                  style={{
                   gridColumn: 1,
                   gridRow: hourIndex + 2,
                 }}
@@ -505,13 +1011,13 @@ export default function AdminCalendarGrid() {
               </div>
 
               {columns.map((column, columnIndex) => {
-                const slotEvents = getEventsForCell(events, {
+                const slotEvents = getEventsForCell(filteredEvents, {
                   date: column.value,
                   hour,
                   room: selectedRoom,
                 });
 
-                const isCoveredByPreviousEvent = isCellCoveredByPreviousSpan(events, {
+                const isCoveredByPreviousEvent = isCellCoveredByPreviousSpan(filteredEvents, {
                   date: column.value,
                   hour,
                   room: selectedRoom,
@@ -538,6 +1044,9 @@ export default function AdminCalendarGrid() {
                       className="admin-time-slot-cell is-empty"
                       key={column.value + "-" + hour}
                       style={cellGridStyle}
+                      data-calendar-slot="true"
+                      data-date={column.value}
+                      data-hour={hour}
                       aria-label={"Tambah jadwal " + column.label + " jam " + hour}
                       onClick={() =>
                         handleOpenCreateModal({
@@ -557,7 +1066,11 @@ export default function AdminCalendarGrid() {
                     className="admin-time-slot-cell has-event"
                     key={column.value + "-" + hour}
                     style={cellGridStyle}
-                    onClick={() => handleOpenDetailModal(slotEvents[0])}
+                    data-calendar-slot="true"
+                    data-date={column.value}
+                    data-hour={hour}
+                    onPointerDown={(pointerEvent) => handleEventPointerDown(pointerEvent, slotEvents[0])}
+                    onClick={(clickEvent) => handleEventClick(clickEvent, slotEvents[0])}
                   >
                     {slotEvents.slice(0, 2).map((event) => (
                       <span className={`admin-time-event-pill status-${event.status} payment-${event.paymentStatus || "unpaid"}`} key={event.id}>
