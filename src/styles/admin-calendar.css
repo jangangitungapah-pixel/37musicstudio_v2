@@ -606,3 +606,221 @@
     min-height: 40px;
   }
 }
+
+
+/* ================================
+   Admin Calendar Table Look Override
+================================ */
+
+.admin-time-calendar-scroll {
+  padding-bottom: 0;
+}
+
+.admin-time-calendar-grid {
+  gap: 1px;
+  padding: 1px;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 20px;
+  background: rgba(255, 255, 255, 0.08);
+  overflow: hidden;
+}
+
+.admin-time-calendar-scroll.view-day .admin-time-calendar-grid {
+  min-width: 320px;
+}
+
+.admin-time-calendar-scroll.view-week .admin-time-calendar-grid {
+  min-width: 860px;
+}
+
+.admin-time-calendar-scroll.view-month .admin-time-calendar-grid {
+  min-width: 2800px;
+}
+
+.admin-time-corner,
+.admin-time-day-head,
+.admin-time-hour-cell,
+.admin-time-slot-cell {
+  border: 0 !important;
+  border-radius: 0 !important;
+  box-shadow: none !important;
+  background: #0d0f12;
+}
+
+.admin-time-corner,
+.admin-time-day-head {
+  background: #13161a;
+}
+
+.admin-time-corner {
+  min-height: 52px;
+  font-size: 0.72rem;
+  font-weight: 900;
+  letter-spacing: 0.08em;
+}
+
+.admin-time-day-head {
+  min-height: 52px;
+  padding: 8px 10px;
+  gap: 2px;
+}
+
+.admin-time-day-head strong {
+  font-size: 0.8rem;
+  font-weight: 800;
+}
+
+.admin-time-day-head span {
+  font-size: 0.68rem;
+  color: var(--text-muted);
+}
+
+.admin-time-day-head.is-today {
+  background:
+    linear-gradient(180deg, rgba(245, 184, 75, 0.08), rgba(245, 184, 75, 0.02)),
+    #13161a !important;
+  box-shadow: inset 0 0 0 1px rgba(245, 184, 75, 0.22) !important;
+}
+
+.admin-time-hour-cell,
+.admin-time-slot-cell {
+  min-height: 40px;
+}
+
+.admin-time-hour-cell {
+  background: #111419;
+  color: rgba(255, 255, 255, 0.7);
+  font-size: 0.74rem;
+  font-weight: 800;
+}
+
+.admin-time-slot-cell {
+  padding: 4px 6px;
+  transition: background 140ms ease;
+}
+
+.admin-time-slot-cell:hover {
+  transform: none;
+  border: 0 !important;
+  background: #151a20 !important;
+}
+
+.admin-time-slot-cell.is-empty {
+  position: relative;
+  background: #0d0f12 !important;
+}
+
+.admin-time-slot-cell.is-empty::before {
+  display: none !important;
+}
+
+.admin-time-slot-cell.is-empty::after {
+  content: "+";
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  color: rgba(255, 255, 255, 0.16);
+  font-size: 1rem;
+  font-weight: 500;
+  opacity: 0;
+  transition: opacity 140ms ease, color 140ms ease, background 140ms ease;
+}
+
+.admin-time-slot-cell.is-empty:hover::after {
+  opacity: 1;
+  color: rgba(245, 184, 75, 0.55);
+}
+
+.admin-time-event-pill {
+  min-height: 28px;
+  padding: 4px 6px 4px 10px;
+  border-radius: 7px;
+  box-shadow: none;
+}
+
+.admin-time-event-pill::before {
+  top: 5px;
+  bottom: 5px;
+}
+
+.admin-time-event-pill strong {
+  font-size: 0.64rem;
+  line-height: 1.1;
+}
+
+.admin-time-event-pill small {
+  font-size: 0.58rem;
+  line-height: 1.1;
+}
+
+.admin-time-slot-cell em {
+  font-size: 0.6rem;
+}
+
+@media (max-width: 720px) {
+  .admin-time-corner,
+  .admin-time-day-head {
+    min-height: 48px;
+  }
+
+  .admin-time-hour-cell,
+  .admin-time-slot-cell {
+    min-height: 38px;
+  }
+
+  .admin-time-day-head {
+    padding: 6px 8px;
+  }
+}
+
+@media (max-width: 420px) {
+  .admin-time-corner,
+  .admin-time-day-head {
+    min-height: 44px;
+  }
+
+  .admin-time-hour-cell,
+  .admin-time-slot-cell {
+    min-height: 36px;
+  }
+
+  .admin-time-day-head strong {
+    font-size: 0.76rem;
+  }
+
+  .admin-time-day-head span {
+    font-size: 0.64rem;
+  }
+}
+
+/* ================================
+   Empty slot clean state
+================================ */
+
+.admin-time-slot-cell.is-empty {
+  position: relative;
+  background: #0d0f12 !important;
+}
+
+.admin-time-slot-cell.is-empty::before {
+  display: none !important;
+}
+
+.admin-time-slot-cell.is-empty::after {
+  content: "+";
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  color: rgba(255, 255, 255, 0.14);
+  font-size: 1rem;
+  font-weight: 500;
+  opacity: 0;
+  transition: opacity 140ms ease, color 140ms ease;
+}
+
+.admin-time-slot-cell.is-empty:hover::after {
+  opacity: 1;
+  color: rgba(245, 184, 75, 0.55);
+}
