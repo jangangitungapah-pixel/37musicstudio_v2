@@ -1,0 +1,195 @@
+/* ================================
+   Admin UI Polish Override
+   Sharper, cleaner, professional
+================================ */
+
+:root {
+  --radius-xs: 6px;
+  --radius-sm: 8px;
+  --radius-md: 12px;
+  --radius-lg: 14px;
+  --radius-xl: 16px;
+  --radius-2xl: 18px;
+}
+
+/* Global admin shell surfaces */
+.admin-shell,
+.admin-main,
+.admin-content,
+.admin-dashboard-page,
+.admin-calendar-page,
+.admin-settings-page {
+  --soft-radius: var(--radius-lg);
+}
+
+/* Main cards / panels */
+.admin-dashboard-card,
+.admin-stat-card,
+.admin-placeholder-card,
+.admin-calendar-grid-shell,
+.admin-calendar-grid-toolbar,
+.admin-calendar-status-row,
+.admin-settings-hero,
+.admin-settings-hero-card,
+.admin-settings-panel-head,
+.admin-settings-empty-state,
+.admin-price-content-head,
+.admin-price-table-card,
+.admin-price-item-card,
+.admin-payment-rules-card div,
+.admin-booking-section,
+.admin-booking-detail-section,
+.admin-booking-detail-summary div,
+.admin-booking-detail-notes div {
+  border-radius: var(--radius-xl) !important;
+}
+
+/* Smaller cards */
+.admin-price-preview-card,
+.admin-settings-tab,
+.admin-price-subtabs button,
+.admin-price-modal-form input,
+.admin-price-modal-form select,
+.admin-price-modal-form textarea,
+.admin-booking-grid input,
+.admin-booking-grid select,
+.admin-booking-grid textarea,
+.admin-booking-detail-grid div {
+  border-radius: var(--radius-md) !important;
+}
+
+/* Hero cards should still feel premium but not bubbly */
+.admin-settings-hero,
+.admin-calendar-grid-shell,
+.admin-booking-modal,
+.admin-booking-detail-modal,
+.admin-price-modal {
+  border-radius: var(--radius-2xl) !important;
+}
+
+/* Modal headers */
+.admin-booking-modal-header,
+.admin-booking-detail-header,
+.admin-price-modal-header {
+  border-radius: 0 !important;
+}
+
+/* Calendar table look */
+.admin-time-calendar-grid {
+  border-radius: var(--radius-lg) !important;
+}
+
+.admin-time-corner,
+.admin-time-day-head,
+.admin-time-hour-cell,
+.admin-time-slot-cell {
+  border-radius: 0 !important;
+}
+
+.admin-time-event-pill {
+  border-radius: var(--radius-sm) !important;
+}
+
+/* Multi-hour event block */
+.admin-time-slot-cell.has-event {
+  border-radius: 0 !important;
+}
+
+.admin-time-slot-cell.has-event .admin-time-event-pill {
+  border-radius: var(--radius-sm) !important;
+}
+
+/* Buttons: keep pill only for primary CTA, but reduce excessive bubble feel */
+.admin-settings-primary-action,
+.admin-settings-secondary-action,
+.admin-modal-cancel,
+.admin-modal-submit,
+.admin-modal-delete,
+.admin-price-card-actions button,
+.admin-calendar-nav button,
+.admin-calendar-view-toggle button,
+.admin-calendar-room-filter button {
+  border-radius: var(--radius-md) !important;
+}
+
+/* Small badges can stay rounded but less extreme */
+.admin-modal-kicker,
+.admin-booking-detail-status,
+.admin-price-card-top > span,
+.admin-price-card-top em,
+.admin-price-item-card > span,
+.admin-price-preview-card span,
+.admin-settings-empty-state span,
+.admin-price-table-row em,
+.admin-settings-tab em,
+.admin-price-subtabs button em,
+.status-dot {
+  border-radius: var(--radius-sm) !important;
+}
+
+/* Sidebar/nav polish */
+.admin-sidebar,
+.admin-sidebar-brand,
+.admin-sidebar-nav a,
+.admin-sidebar-nav button,
+.admin-mobile-topbar {
+  border-radius: var(--radius-md) !important;
+}
+
+/* Inputs: modern rectangle */
+input,
+select,
+textarea {
+  border-radius: var(--radius-md) !important;
+}
+
+/* Forms spacing polish */
+.admin-booking-form,
+.admin-price-modal-form {
+  gap: 12px;
+}
+
+/* More professional shadows */
+.admin-calendar-grid-shell,
+.admin-settings-hero,
+.admin-booking-modal,
+.admin-booking-detail-modal,
+.admin-price-modal {
+  box-shadow: 0 18px 56px rgba(0, 0, 0, 0.34) !important;
+}
+
+/* Tone down overly soft cards */
+.admin-price-item-card,
+.admin-price-preview-card,
+.admin-settings-tab,
+.admin-booking-section,
+.admin-booking-detail-section,
+.admin-settings-panel-head {
+  background:
+    linear-gradient(145deg, rgba(255, 255, 255, 0.052), rgba(255, 255, 255, 0.022)),
+    rgba(0, 0, 0, 0.16) !important;
+}
+
+/* Table and grid borders feel sharper */
+.admin-price-table-card,
+.admin-time-calendar-grid {
+  border-color: rgba(255, 255, 255, 0.11) !important;
+}
+
+/* Mobile: still soft enough but compact */
+@media (max-width: 520px) {
+  .admin-settings-hero,
+  .admin-calendar-grid-shell,
+  .admin-booking-modal,
+  .admin-booking-detail-modal,
+  .admin-price-modal {
+    border-radius: var(--radius-xl) !important;
+  }
+
+  .admin-settings-tab,
+  .admin-price-subtabs button,
+  .admin-booking-section,
+  .admin-settings-panel-head {
+    border-radius: var(--radius-lg) !important;
+  }
+}

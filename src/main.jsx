@@ -11,10 +11,16 @@ import "./styles/admin-auth.css";
 import "./styles/admin-shell.css";
 import "./styles/admin-calendar.css";
 import "./styles/admin-settings.css";
+import "./styles/admin-ui-polish.css";
+import "./styles/admin-typography.css";
+import "./styles/admin-density.css";
 
 ReactDOM.createRoot(document.getElementById("root")).render(
   <React.StrictMode>
     <App />
   </React.StrictMode>
 );
+
+
+
 

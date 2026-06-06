@@ -1,0 +1,263 @@
+/* ================================
+   Admin Density Pass
+   Compact, cleaner, less wasted space
+================================ */
+
+:root {
+  --admin-gap-xs: 6px;
+  --admin-gap-sm: 8px;
+  --admin-gap-md: 12px;
+  --admin-gap-lg: 16px;
+  --admin-pad-sm: 10px;
+  --admin-pad-md: 14px;
+  --admin-pad-lg: 18px;
+}
+
+/* Page rhythm */
+.admin-content,
+.admin-dashboard-page,
+.admin-calendar-page,
+.admin-settings-page {
+  gap: var(--admin-gap-lg) !important;
+}
+
+/* Hero / top panels */
+.admin-settings-hero,
+.admin-calendar-grid-toolbar,
+.admin-settings-panel-head,
+.admin-price-content-head {
+  padding: var(--admin-pad-lg) !important;
+}
+
+.admin-settings-hero {
+  gap: var(--admin-gap-md) !important;
+}
+
+.admin-settings-hero h2,
+.admin-calendar-grid-toolbar h2,
+.admin-settings-panel-head h3,
+.admin-price-content-head h4 {
+  margin-bottom: 0 !important;
+}
+
+/* Reduce long vertical stacks */
+.admin-settings-layout,
+.admin-price-settings,
+.admin-price-engine-layout,
+.admin-price-content-panel,
+.admin-calendar-grid-shell,
+.admin-booking-form,
+.admin-booking-detail-body {
+  gap: var(--admin-gap-md) !important;
+}
+
+/* Cards */
+.admin-settings-tab,
+.admin-price-subtabs button,
+.admin-price-item-card,
+.admin-price-preview-card,
+.admin-booking-section,
+.admin-booking-detail-section,
+.admin-settings-empty-state {
+  padding: var(--admin-pad-md) !important;
+}
+
+/* Sub tabs */
+.admin-settings-tabs,
+.admin-price-subtabs {
+  gap: var(--admin-gap-sm) !important;
+}
+
+.admin-settings-tab {
+  min-height: 62px !important;
+}
+
+.admin-price-subtabs button {
+  min-height: 68px !important;
+}
+
+/* Price content */
+.admin-price-card-grid,
+.admin-price-preview-grid,
+.admin-payment-rules-card,
+.admin-booking-detail-summary,
+.admin-booking-detail-grid,
+.admin-booking-detail-notes {
+  gap: var(--admin-gap-sm) !important;
+}
+
+.admin-price-item-card {
+  gap: var(--admin-gap-sm) !important;
+}
+
+.admin-price-item-card p,
+.admin-price-preview-card p,
+.admin-settings-empty-state p {
+  margin-top: 0 !important;
+}
+
+/* Calendar toolbar */
+.admin-calendar-grid-toolbar {
+  gap: var(--admin-gap-md) !important;
+}
+
+.admin-calendar-toolbar-actions {
+  gap: var(--admin-gap-sm) !important;
+}
+
+.admin-calendar-view-toggle,
+.admin-calendar-room-filter,
+.admin-calendar-nav {
+  gap: 6px !important;
+}
+
+/* Calendar cells */
+.admin-time-corner,
+.admin-time-day-head {
+  min-height: 46px !important;
+}
+
+.admin-time-hour-cell,
+.admin-time-slot-cell {
+  min-height: 36px !important;
+}
+
+.admin-time-day-head {
+  padding: 6px 8px !important;
+}
+
+.admin-time-slot-cell {
+  padding: 3px !important;
+}
+
+.admin-time-event-pill {
+  padding: 6px 8px 6px 11px !important;
+  min-height: 28px !important;
+}
+
+/* Modal compact */
+.admin-booking-modal,
+.admin-booking-detail-modal,
+.admin-price-modal {
+  max-height: min(92svh, 780px) !important;
+}
+
+.admin-booking-modal-header,
+.admin-booking-detail-header,
+.admin-price-modal-header {
+  min-height: 74px !important;
+  padding: 14px 16px !important;
+}
+
+.admin-booking-modal-header h2,
+.admin-booking-detail-header h2,
+.admin-price-modal-header h3 {
+  margin-top: 4px !important;
+}
+
+.admin-booking-form,
+.admin-price-modal-form {
+  padding: 14px !important;
+}
+
+.admin-booking-section {
+  gap: 10px !important;
+}
+
+.admin-booking-grid {
+  gap: 10px !important;
+}
+
+.admin-booking-grid label {
+  gap: 6px !important;
+}
+
+.admin-booking-grid input,
+.admin-booking-grid select {
+  height: 42px !important;
+  padding-inline: 11px !important;
+}
+
+.admin-booking-grid textarea {
+  padding: 10px 11px !important;
+}
+
+.admin-booking-modal-actions,
+.admin-booking-detail-actions,
+.admin-price-modal-actions {
+  padding-top: 10px !important;
+}
+
+.admin-modal-cancel,
+.admin-modal-submit,
+.admin-modal-delete,
+.admin-settings-primary-action,
+.admin-settings-secondary-action {
+  min-height: 42px !important;
+}
+
+/* Detail modal */
+.admin-booking-detail-summary div,
+.admin-booking-detail-grid div,
+.admin-booking-detail-notes div {
+  padding: 11px !important;
+}
+
+.admin-booking-detail-section {
+  padding: 12px !important;
+}
+
+.admin-booking-detail-actions {
+  padding: 12px 14px 14px !important;
+}
+
+/* Price table */
+.admin-price-table-head span,
+.admin-price-table-row > * {
+  min-height: 42px !important;
+  padding-inline: 11px !important;
+}
+
+/* Sidebar / shell */
+.admin-sidebar-nav a,
+.admin-sidebar-nav button {
+  min-height: 42px !important;
+}
+
+.admin-sidebar-brand {
+  padding: 12px !important;
+}
+
+/* Mobile */
+@media (max-width: 520px) {
+  .admin-settings-hero,
+  .admin-calendar-grid-toolbar,
+  .admin-settings-panel-head,
+  .admin-price-content-head {
+    padding: 14px !important;
+  }
+
+  .admin-settings-tab {
+    min-width: 176px !important;
+  }
+
+  .admin-price-subtabs button {
+    min-width: 176px !important;
+  }
+
+  .admin-time-corner,
+  .admin-time-day-head {
+    min-height: 42px !important;
+  }
+
+  .admin-time-hour-cell,
+  .admin-time-slot-cell {
+    min-height: 34px !important;
+  }
+
+  .admin-booking-modal-header,
+  .admin-booking-detail-header,
+  .admin-price-modal-header {
+    padding: 13px 14px !important;
+  }
+}

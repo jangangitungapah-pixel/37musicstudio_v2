@@ -11,7 +11,7 @@ const settingsTabs = [
     id: "price",
     label: "Price",
     eyebrow: "Pricing Engine",
-    description: "Atur harga dasar, paket per jam, recording session, add-on, dan payment rules.",
+    description: "Harga, paket, add-on, dan pembayaran.",
     status: "Ready",
   },
   {
@@ -65,12 +65,12 @@ const priceTabs = [
   {
     id: "packages",
     label: "Packages",
-    description: "Paket harga berdasarkan durasi tertentu.",
+    description: "Paket per durasi.",
   },
   {
     id: "recording",
     label: "Recording Sessions",
-    description: "Paket recording/session yang bisa dibuat bebas.",
+    description: "Paket recording custom.",
   },
   {
     id: "addons",
@@ -116,9 +116,7 @@ export default function AdminSettingsTabs() {
           <p className="section-eyebrow">Settings</p>
           <h2>Studio configuration center.</h2>
           <p>
-            Semua pengaturan operasional studio dikumpulkan di sini. Untuk tahap awal,
-            kita mulai dari pricing engine agar booking, billing, dan POS punya sumber
-            harga yang konsisten.
+            Atur konfigurasi utama studio.
           </p>
         </div>
 
@@ -247,8 +245,7 @@ function PriceSettingsTab() {
           <p className="section-eyebrow">Price settings</p>
           <h3>Pricing engine</h3>
           <p>
-            Di sini admin bisa mengatur harga dasar, paket per durasi, recording
-            session, add-on, dan aturan pembayaran. Data tersimpan di localStorage.
+            Kelola harga, paket, add-on, dan aturan pembayaran.
           </p>
         </div>
 

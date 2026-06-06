@@ -1,0 +1,180 @@
+/* ================================
+   Admin Typography Overhaul
+   Modern, compact, SaaS-like
+================================ */
+
+:root {
+  --admin-font-sans:
+    Inter, Geist, "SF Pro Display", "SF Pro Text", "Segoe UI Variable",
+    "Segoe UI", Roboto, Arial, sans-serif;
+}
+
+body,
+button,
+input,
+select,
+textarea {
+  font-family: var(--admin-font-sans);
+  text-rendering: geometricPrecision;
+  -webkit-font-smoothing: antialiased;
+  font-feature-settings: "cv02", "cv03", "cv04", "cv11";
+}
+
+.admin-shell,
+.admin-main,
+.admin-content,
+.admin-calendar-page,
+.admin-dashboard-page,
+.admin-settings-page {
+  font-family: var(--admin-font-sans);
+}
+
+/* Headings */
+.admin-content h1,
+.admin-content h2,
+.admin-content h3,
+.admin-content h4,
+.admin-calendar-grid-toolbar h2,
+.admin-settings-hero h2,
+.admin-settings-panel-head h3,
+.admin-price-content-head h4,
+.admin-booking-modal-header h2,
+.admin-booking-detail-header h2,
+.admin-price-modal-header h3 {
+  font-weight: 760;
+  letter-spacing: -0.065em;
+  text-wrap: balance;
+}
+
+/* Smaller, denser body copy */
+.admin-content p,
+.admin-content span,
+.admin-content small,
+.admin-content label,
+.admin-content input,
+.admin-content select,
+.admin-content textarea {
+  letter-spacing: -0.01em;
+}
+
+.admin-content p {
+  line-height: 1.45;
+}
+
+.admin-settings-hero p:not(.section-eyebrow),
+.admin-settings-panel-head p:not(.section-eyebrow),
+.admin-price-content-head p,
+.admin-calendar-grid-toolbar span,
+.admin-booking-modal-header p,
+.admin-booking-detail-header p,
+.admin-price-modal-header p {
+  max-width: 620px;
+  font-size: 0.88rem;
+  line-height: 1.42;
+}
+
+/* Eyebrow labels */
+.section-eyebrow,
+.admin-booking-section-title,
+.admin-price-content-head span,
+.admin-settings-empty-state span,
+.admin-modal-kicker {
+  font-size: 0.68rem !important;
+  font-weight: 860 !important;
+  letter-spacing: 0.075em !important;
+}
+
+/* Buttons */
+button {
+  font-weight: 760;
+}
+
+.admin-settings-primary-action,
+.admin-settings-secondary-action,
+.admin-modal-submit,
+.admin-modal-cancel,
+.admin-modal-delete {
+  font-size: 0.86rem;
+  font-weight: 820;
+}
+
+/* Tables and cards */
+.admin-price-table-head span,
+.admin-price-table-row span,
+.admin-price-table-row strong,
+.admin-price-item-card p,
+.admin-price-preview-card p,
+.admin-settings-tab small,
+.admin-price-subtabs button span {
+  font-size: 0.82rem;
+  line-height: 1.35;
+}
+
+.admin-settings-tab strong,
+.admin-price-subtabs button strong,
+.admin-price-item-card strong,
+.admin-price-preview-card strong {
+  font-weight: 760;
+  letter-spacing: -0.035em;
+}
+
+/* Modal forms */
+.admin-booking-grid label span,
+.admin-price-modal-form label span {
+  font-size: 0.78rem;
+  font-weight: 780;
+}
+
+.admin-booking-grid input,
+.admin-booking-grid select,
+.admin-booking-grid textarea,
+.admin-price-modal-form input,
+.admin-price-modal-form select,
+.admin-price-modal-form textarea {
+  font-size: 0.9rem;
+  font-weight: 520;
+}
+
+/* Calendar grid */
+.admin-time-day-head strong {
+  font-weight: 760;
+  letter-spacing: -0.03em;
+}
+
+.admin-time-day-head span,
+.admin-time-hour-cell {
+  font-size: 0.68rem;
+  font-weight: 720;
+}
+
+.admin-time-event-pill strong {
+  font-weight: 760;
+  letter-spacing: -0.025em;
+}
+
+.admin-time-event-pill small {
+  font-weight: 620;
+}
+
+/* Reduce visual noise on long descriptions */
+.admin-settings-hero p,
+.admin-settings-panel-head p,
+.admin-price-content-head p,
+.admin-calendar-grid-toolbar span {
+  color: var(--text-muted);
+}
+
+/* Mobile density */
+@media (max-width: 520px) {
+  .admin-settings-hero h2,
+  .admin-calendar-grid-toolbar h2 {
+    letter-spacing: -0.055em;
+  }
+
+  .admin-settings-hero p:not(.section-eyebrow),
+  .admin-settings-panel-head p:not(.section-eyebrow),
+  .admin-price-content-head p,
+  .admin-calendar-grid-toolbar span {
+    font-size: 0.84rem;
+  }
+}

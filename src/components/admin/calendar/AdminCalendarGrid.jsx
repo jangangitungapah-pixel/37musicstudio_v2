@@ -347,8 +347,7 @@ export default function AdminCalendarGrid() {
           <p className="section-eyebrow">Calendar grid</p>
           <h2>{rangeLabel}</h2>
           <span>
-            Header atas berisi hari dan tanggal. Kolom kiri berisi jam operasional studio
-            dari 10.00 sampai 22.00.
+            Kelola jadwal studio per jam.
           </span>
         </div>
 
