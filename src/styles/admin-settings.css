@@ -317,3 +317,314 @@
     width: 100%;
   }
 }
+/* ================================
+   Price Engine Sections
+================================ */
+
+.admin-price-head-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.admin-settings-secondary-action {
+  min-height: 46px;
+  width: fit-content;
+  padding: 0 16px;
+  border: 1px solid var(--border-soft);
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.055);
+  color: var(--text-main);
+  font-weight: 950;
+}
+
+.admin-price-engine-layout {
+  display: grid;
+  gap: 14px;
+}
+
+.admin-price-subtabs {
+  display: flex;
+  gap: 10px;
+  overflow-x: auto;
+  padding-bottom: 4px;
+  scrollbar-width: none;
+}
+
+.admin-price-subtabs::-webkit-scrollbar {
+  display: none;
+}
+
+.admin-price-subtabs button {
+  min-width: 220px;
+  min-height: 82px;
+  flex: 0 0 auto;
+  display: grid;
+  align-content: center;
+  gap: 6px;
+  padding: 14px;
+  border: 1px solid var(--border-soft);
+  border-radius: 20px;
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.05), rgba(255, 255, 255, 0.024)),
+    rgba(0, 0, 0, 0.14);
+  color: var(--text-main);
+  text-align: left;
+}
+
+.admin-price-subtabs button strong {
+  font-size: 0.9rem;
+  letter-spacing: -0.025em;
+}
+
+.admin-price-subtabs button span {
+  color: var(--text-muted);
+  font-size: 0.74rem;
+  font-weight: 780;
+}
+
+.admin-price-subtabs button.is-active {
+  border-color: rgba(245, 184, 75, 0.42);
+  background:
+    radial-gradient(circle at top right, rgba(245, 184, 75, 0.18), transparent 42%),
+    rgba(245, 184, 75, 0.08);
+  box-shadow: 0 0 0 4px rgba(245, 184, 75, 0.07);
+}
+
+.admin-price-subtabs button.is-active strong {
+  color: var(--accent-strong);
+}
+
+.admin-price-content-panel {
+  display: grid;
+  gap: 14px;
+}
+
+.admin-price-content-head {
+  display: grid;
+  gap: 14px;
+  padding: 18px;
+  border: 1px solid var(--border-soft);
+  border-radius: 24px;
+  background:
+    linear-gradient(145deg, rgba(255, 255, 255, 0.06), rgba(255, 255, 255, 0.026)),
+    rgba(0, 0, 0, 0.14);
+}
+
+.admin-price-content-head span {
+  color: var(--accent);
+  font-size: 0.7rem;
+  font-weight: 950;
+  letter-spacing: 0.1em;
+}
+
+.admin-price-content-head h4 {
+  margin: 6px 0 0;
+  font-size: clamp(1.35rem, 4vw, 2.4rem);
+  line-height: 1;
+  letter-spacing: -0.06em;
+}
+
+.admin-price-content-head p {
+  max-width: 720px;
+  margin: 9px 0 0;
+  color: var(--text-soft);
+}
+
+.admin-price-table-card {
+  overflow: hidden;
+  border: 1px solid var(--border-soft);
+  border-radius: 24px;
+  background: rgba(0, 0, 0, 0.14);
+}
+
+.admin-price-table-head,
+.admin-price-table-row {
+  display: grid;
+  grid-template-columns: minmax(140px, 1.4fr) minmax(120px, 1fr) minmax(90px, 0.7fr) minmax(90px, 0.7fr);
+  gap: 1px;
+}
+
+.admin-price-table-head span,
+.admin-price-table-row > * {
+  min-height: 50px;
+  display: flex;
+  align-items: center;
+  padding: 0 13px;
+  background: rgba(255, 255, 255, 0.035);
+}
+
+.admin-price-table-head span {
+  color: var(--accent);
+  font-size: 0.72rem;
+  font-weight: 950;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.admin-price-table-row strong {
+  color: var(--text-main);
+  font-size: 0.9rem;
+}
+
+.admin-price-table-row span {
+  color: var(--text-soft);
+  font-size: 0.86rem;
+  font-weight: 780;
+}
+
+.admin-price-table-row em {
+  color: #72ff9d;
+  font-size: 0.76rem;
+  font-style: normal;
+  font-weight: 950;
+}
+
+.admin-price-card-grid {
+  display: grid;
+  gap: 12px;
+}
+
+.admin-price-item-card {
+  display: grid;
+  gap: 10px;
+  padding: 17px;
+  border: 1px solid var(--border-soft);
+  border-radius: 22px;
+  background:
+    linear-gradient(145deg, rgba(255, 255, 255, 0.055), rgba(255, 255, 255, 0.024)),
+    rgba(0, 0, 0, 0.14);
+}
+
+.admin-price-item-card > span {
+  width: fit-content;
+  padding: 5px 8px;
+  border-radius: 999px;
+  background: rgba(245, 184, 75, 0.1);
+  color: var(--accent);
+  font-size: 0.68rem;
+  font-weight: 950;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.admin-price-item-card strong {
+  color: var(--text-main);
+  font-size: 1.08rem;
+  letter-spacing: -0.04em;
+}
+
+.admin-price-item-card p {
+  margin: 0;
+  color: var(--text-soft);
+  font-size: 0.88rem;
+}
+
+.admin-price-item-card div {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.admin-price-item-card small {
+  min-height: 30px;
+  display: inline-flex;
+  align-items: center;
+  padding: 0 9px;
+  border: 1px solid var(--border-soft);
+  border-radius: 999px;
+  color: var(--text-muted);
+  font-size: 0.72rem;
+  font-weight: 850;
+}
+
+.admin-price-item-card.is-recording {
+  border-color: rgba(138, 160, 255, 0.24);
+}
+
+.admin-price-item-card.is-addon {
+  border-color: rgba(114, 255, 157, 0.18);
+}
+
+.admin-payment-rules-card {
+  display: grid;
+  gap: 12px;
+}
+
+.admin-payment-rules-card div {
+  display: grid;
+  gap: 7px;
+  padding: 17px;
+  border: 1px solid var(--border-soft);
+  border-radius: 20px;
+  background: rgba(255, 255, 255, 0.035);
+}
+
+.admin-payment-rules-card span {
+  color: var(--text-muted);
+  font-size: 0.76rem;
+  font-weight: 900;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+
+.admin-payment-rules-card strong {
+  color: var(--text-main);
+  font-size: 1.1rem;
+  letter-spacing: -0.035em;
+}
+
+@media (min-width: 920px) {
+  .admin-price-engine-layout {
+    grid-template-columns: 260px minmax(0, 1fr);
+    align-items: start;
+  }
+
+  .admin-price-subtabs {
+    position: sticky;
+    top: 96px;
+    display: grid;
+    overflow: visible;
+  }
+
+  .admin-price-subtabs button {
+    min-width: 0;
+    width: 100%;
+  }
+
+  .admin-price-content-head {
+    grid-template-columns: minmax(0, 1fr) auto;
+    align-items: start;
+  }
+
+  .admin-price-card-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .admin-payment-rules-card {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 760px) {
+  .admin-price-table-card {
+    overflow-x: auto;
+  }
+
+  .admin-price-table-head,
+  .admin-price-table-row {
+    min-width: 620px;
+  }
+}
+
+@media (max-width: 520px) {
+  .admin-price-head-actions,
+  .admin-settings-secondary-action,
+  .admin-price-content-head .admin-settings-primary-action {
+    width: 100%;
+  }
+
+  .admin-price-subtabs button {
+    min-width: 190px;
+  }
+}
