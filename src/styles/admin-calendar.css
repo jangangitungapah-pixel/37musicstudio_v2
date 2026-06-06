@@ -1096,3 +1096,64 @@
 .admin-time-slot-cell.has-event:hover {
   background: rgba(245, 184, 75, 0.08) !important;
 }
+/* ================================
+   Multi-hour event visual block fix
+   Make booked block fill full span height
+================================ */
+
+.admin-time-slot-cell.has-event {
+  position: relative;
+  z-index: 4;
+  min-height: 100% !important;
+  height: 100% !important;
+  display: flex !important;
+  align-items: stretch !important;
+  padding: 2px !important;
+  overflow: hidden;
+  background:
+    linear-gradient(180deg, rgba(245, 184, 75, 0.1), rgba(245, 184, 75, 0.045)),
+    #11100d !important;
+  box-shadow:
+    inset 0 0 0 1px rgba(245, 184, 75, 0.22),
+    0 8px 24px rgba(0, 0, 0, 0.22);
+}
+
+.admin-time-slot-cell.has-event:hover {
+  background:
+    linear-gradient(180deg, rgba(245, 184, 75, 0.16), rgba(245, 184, 75, 0.06)),
+    #15120c !important;
+}
+
+.admin-time-slot-cell.has-event .admin-time-event-pill {
+  width: 100% !important;
+  height: 100% !important;
+  min-height: 100% !important;
+  align-self: stretch !important;
+  display: flex !important;
+  flex-direction: column;
+  align-items: flex-start;
+  justify-content: flex-start;
+  gap: 3px;
+  padding: 9px 10px 9px 13px !important;
+  border-radius: 8px !important;
+  border: 0 !important;
+  background: transparent !important;
+}
+
+.admin-time-slot-cell.has-event .admin-time-event-pill::before {
+  top: 8px !important;
+  bottom: 8px !important;
+  left: 0;
+  width: 3px;
+}
+
+.admin-time-slot-cell.has-event .admin-time-event-pill strong {
+  font-size: 0.72rem;
+  line-height: 1.1;
+}
+
+.admin-time-slot-cell.has-event .admin-time-event-pill small {
+  font-size: 0.64rem;
+  line-height: 1.1;
+  opacity: 0.82;
+}
