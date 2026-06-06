@@ -34,6 +34,40 @@ function getPaymentLabel(status) {
 export default function AdminBookingDetailModal({ event, onClose, onEdit, onQuickUpdate }) {
   const isBooking = event?.type === "booking" || !event?.type;
 
+  function handleMarkBooked() {
+    onQuickUpdate?.({
+      status: "booked",
+      publicLabel: "Booked",
+    });
+  }
+
+  function handleMarkDownPayment() {
+    onQuickUpdate?.({
+      paymentStatus: "down_payment",
+    });
+  }
+
+  function handleMarkPaid() {
+    onQuickUpdate?.({
+      paymentStatus: "paid",
+      deposit: Number(event?.price || 0),
+    });
+  }
+
+  function handleCancelBooking() {
+    const confirmed = window.confirm("Cancel booking ini?");
+
+    if (!confirmed) {
+      return;
+    }
+
+    onQuickUpdate?.({
+      status: "cancelled",
+      publicLabel: "Cancelled",
+    });
+  }
+
+
   return (
     <div className="admin-modal-backdrop" role="presentation" onMouseDown={onClose}>
       <section
@@ -83,6 +117,30 @@ export default function AdminBookingDetailModal({ event, onClose, onEdit, onQuic
               <strong>{getPaymentLabel(event?.paymentStatus)}</strong>
             </div>
           </div>
+          {isBooking && (
+            <div className="admin-booking-detail-section admin-booking-quick-actions">
+              <p>Quick Actions</p>
+
+              <div className="admin-booking-quick-action-grid">
+                <button type="button" onClick={handleMarkBooked}>
+                  Mark Booked
+                </button>
+
+                <button type="button" onClick={handleMarkDownPayment}>
+                  Mark DP
+                </button>
+
+                <button type="button" onClick={handleMarkPaid}>
+                  Mark Paid
+                </button>
+
+                <button type="button" className="is-danger" onClick={handleCancelBooking}>
+                  Cancel
+                </button>
+              </div>
+            </div>
+          )}
+
 
           {isBooking && (
             <div className="admin-booking-detail-section">

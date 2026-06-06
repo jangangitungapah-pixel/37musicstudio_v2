@@ -379,6 +379,18 @@ export default function AdminCalendarGrid() {
     setSelectedEvent(null);
   }
 
+  function handleQuickUpdateFromDetail(patch) {
+    if (!selectedDetailEvent) {
+      return;
+    }
+
+    const nextEvents = updateCalendarEvent(selectedDetailEvent.id, patch);
+    const nextEvent = nextEvents.find((event) => event.id === selectedDetailEvent.id);
+
+    setEvents(nextEvents);
+    setSelectedDetailEvent(nextEvent || null);
+  }
+
   return (
     <section className="admin-calendar-grid-shell">
       <div className="admin-calendar-grid-toolbar">
@@ -555,6 +567,7 @@ export default function AdminCalendarGrid() {
           event={selectedDetailEvent}
           onClose={closeModal}
           onEdit={handleEditFromDetail}
+          onQuickUpdate={handleQuickUpdateFromDetail}
         />
       )}
       {(selectedSlot || selectedEvent) && (
